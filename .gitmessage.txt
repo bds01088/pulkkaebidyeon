@@ -15,3 +15,6 @@
 #[BE] ADD : README              => Commit 타이틀 해당 
 #tech stack selection #cho      => Commit 내용에 해당
 
+#추가사항
+#1. gitmessage를 이용하기 위해서는 git config --local commit.template .gitmessage.txt 가 선행되야함
+#2. content는 꼭 기입할 필요 없음
