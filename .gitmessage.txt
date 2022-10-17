@@ -9,22 +9,9 @@
 # MOVE ->코드의 이동이 있을 때 사용합니다.
 # RENAME ->이름 변경이 있을 때 사용합니다.
 # UPDATE ->개정이나 버전 업데이트가 있을 때 사용합니다. 주로 코드보다는 주로 문서나 리소스, 라이브러리등에 사용합니다.
-# 입력 부분
+# ==========입력 부분==========
 
-# ex)
-# ADD README 
-# tech stack selection #cho
-
-# 바로 아래 공백 유지 (제목과 본문의 분리를 위함)
-
-################
-# Body Message (선택사항)
-# 본문(구체적인 내용)을 아랫줄에 작성
-# 여러 줄의 메시지를 작성할 땐 "-"로 구분 (한 줄은 72자 이내)
-
-################
-# 꼬릿말(footer)을 아랫줄에 작성 (현재 커밋과 관련된 이슈 번호 추가 등)
-# 예) Close #7
-
-# Issue Tracker Number or URL
+#ex)
+#[BE] ADD : README              => Commit 타이틀 해당 
+#tech stack selection #cho      => Commit 내용에 해당
 
