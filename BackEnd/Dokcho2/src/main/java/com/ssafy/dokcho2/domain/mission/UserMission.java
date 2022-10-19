@@ -28,4 +28,8 @@ public class UserMission {
     @ManyToOne
     @JoinColumn(name = "mission_id")
     private Mission mission;
+
+    public void changeStatus(MissionStatus newStatus){
+        this.status = newStatus;
+    }
 }
