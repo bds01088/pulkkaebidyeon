@@ -2,12 +2,16 @@ package com.ssafy.dokcho2.domain.user;
 
 import com.ssafy.dokcho2.domain.basetime.BaseTime;
 import com.ssafy.dokcho2.domain.enums.Role;
+import com.ssafy.dokcho2.domain.userItem.UserItem;
+import com.ssafy.dokcho2.domain.userMonster.UserMonster;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -32,6 +36,12 @@ public class User extends BaseTime {
     private Role role;
     @Column(name = "token")
     private String token;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserItem> userItemList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserMonster> userMonsterList = new ArrayList<>();
 
     public void saveToken(String token) {
         this.token = token;
