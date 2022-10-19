@@ -20,13 +20,9 @@ public class UserResponseDto {
     private String username;
     private String nickname;
     private String email;
-    private int rank_point;
-    private int money;
+    private Long representMonster;
     private Role role;
-    private Boolean newbie;
-    private Boolean starter;
     private String createDate;
-    private Long profile_img;
 
     public static UserResponseDto from(User entity){
         String createDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(entity.getCreatedDate()).toString();
@@ -36,6 +32,7 @@ public class UserResponseDto {
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
+                .representMonster(entity.getRepresentMonster().getMonsterId())
                 .role(entity.getRole())
                 .createDate(createDate)
                 .build();
