@@ -20,6 +20,7 @@ public class UserResponseDto {
     private String username;
     private String nickname;
     private String email;
+    private Long representMonster;
     private Role role;
     private String createDate;
 
@@ -31,6 +32,7 @@ public class UserResponseDto {
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
+                .representMonster(entity.getRepresentMonster().getMonsterId())
                 .role(entity.getRole())
                 .createDate(createDate)
                 .build();

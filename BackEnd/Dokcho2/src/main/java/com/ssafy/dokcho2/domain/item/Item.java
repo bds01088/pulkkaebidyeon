@@ -30,7 +30,7 @@ public class Item {
     private String description;
 
     @Column(name = "type")
-    private Integer type;
+    private Integer type; // Enum으로 바꿔야함
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<UserItem> userItemList = new ArrayList<>();

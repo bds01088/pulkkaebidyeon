@@ -1,0 +1,39 @@
+package com.ssafy.dokcho2.domain.mission;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@NoArgsConstructor
+@Getter
+@Builder
+@AllArgsConstructor
+@Table(name = "mission")
+public class Mission {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "mission_id")
+    private Long missionId;
+    @Column(name = "line")
+    private String line;
+    @Column(name = "characters")
+    private String characters;
+    @Column(name = "relic")
+    private Long relic;
+    @Column(name = "item")
+    private Long item;
+    @Column(name = "exp")
+    private Integer exp;
+    @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL)
+    private List<Quiz> quizList = new ArrayList<>();
+    @OneToMany(mappedBy = "mission", cascade = CascadeType.ALL)
+    private List<UserMission> userMissionList = new ArrayList<>();
+    @OneToOne(mappedBy = "mission", cascade = CascadeType.ALL)
+    private Boss boss;
+}
