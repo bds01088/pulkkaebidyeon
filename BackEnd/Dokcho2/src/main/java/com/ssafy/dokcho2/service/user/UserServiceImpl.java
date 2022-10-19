@@ -1,6 +1,7 @@
 package com.ssafy.dokcho2.service.user;
 
 import com.ssafy.dokcho2.domain.enums.Role;
+import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateEmailException;
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService{
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final UserRepository userRepository;
+    private final UserMissionRepository userMissionRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -127,6 +129,8 @@ public class UserServiceImpl implements UserService{
                 .password(passwordEncoder.encode(requestDto.getPassword()))
                 .role(Role.ROLE_USER)
                 .build();
+
+        // 유저-미션 테이블에 8개 넣는 코드
 
         return UserResponseDto.from(user);
     }
