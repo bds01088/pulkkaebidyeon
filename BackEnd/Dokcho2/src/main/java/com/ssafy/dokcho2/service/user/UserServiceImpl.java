@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService{
                 .build();
 
         // 유저-미션 테이블에 8개 넣는 코드
-
+        userRepository.save(user);
         return UserResponseDto.from(user);
     }
 

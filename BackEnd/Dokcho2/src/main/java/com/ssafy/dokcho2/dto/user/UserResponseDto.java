@@ -32,7 +32,7 @@ public class UserResponseDto {
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
-                .representMonster(entity.getRepresentMonster().getMonsterId())
+          //      .representMonster(entity.getRepresentMonster().getMonsterId())
                 .role(entity.getRole())
                 .createDate(createDate)
                 .build();
