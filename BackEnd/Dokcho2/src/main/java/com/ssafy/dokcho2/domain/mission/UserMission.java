@@ -21,6 +21,7 @@ public class UserMission {
     @Column(name = "users_mission_id")
     private Long usersMissionId;
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private MissionStatus status;
     @ManyToOne
     @JoinColumn(name = "users_id")
