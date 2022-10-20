@@ -1,7 +1,6 @@
 package com.ssafy.dokcho2.service.user;
 
 import com.ssafy.dokcho2.domain.enums.Role;
-import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateEmailException;

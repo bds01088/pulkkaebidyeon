@@ -5,8 +5,10 @@ import com.ssafy.dokcho2.domain.mission.Mission;
 import com.ssafy.dokcho2.domain.mission.MissionRepository;
 import com.ssafy.dokcho2.domain.mission.UserMission;
 import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
+import com.ssafy.dokcho2.domain.monster.Monster;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
+import com.ssafy.dokcho2.dto.exception.mission.MissionNotFoundException;
 import com.ssafy.dokcho2.dto.exception.user.UserNotFoundException;
 import com.ssafy.dokcho2.dto.mission.MissionDto;
 import com.ssafy.dokcho2.dto.mission.QuizDto;
@@ -31,14 +33,14 @@ public class MissionServiceImpl implements MissionService{
     @Override
     public MissionDto getMissionInfo(String characters) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
-        Mission mission = missionRepository.findMissionByCharacters(characters).orElseThrow(RuntimeException::new);
-        UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(RuntimeException::new);
+        Mission mission = missionRepository.findMissionByCharacters(characters).orElseThrow(MissionNotFoundException::new);
+        UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
         return MissionDto.from(mission, userMission.getStatus());
     }
 
     @Override
     public List<QuizDto> getQuizList(Long missionId) {
-        Mission mission = missionRepository.findById(missionId).orElseThrow(RuntimeException::new);
+        Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
         return mission.getQuizList().stream().map(quiz -> QuizDto.from(quiz)).collect(Collectors.toList());
     }
 
@@ -58,8 +60,8 @@ public class MissionServiceImpl implements MissionService{
     @Override
     public void changeMissionStatus(Long missionId, MissionStatus nowStatus) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
-        Mission mission = missionRepository.findById(missionId).orElseThrow(RuntimeException::new);
-        UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(RuntimeException::new);
+        Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
+        UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
 
         MissionStatus newStatus;
 
@@ -81,7 +83,16 @@ public class MissionServiceImpl implements MissionService{
 
     @Override
     public void completeMission(Long missionId) {
-        // 아이템 지급하고, 상태 변경
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+        Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
+        UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
+
+        // 아이템, 경험치 지급하기
+        Monster monster = user.getRepresentMonster();
+        
+        
+        userMission.changeStatus(MissionStatus.FINISHED);
+        userMissionRepository.save(userMission);
     }
 
 
