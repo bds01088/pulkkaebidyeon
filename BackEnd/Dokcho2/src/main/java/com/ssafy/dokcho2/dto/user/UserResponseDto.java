@@ -25,16 +25,16 @@ public class UserResponseDto {
     private String createDate;
 
     public static UserResponseDto from(User entity){
-        String createDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(entity.getCreatedDate()).toString();
+        //String createDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(entity.getCreatedDate()).toString();
 
         return UserResponseDto.builder()
                 .user_id(entity.getUserId())
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
-                .representMonster(entity.getRepresentMonster().getMonsterId())
+               // .representMonster(entity.getRepresentMonster().getMonsterId())
                 .role(entity.getRole())
-                .createDate(createDate)
+               // .createDate(createDate)
                 .build();
     }
 }

@@ -128,6 +128,7 @@ public class UserServiceImpl implements UserService{
                 .role(Role.ROLE_USER)
                 .build();
 
+        userRepository.save(user);
         return UserResponseDto.from(user);
     }
 
