@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.ssafy.dokcho2.domain.enums.ItemType.USE_ITEM;
@@ -47,11 +48,21 @@ public class ItemServiceImpl implements ItemService{
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
         Item item = itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
 
-        UserItem userItem = UserItem.builder()
-                .user(user)
-                .item(item)
-                .count(1)
-                .build();
+        Optional<UserItem> o = userItemRepository.findByUserAndItem(user, item);
+
+        UserItem userItem;
+
+        if (o.isPresent()){
+            userItem = o.get();
+            userItem.setCount(userItem.getCount()+1);
+        } else {
+            userItem = UserItem.builder()
+                    .user(user)
+                    .item(item)
+                    .count(1)
+                    .build();
+        }
+
 
         userItemRepository.save(userItem);
 
