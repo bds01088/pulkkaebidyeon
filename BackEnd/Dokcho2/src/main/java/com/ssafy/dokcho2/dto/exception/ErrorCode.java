@@ -11,7 +11,15 @@ public enum ErrorCode {
     DUPLICATE_NICKNAME(400, "U003", "이미 존재하는 닉네임입니다."),
     DUPLICATE_USERNAME(400, "U004", "이미 존재하는 계정입니다."),
     INVALID_PARAMETER(400, "X001", "잘못된 요청입니다."),
-    MISSION_NOT_FOUND(404, "M001", "미션 정보를 찾을 수 없습니다.");
+
+    MISSION_NOT_FOUND(404, "M001", "미션 정보를 찾을 수 없습니다."),
+
+    ITEM_NOT_EXIST(400, "I001", "존재하지 않는 아이템입니다."),
+
+    ITEM_NOT_USABLE(400, "I003", "사용할 수 없는 아이템입니다."),
+
+    ITEM_NOT_IN_INVENTORY(400, "I002", "사용하는 아이템이 인벤토리에 없습니다.")
+    ;
 
     private final int status;
     private final String code;
