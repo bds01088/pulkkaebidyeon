@@ -30,6 +30,10 @@ public class UserItem {
     @Column(name = "count")
     private Integer count;
 
+    public void setCount(Integer c){
+        this.count = c;
+    }
+
     @PrePersist
     public void prePersist() {
         this.count = this.count == null ? 1 : this.count;

@@ -1,5 +1,6 @@
 package com.ssafy.dokcho2.domain.item;
 
+import com.ssafy.dokcho2.domain.enums.ItemType;
 import com.ssafy.dokcho2.domain.userItem.UserItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,8 @@ public class Item {
     private String description;
 
     @Column(name = "type")
-    private Integer type;
+    @Enumerated(EnumType.STRING)
+    private ItemType type;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<UserItem> userItemList = new ArrayList<>();

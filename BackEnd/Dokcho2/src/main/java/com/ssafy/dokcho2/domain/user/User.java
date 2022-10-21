@@ -2,6 +2,8 @@ package com.ssafy.dokcho2.domain.user;
 
 import com.ssafy.dokcho2.domain.basetime.BaseTime;
 import com.ssafy.dokcho2.domain.enums.Role;
+import com.ssafy.dokcho2.domain.mission.UserMission;
+import com.ssafy.dokcho2.domain.monster.Monster;
 import com.ssafy.dokcho2.domain.userItem.UserItem;
 import com.ssafy.dokcho2.domain.userMonster.UserMonster;
 import lombok.AllArgsConstructor;
@@ -22,7 +24,7 @@ import java.util.List;
 public class User extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "users_id")
     private Long userId;
     @Column(name = "username")
     private String username;
@@ -33,9 +35,14 @@ public class User extends BaseTime {
     @Column(name = "email")
     private String email;
     @Column(name = "role")
+    @Enumerated(EnumType.STRING)
     private Role role;
     @Column(name = "token")
     private String token;
+
+    @ManyToOne
+    @JoinColumn(name = "monster_id")
+    private Monster representMonster;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserItem> userItemList = new ArrayList<>();
@@ -43,11 +50,17 @@ public class User extends BaseTime {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserMonster> userMonsterList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserMission> userMissionList = new ArrayList<>();
+
+
     public void saveToken(String token) {
         this.token = token;
     }
     public void changePW(String password){this.password = password;}
     public void setNickname(String nickname){this.nickname = nickname;}
+
+    public void changeRepresentMonster(Monster monster){this.representMonster = monster;}
 
     @PrePersist
     public void prePersist(){
