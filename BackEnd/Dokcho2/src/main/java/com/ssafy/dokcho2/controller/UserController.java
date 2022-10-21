@@ -153,4 +153,11 @@ public class UserController {
 
         return new ResponseEntity<>(userService.search(keyword), HttpStatus.OK);
     }
+
+    @PutMapping("/represent")
+    @ApiOperation(value = "대표 풀깨비 변경")
+    public ResponseEntity<String> setRepresentMonster(@RequestBody Long monsterId){
+        userService.changeRepresentMonster(monsterId);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
 }

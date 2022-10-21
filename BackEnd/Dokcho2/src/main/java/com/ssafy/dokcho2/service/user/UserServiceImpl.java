@@ -6,9 +6,14 @@ import com.ssafy.dokcho2.domain.mission.Mission;
 import com.ssafy.dokcho2.domain.mission.MissionRepository;
 import com.ssafy.dokcho2.domain.mission.UserMission;
 import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
+import com.ssafy.dokcho2.domain.monster.Monster;
+import com.ssafy.dokcho2.domain.monster.MonsterRepository;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
+import com.ssafy.dokcho2.domain.userMonster.UserMonster;
+import com.ssafy.dokcho2.domain.userMonster.UserMonsterRepository;
 import com.ssafy.dokcho2.dto.exception.mission.MissionNotFoundException;
+import com.ssafy.dokcho2.dto.exception.monster.MonsterNotFoundException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateEmailException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateNicknameException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateUsernameException;
@@ -40,6 +45,8 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final UserMissionRepository userMissionRepository;
     private final MissionRepository missionRepository;
+    private final MonsterRepository monsterRepository;
+    private final UserMonsterRepository userMonsterRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -257,5 +264,22 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByNickname(keyword).orElseThrow(UserNotFoundException::new);
 
         return UserResponseDto.from(user);
+    }
+
+    @Override
+    @Transactional
+    public void changeRepresentMonster(Long monsterId) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+
+        Monster monster = monsterRepository.findById(monsterId).orElseThrow(MonsterNotFoundException::new);
+
+        Optional<UserMonster> o = userMonsterRepository.findByUserAndMonster(user, monster);
+
+        if (o.isPresent()){
+            user.changeRepresentMonster(monster);
+            userRepository.save(user);
+        } else {
+            throw new MonsterNotFoundException();
+        }
     }
 }
