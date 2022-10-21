@@ -1,6 +1,7 @@
 package com.ssafy.dokcho2.controller;
 
 import com.ssafy.dokcho2.domain.enums.MissionStatus;
+import com.ssafy.dokcho2.dto.mission.BossDto;
 import com.ssafy.dokcho2.dto.mission.MissionDto;
 import com.ssafy.dokcho2.dto.mission.QuizDto;
 import com.ssafy.dokcho2.service.mission.MissionService;
@@ -50,5 +51,9 @@ public class MissionController {
         return new ResponseEntity<>(missionService.getMissionList(), HttpStatus.OK);
     }
 
-    //보스 정보 불러오기(MonsterDto 필요)
+    @GetMapping("/boss/{missionId}")
+    @ApiOperation(value = "보스 정보")
+    public ResponseEntity<BossDto> getBossInfo(@PathVariable Long missionId){
+        return new ResponseEntity<>(missionService.getBossInfo(missionId), HttpStatus.OK);
+    }
 }

@@ -1,6 +1,7 @@
 package com.ssafy.dokcho2.service.mission;
 
 import com.ssafy.dokcho2.domain.enums.MissionStatus;
+import com.ssafy.dokcho2.dto.mission.BossDto;
 import com.ssafy.dokcho2.dto.mission.MissionDto;
 import com.ssafy.dokcho2.dto.mission.QuizDto;
 
@@ -12,4 +13,5 @@ public interface MissionService {
     List<MissionDto> getMissionList();
     void changeMissionStatus(Long missionId, MissionStatus nowStatus);
     void completeMission(Long missionId);
+    BossDto getBossInfo(Long missionId);
 }

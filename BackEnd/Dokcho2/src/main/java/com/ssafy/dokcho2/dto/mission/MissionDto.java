@@ -18,6 +18,8 @@ public class MissionDto {
     private String characters;
     private String line;
     private MissionStatus status;
+    private Long relic;
+    private Long item;
 
     public static MissionDto from(Mission entity, MissionStatus status){
         String line = "";
@@ -36,6 +38,8 @@ public class MissionDto {
                 .characters(entity.getCharacters())
                 .line(line)
                 .status(status)
+                .relic(entity.getRelic())
+                .item(entity.getItem())
                 .build();
     }
 }

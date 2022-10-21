@@ -1,15 +1,21 @@
 package com.ssafy.dokcho2.service.mission;
 
 import com.ssafy.dokcho2.domain.enums.MissionStatus;
-import com.ssafy.dokcho2.domain.mission.Mission;
-import com.ssafy.dokcho2.domain.mission.MissionRepository;
-import com.ssafy.dokcho2.domain.mission.UserMission;
-import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
+import com.ssafy.dokcho2.domain.item.Item;
+import com.ssafy.dokcho2.domain.item.ItemRepository;
+import com.ssafy.dokcho2.domain.mission.*;
 import com.ssafy.dokcho2.domain.monster.Monster;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
+import com.ssafy.dokcho2.domain.userItem.UserItem;
+import com.ssafy.dokcho2.domain.userItem.UserItemRepository;
+import com.ssafy.dokcho2.domain.userMonster.UserMonster;
+import com.ssafy.dokcho2.domain.userMonster.UserMonsterRepository;
+import com.ssafy.dokcho2.dto.exception.item.ItemNotFoundException;
 import com.ssafy.dokcho2.dto.exception.mission.MissionNotFoundException;
+import com.ssafy.dokcho2.dto.exception.monster.MonsterNotFoundException;
 import com.ssafy.dokcho2.dto.exception.user.UserNotFoundException;
+import com.ssafy.dokcho2.dto.mission.BossDto;
 import com.ssafy.dokcho2.dto.mission.MissionDto;
 import com.ssafy.dokcho2.dto.mission.QuizDto;
 import com.ssafy.dokcho2.util.SecurityUtil;
@@ -29,6 +35,10 @@ public class MissionServiceImpl implements MissionService{
     private final UserRepository userRepository;
     private final MissionRepository missionRepository;
     private final UserMissionRepository userMissionRepository;
+    private final ItemRepository itemRepository;
+    private final UserItemRepository userItemRepository;
+    private final UserMonsterRepository userMonsterRepository;
+    private final BossRepository bossRepository;
 
     @Override
     public MissionDto getMissionInfo(String characters) {
@@ -87,13 +97,22 @@ public class MissionServiceImpl implements MissionService{
         Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
         UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
 
-        // 아이템, 경험치 지급하기
         Monster monster = user.getRepresentMonster();
+        UserMonster um = userMonsterRepository.findByUserAndMonster(user, monster).orElseThrow(MonsterNotFoundException::new);
+        um.setExp(um.getExp() + mission.getExp());
+        userMonsterRepository.save(um);
 
+        Item relic = itemRepository.findById(mission.getRelic()).orElseThrow(ItemNotFoundException::new);
+        Item item = itemRepository.findById(mission.getItem()).orElseThrow(ItemNotFoundException::new);
+        userItemRepository.save(UserItem.builder().item(relic).user(user).count(1).build());
+        userItemRepository.save(UserItem.builder().item(item).user(user).count(1).build());
         
         userMission.changeStatus(MissionStatus.FINISHED);
         userMissionRepository.save(userMission);
     }
 
-
+    @Override
+    public BossDto getBossInfo(Long missionId){
+        return BossDto.from(bossRepository.findById(missionId).orElseThrow(MonsterNotFoundException::new));
+    }
 }
