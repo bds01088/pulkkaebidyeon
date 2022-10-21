@@ -18,7 +18,11 @@ public enum ErrorCode {
 
     ITEM_NOT_USABLE(400, "I003", "사용할 수 없는 아이템입니다."),
 
-    ITEM_NOT_IN_INVENTORY(400, "I002", "사용하는 아이템이 인벤토리에 없습니다.")
+    ITEM_NOT_IN_INVENTORY(400, "I002", "사용하는 아이템이 인벤토리에 없습니다."),
+
+    MONSTER_NOT_FOUND(400, "M001", "데이터베이스 또는 인벤토리에 존재하지 않는 풀깨비입니다."),
+    
+    MONSTER_ALREADY_EXIST(400, "M002", "이미 보유한 풀깨비입니다.")
     ;
 
     private final int status;

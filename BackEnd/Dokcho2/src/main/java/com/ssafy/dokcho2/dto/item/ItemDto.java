@@ -1,8 +1,6 @@
 package com.ssafy.dokcho2.dto.item;
 
 import com.ssafy.dokcho2.domain.enums.ItemType;
-import com.ssafy.dokcho2.domain.item.Item;
-import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.userItem.UserItem;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
@@ -14,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel
+@ApiModel(value = "아이템 정보")
 public class ItemDto {
     private Long userId;
     private Long itemId;

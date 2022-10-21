@@ -60,6 +60,8 @@ public class User extends BaseTime {
     public void changePW(String password){this.password = password;}
     public void setNickname(String nickname){this.nickname = nickname;}
 
+    public void changeRepresentMonster(Monster monster){this.representMonster = monster;}
+
     @PrePersist
     public void prePersist(){
         this.role = this.role == null ? Role.ROLE_USER : this.role;
