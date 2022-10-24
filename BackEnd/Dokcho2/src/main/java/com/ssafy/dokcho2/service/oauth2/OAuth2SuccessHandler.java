@@ -84,7 +84,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         }
 
         // 리다이렉트
-        String target = "http://localhost:8082/oauth?Auth=" + tokenDto.getAccessToken() + "&Refresh=" + tokenDto.getRefreshToken();
+        String target = "https://k7e203.p.ssafy.io/oauth?Auth=" + tokenDto.getAccessToken() + "&Refresh=" + tokenDto.getRefreshToken();
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
         redirectStrategy.sendRedirect(request, response, target);
     }

@@ -147,13 +147,6 @@ public class UserController {
         return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
     }
 
-//    @GetMapping("/search/{keyword}")
-//    @ApiOperation(value = "회원 검색")
-//    public ResponseEntity<UserResponseDto> search(@PathVariable String keyword){
-//
-//        return new ResponseEntity<>(userService.search(keyword), HttpStatus.OK);
-//    }
-
     @PutMapping("/represent")
     @ApiOperation(value = "대표 풀깨비 변경")
     public ResponseEntity<String> setRepresentMonster(@RequestBody Long monsterId){
