@@ -31,7 +31,10 @@ export default {
       scene.add(camera)
 
       // light
-      const light = new THREE.DirectionalLight('white', 1)
+      const alight = new THREE.AmbientLight('white')
+      scene.add(alight)
+
+      const light = new THREE.DirectionalLight('white')
       scene.add(light)
 
       // mesh
