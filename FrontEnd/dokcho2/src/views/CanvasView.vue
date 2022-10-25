@@ -4,6 +4,9 @@
 
 <script>
 import * as THREE from 'three'
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
+import { sceneRoom } from './room'
+import { sceneMain } from './main'
 
 export default {
   name: 'CanvasView',
@@ -13,12 +16,16 @@ export default {
       const canvas = document.querySelector('#canvas')
 
       // renderer
-      const renderer = new THREE.WebGL1Renderer({ canvas, antialias: true })
+      const renderer = new THREE.WebGL1Renderer({
+        canvas,
+        antialias: true
+      })
       renderer.setSize(window.innerWidth, window.innerHeight)
       renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
 
       // Scene
-      const scene = new THREE.Scene()
+
+      let sceneNow = sceneMain
 
       // camera
       const camera = new THREE.PerspectiveCamera(
@@ -27,40 +34,65 @@ export default {
         0.1,
         1000
       )
+      camera.position.x = 2
+      camera.position.y = 2
       camera.position.z = 4
-      scene.add(camera)
+      sceneNow.add(camera)
 
-      // light
-      const alight = new THREE.AmbientLight('white')
-      scene.add(alight)
+      //control
+      const controls = new TrackballControls(camera, renderer.domElement)
+      controls.enableDamping = true
 
-      const light = new THREE.DirectionalLight('white')
-      scene.add(light)
-
-      // mesh
-      const geometry = new THREE.BoxGeometry(1, 1, 1)
-      const material = new THREE.MeshStandardMaterial({
-        side: THREE.DoubleSide,
-        color: 'pink',
-        wireframe: false
-      })
-      const cube = new THREE.Mesh(geometry, material)
-      scene.add(cube)
-      // 쥬석
       // 그리기
-      renderer.render(scene, camera)
+      function draw() {
+        controls.update()
+        renderer.render(sceneNow, camera)
+        renderer.setAnimationLoop(draw)
+      }
+
+      function setSize() {
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.render(sceneNow, camera)
+      }
+
+      // scene 변경
+      function changeScene() {
+        if (sceneNow === sceneMain) {
+          sceneNow = sceneRoom
+        } else {
+          sceneNow = sceneMain
+        }
+      }
+
+      // 이벤트
+      window.addEventListener('resize', setSize)
+
+      draw()
+
+      window.addEventListener('click', () => {
+        changeScene()
+      })
 
       return {
         canvas,
         renderer,
-        scene,
+        sceneNow,
         camera,
-        light,
-        cube
+        setSize,
+        draw,
+        changeScene
       }
     }, 100)
   }
 }
 </script>
 
-<style></style>
+<style scoped>
+#canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+</style>
