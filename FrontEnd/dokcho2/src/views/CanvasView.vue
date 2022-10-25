@@ -7,6 +7,9 @@ import * as THREE from 'three'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 import { sceneRoom } from './room'
 import { sceneMain } from './main'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import Stats from 'three/examples/jsm/libs/stats.module'
 
 export default {
   name: 'CanvasView',
