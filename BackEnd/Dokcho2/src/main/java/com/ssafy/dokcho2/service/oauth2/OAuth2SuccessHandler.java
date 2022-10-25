@@ -1,8 +1,14 @@
 package com.ssafy.dokcho2.service.oauth2;
 
+import com.ssafy.dokcho2.domain.enums.MissionStatus;
 import com.ssafy.dokcho2.domain.enums.Role;
+import com.ssafy.dokcho2.domain.mission.Mission;
+import com.ssafy.dokcho2.domain.mission.MissionRepository;
+import com.ssafy.dokcho2.domain.mission.UserMission;
+import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
+import com.ssafy.dokcho2.dto.exception.mission.MissionNotFoundException;
 import com.ssafy.dokcho2.dto.jwt.TokenDto;
 import com.ssafy.dokcho2.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +31,8 @@ import java.util.Optional;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+    private final UserMissionRepository userMissionRepository;
+    private final MissionRepository missionRepository;
     private final PasswordMaker passwordMaker;
 
     @Override
@@ -56,6 +64,18 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             tokenDto = tokenProvider.generateTokenDto(user.getUsername(), user.getRole().toString());
             user.saveToken(tokenDto.getRefreshToken());
             userRepository.save(user);
+
+            // 유저-미션 테이블에 8개 넣는 코드
+            for(int i=1; i<=8; i++){
+                Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
+                UserMission um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.NOT_YET)
+                        .build();
+
+                userMissionRepository.save(um);
+            }
         }else {
             // 토큰 생성
             tokenDto = tokenProvider.generateTokenDto(entity.get().getUsername(), entity.get().getRole().toString());
@@ -64,7 +84,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         }
 
         // 리다이렉트
-        String target = "http://localhost:8082/oauth?Auth=" + tokenDto.getAccessToken() + "&Refresh=" + tokenDto.getRefreshToken();
+        String target = "https://k7e203.p.ssafy.io/oauth?Auth=" + tokenDto.getAccessToken() + "&Refresh=" + tokenDto.getRefreshToken();
         RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
         redirectStrategy.sendRedirect(request, response, target);
     }
