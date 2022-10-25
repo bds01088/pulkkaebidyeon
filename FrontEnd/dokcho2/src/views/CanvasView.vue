@@ -5,6 +5,8 @@
 <script>
 import * as THREE from 'three'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
+import { sceneRoom } from './room'
+import { sceneMain } from './main'
 
 export default {
   name: 'CanvasView',
@@ -22,9 +24,8 @@ export default {
       renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
 
       // Scene
-      const scene1 = new THREE.Scene()
 
-      const scene2 = new THREE.Scene()
+      let sceneNow = sceneMain
 
       // camera
       const camera = new THREE.PerspectiveCamera(
@@ -36,43 +37,11 @@ export default {
       camera.position.x = 2
       camera.position.y = 2
       camera.position.z = 4
-      scene1.add(camera)
-      scene2.add(camera)
-
-      // light
-      const alight = new THREE.AmbientLight('white')
-      const alight2 = alight.clone()
-      scene1.add(alight)
-      scene2.add(alight2)
-
-      const light = new THREE.DirectionalLight('white', 1)
-      const light2 = light.clone()
-      scene1.add(light)
-      scene2.add(light2)
+      sceneNow.add(camera)
 
       //control
       const controls = new TrackballControls(camera, renderer.domElement)
       controls.enableDamping = true
-
-      // mesh
-      const geometry = new THREE.BoxGeometry(1, 1, 1)
-      const material1 = new THREE.MeshStandardMaterial({
-        side: THREE.DoubleSide,
-        color: 'pink',
-        wireframe: false
-      })
-      const material2 = new THREE.MeshStandardMaterial({
-        side: THREE.DoubleSide,
-        color: 'blue',
-        wireframe: false
-      })
-      const cube1 = new THREE.Mesh(geometry, material1)
-      const cube2 = new THREE.Mesh(geometry, material2)
-
-      scene1.add(cube1)
-      scene2.add(cube2)
-
-      let sceneNow = scene1
 
       // 그리기
       function draw() {
@@ -90,10 +59,10 @@ export default {
 
       // scene 변경
       function changeScene() {
-        if (sceneNow === scene1) {
-          sceneNow = scene2
+        if (sceneNow === sceneMain) {
+          sceneNow = sceneRoom
         } else {
-          sceneNow = scene1
+          sceneNow = sceneMain
         }
       }
 
@@ -103,20 +72,14 @@ export default {
       draw()
 
       window.addEventListener('click', () => {
-        // console.log('click')
         changeScene()
       })
 
       return {
         canvas,
         renderer,
-        scene1,
-        scene2,
         sceneNow,
         camera,
-        light,
-        cube1,
-        cube2,
         setSize,
         draw,
         changeScene
