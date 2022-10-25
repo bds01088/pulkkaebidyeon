@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import axios from 'axios'
-import StartView from '../views/StartView'
+import CanvasView from '../views/CanvasView'
 
 const routes = [
   {
     path: '/',
-    name: 'start',
-    component: StartView
+    name: 'canvas',
+    component: CanvasView
   }
 ]
 

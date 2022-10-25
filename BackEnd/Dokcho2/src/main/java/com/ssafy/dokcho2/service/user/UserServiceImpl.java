@@ -1,8 +1,19 @@
 package com.ssafy.dokcho2.service.user;
 
+import com.ssafy.dokcho2.domain.enums.MissionStatus;
 import com.ssafy.dokcho2.domain.enums.Role;
+import com.ssafy.dokcho2.domain.mission.Mission;
+import com.ssafy.dokcho2.domain.mission.MissionRepository;
+import com.ssafy.dokcho2.domain.mission.UserMission;
+import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
+import com.ssafy.dokcho2.domain.monster.Monster;
+import com.ssafy.dokcho2.domain.monster.MonsterRepository;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
+import com.ssafy.dokcho2.domain.userMonster.UserMonster;
+import com.ssafy.dokcho2.domain.userMonster.UserMonsterRepository;
+import com.ssafy.dokcho2.dto.exception.mission.MissionNotFoundException;
+import com.ssafy.dokcho2.dto.exception.monster.MonsterNotFoundException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateEmailException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateNicknameException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateUsernameException;
@@ -23,10 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +43,10 @@ public class UserServiceImpl implements UserService{
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final UserRepository userRepository;
+    private final UserMissionRepository userMissionRepository;
+    private final MissionRepository missionRepository;
+    private final MonsterRepository monsterRepository;
+    private final UserMonsterRepository userMonsterRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -125,8 +137,22 @@ public class UserServiceImpl implements UserService{
                 .email(requestDto.getEmail())
                 .nickname("")
                 .password(passwordEncoder.encode(requestDto.getPassword()))
+                // 대표 독초몬 설정할 것
                 .role(Role.ROLE_USER)
                 .build();
+        userRepository.save(user);
+
+        // 유저-미션 테이블에 8개 넣는 코드
+//        for(int i=1; i<=8; i++){
+//            Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
+//            UserMission um = UserMission.builder()
+//                    .user(user)
+//                    .mission(mission)
+//                    .status(MissionStatus.NOT_YET)
+//                    .build();
+//
+//            userMissionRepository.save(um);
+//        }
 
         return UserResponseDto.from(user);
     }
@@ -238,5 +264,22 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByNickname(keyword).orElseThrow(UserNotFoundException::new);
 
         return UserResponseDto.from(user);
+    }
+
+    @Override
+    @Transactional
+    public void changeRepresentMonster(Long monsterId) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+
+        Monster monster = monsterRepository.findById(monsterId).orElseThrow(MonsterNotFoundException::new);
+
+        Optional<UserMonster> o = userMonsterRepository.findByUserAndMonster(user, monster);
+
+        if (o.isPresent()){
+            user.changeRepresentMonster(monster);
+            userRepository.save(user);
+        } else {
+            throw new MonsterNotFoundException();
+        }
     }
 }
