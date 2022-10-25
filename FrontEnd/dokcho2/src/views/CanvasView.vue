@@ -46,7 +46,7 @@ export default {
       })
       const cube = new THREE.Mesh(geometry, material)
       scene.add(cube)
-
+      // 쥬석
       // 그리기
       renderer.render(scene, camera)
 
