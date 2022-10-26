@@ -8,47 +8,48 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 // Scene
 const sceneGreedy = new THREE.Scene()
+let currentAnimationAction = []
+let animationsMap = {}
+function setmodel() {
+  // model
+  const loader = new GLTFLoader()
+  loader.load('./3Ddata/character.glb', (gltf) => {
+    const model = gltf.scene
+    sceneGreedy.add(model)
 
-// model
-const loader = new GLTFLoader()
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true
+      }
+    })
 
-loader.load('./3Ddata/character.glb', (gltf) => {
-  const model = gltf.scene
-  sceneGreedy.add(model)
+    const animationClips = gltf.animations
+    const mixer = new THREE.AnimationMixer(model)
 
-  model.traverse((child) => {
-    if (child instanceof THREE.Mesh) {
-      child.castShadow = true
-    }
+    animationClips.forEach((clip) => {
+      const name = clip.name
+      console.log(name)
+      animationsMap[name] = mixer.clipAction(clip)
+    })
+    currentAnimationAction = animationsMap['Idle']
+    currentAnimationAction.play()
   })
 
-  const animationClips = gltf.animations
-  const mixer = new THREE.AnimationMixer(model)
-  let animationsMap = {}
-  animationClips.forEach((clip) => {
-    const name = clip.name
-    console.log(name)
-    animationsMap[name] = mixer.clipAction(clip)
+  loader.load('./3Ddata/spacestair.glb', (gltf) => {
+    const model = gltf.scene
+
+    sceneGreedy.add(model)
+
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true
+        child.receiveShadow = true
+      }
+    })
+
+    // this._setupOctree(model);
   })
-
-  let currentAnimationAction = animationsMap['Idle']
-  currentAnimationAction.play()
-})
-
-loader.load('./3Ddata/spacestair.glb', (gltf) => {
-  const model = gltf.scene
-
-  sceneGreedy.add(model)
-
-  model.traverse((child) => {
-    if (child instanceof THREE.Mesh) {
-      child.castShadow = true
-      child.receiveShadow = true
-    }
-  })
-
-  // this._setupOctree(model);
-})
+}
 
 let speed = 0
 let maxSpeed = 0
@@ -59,7 +60,7 @@ let acceleration = 0
 const pressedKeys = {}
 
 function processAnimation() {
-  const previousAnimationAction = this.currentAnimationAction
+  const previousAnimationAction = currentAnimationAction
 
   if (
     pressedKeys['w'] ||
@@ -67,27 +68,27 @@ function processAnimation() {
     pressedKeys['s'] ||
     pressedKeys['d']
   ) {
-    if (this.pressedKeys['shift']) {
-      this.currentAnimationAction = this.animationsMap['Run']
+    if (pressedKeys['shift']) {
+      currentAnimationAction = animationsMap['Run']
       // this._speed = 350;
       maxSpeed = 350
       acceleration = 3
     } else {
-      this.currentAnimationAction = this.animationsMap['Walk']
+      currentAnimationAction = animationsMap['Walk']
       // this._speed = 80;
       maxSpeed = 80
       acceleration = 3
     }
   } else {
-    this.currentAnimationAction = this.animationsMap['Idle']
+    currentAnimationAction = animationsMap['Idle']
     speed = 0
     maxSpeed = 0
     acceleration = 0
   }
 
-  if (previousAnimationAction !== this.currentAnimationAction) {
+  if (previousAnimationAction !== currentAnimationAction) {
     previousAnimationAction.fadeOut(0.5)
-    this.currentAnimationAction.reset().fadeIn(0.5).play()
+    currentAnimationAction.reset().fadeIn(0.5).play()
   }
 }
 
@@ -104,7 +105,7 @@ document.addEventListener('keyup', (event) => {
 let previousDirectionOffset = 0
 
 function directionOffset() {
-  const pressedKeys = this.pressedKeys
+  const pressedKeys = pressedKeys
   let directionOffset = 0
 
   if (pressedKeys['w']) {
@@ -169,11 +170,22 @@ shadowLight.shadow.radius = 5
 sceneGreedy.add(shadowLight)
 sceneGreedy.add(shadowLight.target)
 
+function update(time) {
+  time *= 0.001
+
+  if (mixer) {
+    const deltaTime = time - previousTime
+    mixer.update(deltaTime)
+  }
+  previousTime = time
+}
+
 export {
   sceneGreedy,
   speed,
   maxSpeed,
   acceleration,
   previousDirectionOffset,
-  directionOffset
+  directionOffset,
+  setmodel
 }

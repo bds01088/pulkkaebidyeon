@@ -7,7 +7,7 @@ import * as THREE from 'three'
 // import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 import { sceneRoom } from './room'
 import { sceneMain } from './main'
-import { sceneGreedy } from './greedy'
+import { sceneGreedy, setmodel } from './greedy'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import Stats from 'three/examples/jsm/libs/stats.module'
@@ -19,7 +19,7 @@ export default {
     setTimeout(() => {
       // Canvas
       const canvas = document.querySelector('#canvas')
-
+      setmodel()
       // renderer
       const renderer = new THREE.WebGL1Renderer({
         canvas,
