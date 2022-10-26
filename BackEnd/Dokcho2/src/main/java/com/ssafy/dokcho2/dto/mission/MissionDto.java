@@ -17,6 +17,7 @@ public class MissionDto {
     private Long missionId;
     private String characters;
     private String line;
+    private String description;
     private MissionStatus status;
     private Long relic;
     private Long item;
@@ -37,6 +38,7 @@ public class MissionDto {
                 .missionId(entity.getMissionId())
                 .characters(entity.getCharacters())
                 .line(line)
+                .description(entity.getDescription())
                 .status(status)
                 .relic(entity.getRelic())
                 .item(entity.getItem())
