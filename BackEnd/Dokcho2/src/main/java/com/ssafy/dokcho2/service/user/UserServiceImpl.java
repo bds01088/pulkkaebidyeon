@@ -155,6 +155,17 @@ public class UserServiceImpl implements UserService{
             userMissionRepository.save(um);
         }
 
+        // 기본 풀깨비 지급
+        for(int i=1; i<=3; i++){
+            Monster monster = monsterRepository.findById((long)i).orElseThrow(MonsterNotFoundException::new);
+            UserMonster um = UserMonster.builder()
+                    .user(user)
+                    .monster(monster)
+                    .build();
+
+            userMonsterRepository.save(um);
+        }
+
         return UserResponseDto.from(user);
     }
 
