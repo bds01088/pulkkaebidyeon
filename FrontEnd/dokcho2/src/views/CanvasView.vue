@@ -17,9 +17,6 @@ import { Octree } from 'three/examples/jsm/math/Octree.js'
 import { Capsule } from 'three/examples/jsm/math/Capsule.js'
 
 export default {
-  components: {
-    NavBar
-  },
   name: 'CanvasView',
   data() {
     return {
@@ -258,10 +255,10 @@ export default {
       })
     },
 
-    async _setupBack() {
+    _setupBack() {
       const loader = new GLTFLoader()
 
-      await loader.load('/models/space.glb', (gltf) => {
+      loader.load('/models/space.glb', (gltf) => {
         // gltf.scene.scale.set(0.1, 0.1, 0.1)
         const model = gltf.scene
 
