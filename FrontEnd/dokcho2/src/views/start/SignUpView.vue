@@ -265,7 +265,7 @@ export default {
           },
           {
             headers: {
-              'Content-type': 'application/json'
+              'Content-Type': 'application/json'
             }
           }
         )
