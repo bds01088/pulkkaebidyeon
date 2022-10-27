@@ -69,6 +69,8 @@ export default {
       this.$router.push({ name: 'signup' })
     },
     async login() {
+      console.log(this.username)
+
       try {
         const result = await axios.post(
           BASE_URL + '/api/v1/user/auth/login',
@@ -78,7 +80,7 @@ export default {
           },
           {
             headers: {
-              'Content-type': 'application/json'
+              'Content-Type': 'application/json'
             }
           }
         )
