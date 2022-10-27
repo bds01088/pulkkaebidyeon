@@ -125,7 +125,7 @@ export default {
               buttons: false,
               timer: 1500
             })
-            this.$router.push({ name: 'intro' })
+            this.$router.push({ name: 'main' })
           })
       }
     }
