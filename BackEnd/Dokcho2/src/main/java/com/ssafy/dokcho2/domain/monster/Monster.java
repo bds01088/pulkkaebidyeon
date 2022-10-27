@@ -38,10 +38,6 @@ public class Monster {
     @OneToMany(mappedBy = "monster", cascade = CascadeType.ALL)
     private List<UserMonster> userMonsterList = new ArrayList<>();
 
-    public void setHp(Integer hp) { this.hp = hp; }
-
-    public void setAttack(Integer attack) { this.attack = attack; }
-
     @PrePersist
     public void prePersist(){
         this.hp = 500;

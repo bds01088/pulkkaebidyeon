@@ -38,7 +38,9 @@ public class UserMonster {
 
     public void setLevel(Integer level) { this.level = level; }
 
-    public void setExp(Integer exp) { this.exp = exp; }
+    public void setExp(Integer exp) {
+        this.exp = exp;
+    }
 
     @PrePersist
     public void prePersist() {
