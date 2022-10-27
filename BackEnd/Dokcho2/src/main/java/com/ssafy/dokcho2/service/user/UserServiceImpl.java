@@ -22,6 +22,7 @@ import com.ssafy.dokcho2.dto.jwt.TokenDto;
 import com.ssafy.dokcho2.dto.jwt.TokenRequestDto;
 import com.ssafy.dokcho2.dto.user.LoginRequestDto;
 import com.ssafy.dokcho2.dto.user.SignUpRequestDto;
+import com.ssafy.dokcho2.dto.user.UserPositionDto;
 import com.ssafy.dokcho2.dto.user.UserResponseDto;
 import com.ssafy.dokcho2.jwt.TokenProvider;
 import com.ssafy.dokcho2.util.SecurityUtil;
@@ -281,5 +282,12 @@ public class UserServiceImpl implements UserService{
         } else {
             throw new MonsterNotFoundException();
         }
+    }
+
+    @Override
+    public void savePosition(UserPositionDto positionDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+        user.savePosition(positionDto);
+        userRepository.save(user);
     }
 }

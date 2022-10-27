@@ -147,6 +147,13 @@ public class UserController {
         return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
     }
 
+    @PutMapping("/position")
+    @ApiOperation(value = "위치 정보 저장")
+    public ResponseEntity<String> savePosition(@RequestBody UserPositionDto positionDto){
+        userService.savePosition(positionDto);
+        return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+    }
+
     @PutMapping("/represent")
     @ApiOperation(value = "대표 풀깨비 변경")
     public ResponseEntity<String> setRepresentMonster(@RequestBody Long monsterId){
