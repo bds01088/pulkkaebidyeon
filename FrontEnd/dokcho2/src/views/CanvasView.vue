@@ -1,25 +1,25 @@
 <template>
+  <NavBar></NavBar>
   <canvas id="canvas"></canvas>
 </template>
 
 <script>
 import * as THREE from 'three'
-// import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 import { sceneRoom } from './room'
 import { sceneMain } from './main'
-import { sceneGreedy, setmodel } from './greedy'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import Stats from 'three/examples/jsm/libs/stats.module'
-import * as CANNON from 'cannon-es'
+import NavBar from '@/components/main/NavBar.vue'
 
 export default {
+  components: {
+    NavBar
+  },
   name: 'CanvasView',
   setup() {
     setTimeout(() => {
       // Canvas
       const canvas = document.querySelector('#canvas')
-      setmodel()
+
       // renderer
       const renderer = new THREE.WebGL1Renderer({
         canvas,
@@ -27,37 +27,26 @@ export default {
       })
       renderer.setSize(window.innerWidth, window.innerHeight)
       renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
-      renderer.shadowMap.enabled = true
-      renderer.shadowMap.type = THREE.VSMShadowMap
 
       // Scene
 
-      let sceneNow = sceneGreedy
+      let sceneNow = sceneMain
 
       // camera
       const camera = new THREE.PerspectiveCamera(
-        60,
+        75,
         window.innerWidth / window.innerHeight,
-        1,
-        5000
+        0.1,
+        1000
       )
-      camera.position.x = 0
-      camera.position.y = 100
-      camera.position.z = 500
+      camera.position.x = 2
+      camera.position.y = 2
+      camera.position.z = 4
       sceneNow.add(camera)
 
       //control
-      const controls = new OrbitControls(camera, canvas)
+      const controls = new TrackballControls(camera, renderer.domElement)
       controls.enableDamping = true
-      controls.enablePan = false
-      controls.target.set(0, 100, 0)
-
-      const stats = new Stats()
-      canvas.appendChild(stats.dom)
-
-      // Cannon(물리 엔진)
-      const cannonWorld = new CANNON.World()
-      cannonWorld.gravity.set(0, -9.8, 0)
 
       // 그리기
       function draw() {
@@ -75,8 +64,8 @@ export default {
 
       // scene 변경
       function changeScene() {
-        if (sceneNow === sceneRoom) {
-          sceneNow = sceneGreedy
+        if (sceneNow === sceneMain) {
+          sceneNow = sceneRoom
         } else {
           sceneNow = sceneMain
         }
@@ -87,9 +76,9 @@ export default {
 
       draw()
 
-      // window.addEventListener('click', () => {
-      //   changeScene()
-      // })
+      window.addEventListener('click', () => {
+        changeScene()
+      })
 
       return {
         canvas,
