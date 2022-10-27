@@ -1,5 +1,6 @@
-import { createStore } from "vuex";
+import { createStore } from 'vuex'
+import { accounts } from './modules/accounts'
 
-// export interface RootState {}
-
-export default createStore({});
+export default createStore({
+  modules: { accounts }
+})
