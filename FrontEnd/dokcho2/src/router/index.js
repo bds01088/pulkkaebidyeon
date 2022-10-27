@@ -115,7 +115,7 @@ const routes = [
     name: 'main',
     component: () =>
       import(
-        /* webpackChunkName: "main", webpackPrefetch:true */ '../views/CanvasView.vue'
+        /* webpackChunkName: "main", webpackPrefetch:true */ '../views/canvas/CanvasView.vue'
       )
   }, // 404 에러
   // {

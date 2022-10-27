@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import WorldView from '../components/canvas/WorldView.vue'
-import HouseView from '../components/canvas/HouseView.vue'
+import WorldView from '../../components/canvas/WorldView.vue'
+import HouseView from '../../components/canvas/HouseView.vue'
 
 export default {
   data() {
