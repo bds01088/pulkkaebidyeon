@@ -100,6 +100,15 @@ const routes = [
         /* webpackChunkName: "intro", webpackPrefetch:true */ '../views/start/SetNicknameView.vue'
       )
   },
+  // 스타팅풀깨비
+  {
+    path: '/startingcard',
+    name: 'startingcard',
+    component: () =>
+      import(
+        /* webpackChunkName: "intro", webpackPrefetch:true */ '../views/start/StartingCardView.vue'
+      )
+  },
   // 메인페이지
   {
     path: '/main',

@@ -125,7 +125,7 @@ export default {
               buttons: false,
               timer: 1500
             })
-            this.$router.push({ name: 'main' })
+            this.$router.push({ name: 'startingcard' })
           })
       }
     }

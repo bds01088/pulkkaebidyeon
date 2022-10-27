@@ -279,7 +279,7 @@ export default {
           }
           axios.get(BASE_URL + '/api/v1/user/myinfo', option).then((res) => {
             this.fetchUserInfo(res.data)
-            if (res.data.newbie) {
+            if (res.data.nickname === '') {
               this.$router.replace({ name: 'setnickname' })
             } else {
               this.$router.replace({ name: 'main' })
