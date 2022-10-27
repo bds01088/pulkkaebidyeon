@@ -1,41 +1,138 @@
 <template>
-  <WorldView
-    v-show="this.nowPage === 0"
-    @changeCanvas="changeCanvas"
-    :nowPage="this.nowPage"
-  />
-  <HouseView
-    v-show="this.nowPage === 1"
-    @changeCanvas="changeCanvas"
-    :nowPage="this.nowPage"
-  />
+  <div>
+    <button @click="changeCanvas">바꾸기1</button>
+    <div id="world"></div>
+  </div>
 </template>
 
 <script>
-import WorldView from '../components/canvas/WorldView.vue'
-import HouseView from '../components/canvas/HouseView.vue'
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+// import Stats from 'three/examples/jsm/libs/stats.module.js'
+
+import { Octree } from 'three/examples/jsm/math/Octree.js'
+import { Capsule } from 'three/examples/jsm/math/Capsule.js'
 
 export default {
+  name: 'WorldView',
+  props: {
+    nowPage: Number
+  },
   data() {
     return {
-      nowPage: 0
+      previousDirectionOffset: 0,
+      speed: 0,
+      maxSpeed: 0,
+      acceleration: 0,
+      bOnTheGround: false,
+      fallingAcceleration: 0,
+      fallingSpeed: 0,
+      isPressed: false
     }
   },
-  components: {
-    WorldView: WorldView,
-    HouseView: HouseView
-  },
-  methods: {
-    changeCanvas() {
-      if (this.nowPage === 0) {
-        this.nowPage = 1
-      } else {
-        this.nowPage = 0
-      }
 
-      if (previousAnimationAction !== this._currentAnimationAction) {
-        previousAnimationAction.fadeOut(0.5)
-        this._currentAnimationAction.reset().fadeIn(0.5).play()
+  mounted() {
+    this.init()
+  },
+
+  methods: {
+    init() {
+      this.fallingAcceleration = 0
+      this.fallingSpeed = 0
+
+      const divContainer = document.querySelector('#world')
+      this._divContainer = divContainer
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true })
+      renderer.setPixelRatio(window.devicePixelRatio)
+      divContainer.appendChild(renderer.domElement)
+
+      renderer.shadowMap.enabled = true
+      renderer.shadowMap.type = THREE.VSMShadowMap
+
+      this._renderer = renderer
+
+      const scene = new THREE.Scene()
+      this._scene = scene
+
+      //this._setupOctree();
+      this._setupCamera()
+      this._setupLight()
+      this._setupBack()
+      this._setupModel()
+      this._setupControls()
+
+      window.onresize = this.resize.bind(this)
+      this.resize()
+
+      requestAnimationFrame(this.render.bind(this))
+    },
+
+    _setupOctree(model) {
+      this._worldOctree = new Octree()
+      this._worldOctree.fromGraphNode(model)
+    },
+
+    _setupControls() {
+      this._controls = new OrbitControls(this._camera, this._divContainer)
+      this._controls.target.set(0, 100, 0)
+      this._controls.enablePan = false
+      this._controls.enableDamping = true
+
+      // const stats = new Stats()
+      // this._divContainer.appendChild(stats.dom)
+      // this._fps = stats
+
+      this._pressedKeys = {}
+
+      document.addEventListener('keydown', (event) => {
+        this._pressedKeys[event.key.toLowerCase()] = true
+        this._processAnimation()
+      })
+
+      document.addEventListener('keyup', (event) => {
+        this._pressedKeys[event.key.toLowerCase()] = false
+        this._processAnimation()
+      })
+
+      document.addEventListener('click', () => {})
+    },
+
+    _processAnimation() {
+      const previousAnimationAction = this._currentAnimationAction
+      if (this.nowPage === 0) {
+        if (
+          this._pressedKeys['w'] ||
+          this._pressedKeys['a'] ||
+          this._pressedKeys['s'] ||
+          this._pressedKeys['d']
+        ) {
+          this.maxSpeed = 350
+          this.acceleration = 3
+          //   if (this._pressedKeys['shift']) {
+          //     this._currentAnimationAction = this._animationMap['Run']
+          //     // this.speed = 350;
+          //     this.maxSpeed = 350
+          //     this.acceleration = 3
+          //   } else {
+          //     this._currentAnimationAction = this._animationMap['Walk']
+          //     //this.speed = 80;
+          //     this.maxSpeed = 80
+          //     this.acceleration = 3
+          //   }
+        } else {
+          // this._currentAnimationAction = this._animationMap['Idle']
+          this.speed = 0
+          this.maxSpeed = 0
+          this.acceleration = 0
+        }
+
+        if (previousAnimationAction !== this._currentAnimationAction) {
+          previousAnimationAction.fadeOut(0.5)
+          this._currentAnimationAction.reset().fadeIn(0.5).play()
+        }
       }
     },
 
@@ -110,10 +207,10 @@ export default {
       })
     },
 
-    _setupBack() {
+    async _setupBack() {
       const loader = new GLTFLoader()
 
-      loader.load('/models/space.glb', (gltf) => {
+      await loader.load('/models/space.glb', (gltf) => {
         // gltf.scene.scale.set(0.1, 0.1, 0.1)
         const model = gltf.scene
 
@@ -309,7 +406,6 @@ export default {
           walkDirection.y * this.fallingSpeed,
           walkDirection.z * this.speed
         )
-        console.log(velocity)
 
         const deltaPosition = velocity.clone().multiplyScalar(deltaTime)
 
@@ -375,14 +471,22 @@ export default {
       this._camera.updateProjectionMatrix()
 
       this._renderer.setSize(width, height)
+    },
+
+    changeCanvas() {
+      this.$emit('changeCanvas')
     }
   }
 }
 </script>
 
-<style>
-canvas {
-  height: 100%;
-  width: 100%;
+<style scoped>
+* {
+  outline: none;
+  margin: 0;
+}
+#world {
+  width: 600px;
+  height: 600px;
 }
 </style>
