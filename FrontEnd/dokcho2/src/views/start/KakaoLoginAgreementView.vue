@@ -67,7 +67,7 @@ export default {
           timer: 1500
         })
       } else {
-        if (JSON.parse(localStorage.getItem('userInfo')).newbie) {
+        if (JSON.parse(localStorage.getItem('userInfo')).nickname === '') {
           this.$router.replace({ name: 'setnickname' })
         } else {
           this.$router.replace({ name: 'main' })
