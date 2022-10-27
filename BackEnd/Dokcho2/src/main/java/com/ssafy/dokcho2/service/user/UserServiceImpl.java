@@ -137,22 +137,22 @@ public class UserServiceImpl implements UserService{
                 .email(requestDto.getEmail())
                 .nickname("")
                 .password(passwordEncoder.encode(requestDto.getPassword()))
-                // 대표 독초몬 설정할 것
+                .representMonster(monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new))
                 .role(Role.ROLE_USER)
                 .build();
         userRepository.save(user);
 
         // 유저-미션 테이블에 8개 넣는 코드
-//        for(int i=1; i<=8; i++){
-//            Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
-//            UserMission um = UserMission.builder()
-//                    .user(user)
-//                    .mission(mission)
-//                    .status(MissionStatus.NOT_YET)
-//                    .build();
-//
-//            userMissionRepository.save(um);
-//        }
+        for(int i=1; i<=8; i++){
+            Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
+            UserMission um = UserMission.builder()
+                    .user(user)
+                    .mission(mission)
+                    .status(MissionStatus.NOT_YET)
+                    .build();
+
+            userMissionRepository.save(um);
+        }
 
         return UserResponseDto.from(user);
     }
