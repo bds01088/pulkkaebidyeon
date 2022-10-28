@@ -6,9 +6,14 @@ import com.ssafy.dokcho2.domain.mission.Mission;
 import com.ssafy.dokcho2.domain.mission.MissionRepository;
 import com.ssafy.dokcho2.domain.mission.UserMission;
 import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
+import com.ssafy.dokcho2.domain.monster.Monster;
+import com.ssafy.dokcho2.domain.monster.MonsterRepository;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
+import com.ssafy.dokcho2.domain.userMonster.UserMonster;
+import com.ssafy.dokcho2.domain.userMonster.UserMonsterRepository;
 import com.ssafy.dokcho2.dto.exception.mission.MissionNotFoundException;
+import com.ssafy.dokcho2.dto.exception.monster.MonsterNotFoundException;
 import com.ssafy.dokcho2.dto.jwt.TokenDto;
 import com.ssafy.dokcho2.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +38,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final UserRepository userRepository;
     private final UserMissionRepository userMissionRepository;
     private final MissionRepository missionRepository;
+    private final MonsterRepository monsterRepository;
+    private final UserMonsterRepository userMonsterRepository;
     private final PasswordMaker passwordMaker;
 
     @Override
@@ -57,6 +64,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                     .password(passwordMaker.make())
                     .email(email)
                     .nickname("")
+                    .representMonster(monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new))
                     .role(Role.ROLE_USER)
                     .build();
 
@@ -75,6 +83,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         .build();
 
                 userMissionRepository.save(um);
+            }
+
+            // 기본 풀깨비 지급
+            for(int i=1; i<=3; i++){
+                Monster monster = monsterRepository.findById((long)i).orElseThrow(MonsterNotFoundException::new);
+                UserMonster um = UserMonster.builder()
+                        .user(user)
+                        .monster(monster)
+                        .build();
+
+                userMonsterRepository.save(um);
             }
         }else {
             // 토큰 생성
