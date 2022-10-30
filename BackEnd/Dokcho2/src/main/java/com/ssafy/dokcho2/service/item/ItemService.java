@@ -10,4 +10,5 @@ public interface ItemService {
     List<ItemDto> addItem(Long itemId);
 
     List<ItemDto> useItem(Long itemId);
+    ItemDto addUseItem();
 }

@@ -31,6 +31,7 @@ export default {
       bOnTheGround: false,
       fallingAcceleration: 0,
       fallingSpeed: 0,
+      jumpingSpeed: 0,
 
       isPressed: false
     }
@@ -44,6 +45,7 @@ export default {
     init() {
       this.fallingAcceleration = 0
       this.fallingSpeed = 0
+      this.jumpingSpeed = 0
 
       const divContainer = document.querySelector('#house')
       this._divContainer = divContainer
@@ -111,7 +113,8 @@ export default {
           this._pressedKeys['w'] ||
           this._pressedKeys['a'] ||
           this._pressedKeys['s'] ||
-          this._pressedKeys['d']
+          this._pressedKeys['d'] ||
+          this._pressedKeys['shift']
         ) {
           this.maxSpeed = 350
           this.acceleration = 3
@@ -199,14 +202,16 @@ export default {
         this._boxHelper = boxHelper
         this._model = model
 
-        // const boxG = new THREE.BoxGeometry(100, diameter-5, 100);
-        // const boxM = new THREE.Mesh(boxG, planeMaterial);
-        // boxM.receiveShadow = true;
-        // boxM.castShadow = true;
-        // boxM.position.set(150, 0, 0);
-        // this._scene.add(boxM);
+        const boxG = new THREE.BoxGeometry(100, diameter - 5, 100)
+        const boxM = new THREE.MeshStandardMaterial({ color: 'plum' })
+        const boxbox = new THREE.Mesh(boxG, boxM)
+        boxbox.receiveShadow = true
+        boxbox.castShadow = true
+        boxbox.position.set(0, 0, 0)
+        this._scene.add(boxbox)
 
-        // this._worldOctree.fromGraphNode(boxM);
+        this._worldOctree.fromGraphNode(boxbox)
+
         console.log(model)
       })
     },
@@ -488,9 +493,5 @@ export default {
 * {
   outline: none;
   margin: 0;
-}
-#house {
-  width: 600px;
-  height: 600px;
 }
 </style>

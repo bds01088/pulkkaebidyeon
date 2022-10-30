@@ -5,6 +5,7 @@ import com.ssafy.dokcho2.dto.jwt.TokenDto;
 import com.ssafy.dokcho2.dto.jwt.TokenRequestDto;
 import com.ssafy.dokcho2.dto.user.LoginRequestDto;
 import com.ssafy.dokcho2.dto.user.SignUpRequestDto;
+import com.ssafy.dokcho2.dto.user.UserPositionDto;
 import com.ssafy.dokcho2.dto.user.UserResponseDto;
 
 public interface UserService {
@@ -28,4 +29,6 @@ public interface UserService {
     UserResponseDto search(String keyword);
 
     void changeRepresentMonster(Long monsterId);
+
+    void savePosition(UserPositionDto positionDto);
 }

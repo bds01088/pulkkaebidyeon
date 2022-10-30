@@ -1,9 +1,11 @@
 package com.ssafy.dokcho2.controller;
 
 import com.ssafy.dokcho2.domain.enums.MissionStatus;
+import com.ssafy.dokcho2.dto.item.ItemDto;
 import com.ssafy.dokcho2.dto.mission.BossDto;
 import com.ssafy.dokcho2.dto.mission.MissionDto;
 import com.ssafy.dokcho2.dto.mission.QuizDto;
+import com.ssafy.dokcho2.service.item.ItemService;
 import com.ssafy.dokcho2.service.mission.MissionService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/api/v1/mission")
 public class MissionController {
     private final MissionService missionService;
+    private final ItemService itemService;
 
     @GetMapping("/{characters}")
     @ApiOperation(value = "캐릭터와 상호작용 시 미션 정보 주기")
@@ -55,5 +58,13 @@ public class MissionController {
     @ApiOperation(value = "보스 정보")
     public ResponseEntity<BossDto> getBossInfo(@PathVariable Long missionId){
         return new ResponseEntity<>(missionService.getBossInfo(missionId), HttpStatus.OK);
+    }
+
+    @PutMapping("/mini")
+    @ApiOperation(value = "미니게임 경험치 저장")
+    public ResponseEntity<ItemDto> completeMiniGame(@RequestParam Integer rewardExp){
+        missionService.updateExp(rewardExp);
+        ItemDto itemDto = itemService.addUseItem();
+        return new ResponseEntity<>(itemDto, HttpStatus.OK);
     }
 }
