@@ -116,14 +116,14 @@ export default {
 
     // check click
     checkIntersects() {
-      // console.log('intersects 실행됨')
+      console.log('intersects 실행됨')
       this.raycaster.setFromCamera(this.mouse, this._camera)
       // console.log('meshes', this.meshes[0])
       const intersects = this.raycaster.intersectObjects(this.meshes)
       for (const item of intersects) {
         if (item.object.name[0] === 'monster') {
           let monsterId = item.object.name[1]
-          // console.log(monsterId)
+          console.log(monsterId)
           axios({
             url: BASE_URL + '/api/v1/monster/' + monsterId,
             method: 'GET',
