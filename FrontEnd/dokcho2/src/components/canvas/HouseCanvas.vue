@@ -144,6 +144,8 @@ export default {
               .catch((err) => {
                 console.log(err)
               })
+          } else if (item.object.name === 'move') {
+            this.changeCanvas()
           }
         }
       } else {
@@ -305,6 +307,20 @@ export default {
         this.meshes.push(boxbox)
 
         this._worldOctree.fromGraphNode(boxbox)
+
+        // map 이동용
+
+        const boxG2 = new THREE.BoxGeometry(50, 50, 50)
+        const boxM2 = new THREE.MeshStandardMaterial({ color: 'green' })
+        const boxbox2 = new THREE.Mesh(boxG2, boxM2)
+        boxbox2.name = 'move'
+        boxbox2.receiveShadow = true
+        boxbox2.castShadow = true
+        boxbox2.position.set(100, 100, 200)
+
+        this._scene.add(boxbox2)
+        this.meshes.push(boxbox2)
+        this._worldOctree.fromGraphNode(boxbox2)
 
         console.log(model)
       })
