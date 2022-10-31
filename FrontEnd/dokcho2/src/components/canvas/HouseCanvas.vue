@@ -1,6 +1,5 @@
 <template>
   <div>
-    <button @click="changeCanvas">바꾸기2</button>
     <div id="house">
       <!-- <monsterDetail
         v-show="monster === true"

@@ -34,17 +34,9 @@
         </ul>
       </div>
     </nav>
-    <MyModal1 v-if="modal1">
-      <p @click="closeModal1">닫기</p>
-    </MyModal1>
-    <MyModal2 @click="closeModal2" v-if="modal2">
-      <p>가방창</p>
-      <div><input v-model="message2" /></div>
-    </MyModal2>
-    <MyModal3 @click="closeModal3" v-if="modal3">
-      <p>지도창</p>
-      <div><input v-model="message3" /></div>
-    </MyModal3>
+    <MyModal1 v-if="modal1"> </MyModal1>
+    <MyModal2 v-if="modal2"> </MyModal2>
+    <MyModal3 v-if="modal3"> </MyModal3>
   </div>
 </template>
 
@@ -143,9 +135,14 @@ export default {
 <style scoped>
 .navbar {
   position: absolute;
-  /* z-index: -9; */
-  margin-left: 500px;
-  margin-top: 20px;
+  z-index: 10;
+  /* display: flex; */
+  height: 100px;
+  width: 100px;
+  margin-top: 30px;
+  margin-left: 1430px;
+  /* float: right; */
+  color: aliceblue;
 }
 </style>
 >

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <button @click="changeCanvas">바꾸기1</button>
     <div id="world"></div>
   </div>
 </template>
