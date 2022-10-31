@@ -292,7 +292,9 @@ export default {
         boxbox.name = ['monster', 1]
         boxbox.receiveShadow = true
         boxbox.castShadow = true
-        boxbox.position.set(0, 0, 0)
+        // boxbox.position.set(0, 0, 0)
+        const move = new THREE.Vector3(10, 10, 10)
+        boxbox.translate(move)
         this._scene.add(boxbox)
         this.meshes.push(boxbox)
 
