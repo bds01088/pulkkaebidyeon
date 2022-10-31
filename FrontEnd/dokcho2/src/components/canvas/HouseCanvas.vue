@@ -120,6 +120,7 @@ export default {
       this.raycaster.setFromCamera(this.mouse, this._camera)
       console.log('meshes', this.meshes[0])
       const intersects = this.raycaster.intersectObjects(this.meshes)
+      console.log(intersects)
       for (const item of intersects) {
         if (item.object.name[0] === 'monster') {
           let monsterId = item.object.name[1]
