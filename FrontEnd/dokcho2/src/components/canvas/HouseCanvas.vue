@@ -1,7 +1,14 @@
 <template>
   <div>
     <button @click="changeCanvas">바꾸기2</button>
-    <div id="house"></div>
+    <div id="house">
+      <!-- <monsterDetail
+        v-show="monster === true"
+        @showMonster="showMonster"
+        :monsterDetail="this.monsterDetail"
+        :monster="this.monster"
+      /> -->
+    </div>
   </div>
 </template>
 
@@ -15,8 +22,17 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { Octree } from 'three/examples/jsm/math/Octree.js'
 import { Capsule } from 'three/examples/jsm/math/Capsule.js'
 
+import axios from 'axios'
+import { BASE_URL } from '@/constant/BASE_URL'
+import Swal from 'sweetalert2'
+
+// import monsterDetail from '../monster/monsterDetail.vue'
+
 export default {
   name: 'HouseView',
+  // components: {
+  //   monsterDetail: monsterDetail
+  // },
   props: {
     nowPage: Number
   },
@@ -33,7 +49,16 @@ export default {
       fallingSpeed: 0,
       jumpingSpeed: 0,
 
-      isPressed: false
+      isPressed: false,
+
+      //raycaster
+      raycaster: new THREE.Raycaster(),
+      mouse: new THREE.Vector2(),
+      meshes: [],
+
+      // monsterdetail
+      monster: false,
+      monsterDetail: {}
     }
   },
 
@@ -42,11 +67,20 @@ export default {
   },
 
   methods: {
+    showMonster() {
+      console.log(this.monster)
+      if (this.monster === true) {
+        this.monster = false
+      } else {
+        this.monster = true
+      }
+    },
     init() {
       this.fallingAcceleration = 0
       this.fallingSpeed = 0
       this.jumpingSpeed = 0
 
+      // canvas === divContainer
       const divContainer = document.querySelector('#house')
       this._divContainer = divContainer
 
@@ -62,6 +96,11 @@ export default {
       const scene = new THREE.Scene()
       this._scene = scene
 
+      // raycaster
+      // this.raycaster = new THREE.Raycaster()
+
+      // this.mouse = new THREE.Vector2()
+
       //this._setupOctree();
       this._setupCamera()
       this._setupLight()
@@ -73,6 +112,42 @@ export default {
       this.resize()
 
       requestAnimationFrame(this.render.bind(this))
+    },
+
+    // check click
+    checkIntersects() {
+      // console.log('intersects 실행됨')
+      this.raycaster.setFromCamera(this.mouse, this._camera)
+      // console.log('meshes', this.meshes[0])
+      const intersects = this.raycaster.intersectObjects(this.meshes)
+      for (const item of intersects) {
+        if (item.object.name[0] === 'monster') {
+          let monsterId = item.object.name[1]
+          // console.log(monsterId)
+          axios({
+            url: BASE_URL + '/api/v1/monster/' + monsterId,
+            method: 'GET',
+            headers: {
+              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+            }
+          })
+            .then((res) => {
+              this.monsterDetail = res.data
+
+              Swal.fire(`${this.monsterDetail.name}`)
+              this.showMonster()
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        } else {
+          console.log('안들어감')
+        }
+        break
+      }
+
+      // console.log(intersects[0].name)
+      // console.log(this._model.children)
     },
 
     _setupOctree(model) {
@@ -102,7 +177,15 @@ export default {
         this._processAnimation()
       })
 
-      document.addEventListener('click', () => {})
+      // document.addEventListener('click', () => {})
+
+      // 클릭 이벤트 바인딩
+      document.addEventListener('click', (e) => {
+        this.mouse.x = (e.clientX / this._divContainer.clientWidth) * 2 - 1
+        this.mouse.y = -((e.clientY / this._divContainer.clientHeight) * 2 - 1)
+        // console.log(this.mouse.x)
+        this.checkIntersects()
+      })
     },
 
     _processAnimation() {
@@ -205,10 +288,12 @@ export default {
         const boxG = new THREE.BoxGeometry(100, diameter - 5, 100)
         const boxM = new THREE.MeshStandardMaterial({ color: 'plum' })
         const boxbox = new THREE.Mesh(boxG, boxM)
+        boxbox.name = ['monster', 1]
         boxbox.receiveShadow = true
         boxbox.castShadow = true
         boxbox.position.set(0, 0, 0)
         this._scene.add(boxbox)
+        this.meshes.push(boxbox)
 
         this._worldOctree.fromGraphNode(boxbox)
 
