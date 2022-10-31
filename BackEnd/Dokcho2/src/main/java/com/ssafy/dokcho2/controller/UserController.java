@@ -147,11 +147,11 @@ public class UserController {
         return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
     }
 
-    @GetMapping("/search/{keyword}")
-    @ApiOperation(value = "회원 검색")
-    public ResponseEntity<UserResponseDto> search(@PathVariable String keyword){
-
-        return new ResponseEntity<>(userService.search(keyword), HttpStatus.OK);
+    @PutMapping("/position")
+    @ApiOperation(value = "위치 정보 저장")
+    public ResponseEntity<String> savePosition(@RequestBody UserPositionDto positionDto){
+        userService.savePosition(positionDto);
+        return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
     }
 
     @PutMapping("/represent")

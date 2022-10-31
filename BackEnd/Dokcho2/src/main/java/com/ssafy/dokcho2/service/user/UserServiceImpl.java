@@ -22,6 +22,7 @@ import com.ssafy.dokcho2.dto.jwt.TokenDto;
 import com.ssafy.dokcho2.dto.jwt.TokenRequestDto;
 import com.ssafy.dokcho2.dto.user.LoginRequestDto;
 import com.ssafy.dokcho2.dto.user.SignUpRequestDto;
+import com.ssafy.dokcho2.dto.user.UserPositionDto;
 import com.ssafy.dokcho2.dto.user.UserResponseDto;
 import com.ssafy.dokcho2.jwt.TokenProvider;
 import com.ssafy.dokcho2.util.SecurityUtil;
@@ -137,22 +138,33 @@ public class UserServiceImpl implements UserService{
                 .email(requestDto.getEmail())
                 .nickname("")
                 .password(passwordEncoder.encode(requestDto.getPassword()))
-                // 대표 독초몬 설정할 것
+                .representMonster(monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new))
                 .role(Role.ROLE_USER)
                 .build();
         userRepository.save(user);
 
         // 유저-미션 테이블에 8개 넣는 코드
-//        for(int i=1; i<=8; i++){
-//            Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
-//            UserMission um = UserMission.builder()
-//                    .user(user)
-//                    .mission(mission)
-//                    .status(MissionStatus.NOT_YET)
-//                    .build();
-//
-//            userMissionRepository.save(um);
-//        }
+        for(int i=1; i<=8; i++){
+            Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
+            UserMission um = UserMission.builder()
+                    .user(user)
+                    .mission(mission)
+                    .status(MissionStatus.NOT_YET)
+                    .build();
+
+            userMissionRepository.save(um);
+        }
+
+        // 기본 풀깨비 지급
+        for(int i=1; i<=3; i++){
+            Monster monster = monsterRepository.findById((long)i).orElseThrow(MonsterNotFoundException::new);
+            UserMonster um = UserMonster.builder()
+                    .user(user)
+                    .monster(monster)
+                    .build();
+
+            userMonsterRepository.save(um);
+        }
 
         return UserResponseDto.from(user);
     }
@@ -281,5 +293,12 @@ public class UserServiceImpl implements UserService{
         } else {
             throw new MonsterNotFoundException();
         }
+    }
+
+    @Override
+    public void savePosition(UserPositionDto positionDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+        user.savePosition(positionDto);
+        userRepository.save(user);
     }
 }

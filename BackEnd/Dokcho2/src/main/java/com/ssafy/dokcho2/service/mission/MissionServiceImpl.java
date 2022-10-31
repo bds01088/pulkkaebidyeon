@@ -94,15 +94,32 @@ public class MissionServiceImpl implements MissionService{
     }
 
     @Override
+    public void updateExp(Integer rewardExp){
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+        Monster monster = user.getRepresentMonster();
+
+        updateExp(user, monster, rewardExp);
+    }
+
+    public void updateExp(User user, Monster monster, Integer rewardExp){
+        UserMonster um = userMonsterRepository.findByUserAndMonster(user, monster).orElseThrow(MonsterNotFoundException::new);
+        if (um.getLevel()*100 <= (um.getExp()+rewardExp)) {
+            um.setExp((um.getExp()+rewardExp)-um.getLevel()*100);
+            um.setLevel(um.getLevel()+1);
+        } else {
+            um.setExp(um.getExp() + rewardExp);
+        }
+        userMonsterRepository.save(um);
+    }
+
+    @Override
     public void completeMission(Long missionId) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
         Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
         UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
 
         Monster monster = user.getRepresentMonster();
-        UserMonster um = userMonsterRepository.findByUserAndMonster(user, monster).orElseThrow(MonsterNotFoundException::new);
-        um.setExp(um.getExp() + mission.getExp());
-        userMonsterRepository.save(um);
+        updateExp(user, monster, mission.getExp());
 
         Item relic = itemRepository.findById(mission.getRelic()).orElseThrow(ItemNotFoundException::new);
         Item item = itemRepository.findById(mission.getItem()).orElseThrow(ItemNotFoundException::new);

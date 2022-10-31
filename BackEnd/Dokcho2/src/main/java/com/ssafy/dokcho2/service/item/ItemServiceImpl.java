@@ -97,4 +97,28 @@ public class ItemServiceImpl implements ItemService{
                 .stream().map(s -> ItemDto.from(s)).collect(Collectors.toList());
         return userItemList;
     }
+
+    @Override
+    @Transactional
+    public ItemDto addUseItem() {
+        Item item = itemRepository.findRandomItem();
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+
+        Optional<UserItem> o = userItemRepository.findByUserAndItem(user, item);
+
+        UserItem userItem;
+
+        if (o.isPresent()){
+            userItem = o.get();
+            userItem.setCount(userItem.getCount()+1);
+        } else {
+            userItem = UserItem.builder()
+                    .user(user)
+                    .item(item)
+                    .count(1)
+                    .build();
+        }
+        userItemRepository.save(userItem);
+        return ItemDto.from(userItem);
+    }
 }

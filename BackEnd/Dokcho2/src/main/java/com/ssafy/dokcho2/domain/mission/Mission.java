@@ -32,6 +32,8 @@ public class Mission {
     private String line4; // 배틀 승리 후
     @Column(name = "characters")
     private String characters;
+    @Column(name = "description")
+    private String description; // 미션 설명
     @Column(name = "relic")
     private Long relic;
     @Column(name = "item")
