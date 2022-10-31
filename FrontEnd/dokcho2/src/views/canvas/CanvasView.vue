@@ -44,13 +44,7 @@ export default {
 
 <style>
 canvas {
-  width: 100%;
-  height: 100%;
-}
-
-.wholeCanvas {
-  position: relative;
-  width: 1800px;
-  height: 800px;
+  height: 600px;
+  width: 600px;
 }
 </style>
