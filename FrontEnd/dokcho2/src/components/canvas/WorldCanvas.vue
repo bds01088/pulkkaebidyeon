@@ -1,6 +1,5 @@
 <template>
   <div>
-    <button @click="changeCanvas">바꾸기1</button>
     <div id="world"></div>
   </div>
 </template>
@@ -14,6 +13,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 import { Octree } from 'three/examples/jsm/math/Octree.js'
 import { Capsule } from 'three/examples/jsm/math/Capsule.js'
+
+import axios from 'axios'
+import { BASE_URL } from '@/constant/BASE_URL'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'WorldView',
@@ -29,7 +32,11 @@ export default {
       bOnTheGround: false,
       fallingAcceleration: 0,
       fallingSpeed: 0,
-      isPressed: false
+      isPressed: false,
+      //raycaster
+      raycaster: new THREE.Raycaster(),
+      mouse: new THREE.Vector2(),
+      meshes: []
     }
   },
 
@@ -71,6 +78,45 @@ export default {
       requestAnimationFrame(this.render.bind(this))
     },
 
+    // check click
+    checkIntersects() {
+      // console.log('intersects 실행됨')
+      this.raycaster.setFromCamera(this.mouse, this._camera)
+      // console.log('meshes', this.meshes[0])
+      // console.log(this._scene.children[17])
+      const intersects = this.raycaster.intersectObjects(this.meshes)
+      // console.log(intersects)
+
+      if (intersects.length > 0) {
+        for (const item of intersects) {
+          if (item.object.name[0] === 'monster') {
+            let monsterId = item.object.name[1]
+            console.log(monsterId)
+            axios({
+              url: BASE_URL + '/api/v1/monster/' + monsterId,
+              method: 'GET',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            })
+              .then((res) => {
+                this.monsterDetail = res.data
+
+                Swal.fire(`${this.monsterDetail.name}`)
+                this.showMonster()
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+          } else if (item.object.name === 'move') {
+            this.changeCanvas()
+          }
+        }
+      } else {
+        console.log('비어있음')
+      }
+    },
+
     _setupOctree(model) {
       this._worldOctree = new Octree()
       this._worldOctree.fromGraphNode(model)
@@ -101,7 +147,13 @@ export default {
         this._processAnimation()
       })
 
-      document.addEventListener('click', () => {})
+      // 클릭 이벤트 바인딩
+      document.addEventListener('dblclick', (e) => {
+        this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+        this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+        console.log(this.mouse.x, this.mouse.y)
+        this.checkIntersects()
+      })
     },
 
     _processAnimation() {
@@ -207,6 +259,20 @@ export default {
         // this._scene.add(boxM);
 
         // this._worldOctree.fromGraphNode(boxM);
+
+        // map 이동용
+        const boxG2 = new THREE.BoxGeometry(50, 50, 50)
+        const boxM2 = new THREE.MeshStandardMaterial({ color: 'green' })
+        const boxbox2 = new THREE.Mesh(boxG2, boxM2)
+        boxbox2.name = 'move'
+        boxbox2.receiveShadow = true
+        boxbox2.castShadow = true
+        boxbox2.position.set(100, 100, 200)
+
+        this._scene.add(boxbox2)
+        this.meshes.push(boxbox2)
+        this._worldOctree.fromGraphNode(boxbox2)
+
         console.log(model)
       })
     },
