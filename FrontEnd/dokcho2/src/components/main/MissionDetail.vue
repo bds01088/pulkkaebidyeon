@@ -1,5 +1,5 @@
 <template>
-  <div class="missionDetail">미쎤디테일</div>
+  <div class="missionDetail">미션디테일</div>
 </template>
 
 <script>

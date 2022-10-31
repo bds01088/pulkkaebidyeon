@@ -8,6 +8,7 @@
         :monster="this.monster"
       /> -->
     </div>
+    <myPage v-if="modal" />
   </div>
 </template>
 
@@ -25,13 +26,16 @@ import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import Swal from 'sweetalert2'
 
+import myPage from '../accounts/myPage.vue'
+
 // import monsterDetail from '../monster/monsterDetail.vue'
 
 export default {
   name: 'HouseView',
-  // components: {
-  //   monsterDetail: monsterDetail
-  // },
+  components: {
+    // monsterDetail: monsterDetail,
+    myPage
+  },
   props: {
     nowPage: Number
   },
@@ -57,7 +61,10 @@ export default {
 
       // monsterdetail
       monster: false,
-      monsterDetail: {}
+      monsterDetail: {},
+
+      // account modal
+      modal: false
     }
   },
 
@@ -66,6 +73,12 @@ export default {
   },
 
   methods: {
+    openModal() {
+      this.modal = true
+    },
+    closeModal() {
+      this.modal = false
+    },
     showMonster() {
       console.log(this.monster)
       if (this.monster === true) {
@@ -125,6 +138,7 @@ export default {
 
       if (intersects.length > 0) {
         for (const item of intersects) {
+          console.log(item.object.name)
           if (item.object.name[0] === 'monster') {
             let monsterId = item.object.name[1]
             console.log(monsterId)
@@ -146,6 +160,8 @@ export default {
               })
           } else if (item.object.name === 'move') {
             this.changeCanvas()
+          } else if (item.object.name === 'account') {
+            this.openModal()
           }
         }
       } else {
@@ -321,6 +337,20 @@ export default {
         this._scene.add(boxbox2)
         this.meshes.push(boxbox2)
         this._worldOctree.fromGraphNode(boxbox2)
+
+        // 개인정보수정
+        const geometry = new THREE.PlaneGeometry(100, 100)
+        const material = new THREE.MeshBasicMaterial({
+          color: 'blue',
+          side: THREE.DoubleSide
+        })
+        const plane = new THREE.Mesh(geometry, material)
+        plane.name = 'account'
+        plane.position.set(-100, -50, 100)
+
+        this._scene.add(plane)
+        this.meshes.push(plane)
+        this._worldOctree.fromGraphNode(plane)
 
         console.log(model)
       })
