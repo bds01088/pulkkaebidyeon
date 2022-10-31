@@ -188,7 +188,7 @@ export default {
       // document.addEventListener('click', () => {})
 
       // 클릭 이벤트 바인딩
-      document.addEventListener('click', (e) => {
+      document.addEventListener('dblclick', (e) => {
         this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1
         this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
         console.log(this.mouse.x, this.mouse.y)
