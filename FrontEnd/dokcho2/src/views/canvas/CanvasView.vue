@@ -1,19 +1,23 @@
 <template>
-  <WorldCanvas
-    v-show="this.nowPage === 0"
-    @changeCanvas="changeCanvas"
-    :nowPage="this.nowPage"
-  />
-  <HouseCanvas
-    v-show="this.nowPage === 1"
-    @changeCanvas="changeCanvas"
-    :nowPage="this.nowPage"
-  />
+  <div class="wholeCanvas">
+    <NavBar />
+    <WorldCanvas
+      v-show="this.nowPage === 0"
+      @changeCanvas="changeCanvas"
+      :nowPage="this.nowPage"
+    />
+    <HouseCanvas
+      v-show="this.nowPage === 1"
+      @changeCanvas="changeCanvas"
+      :nowPage="this.nowPage"
+    />
+  </div>
 </template>
 
 <script>
 import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
 import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
+import NavBar from '../../components/main/NavBar.vue'
 
 export default {
   data() {
@@ -23,7 +27,8 @@ export default {
   },
   components: {
     WorldCanvas: WorldCanvas,
-    HouseCanvas: HouseCanvas
+    HouseCanvas: HouseCanvas,
+    NavBar: NavBar
   },
   methods: {
     changeCanvas() {

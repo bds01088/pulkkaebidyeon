@@ -590,8 +590,4 @@ export default {
   outline: none;
   margin: 0;
 }
-#house {
-  width: 600px;
-  height: 600px;
-}
 </style>
