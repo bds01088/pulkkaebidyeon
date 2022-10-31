@@ -34,9 +34,8 @@
         </ul>
       </div>
     </nav>
-    <MyModal1 @click="closeModal1" v-if="modal1">
-      <p>미션창</p>
-      <div><input v-model="message1" /></div>
+    <MyModal1 v-if="modal1">
+      <p @click="closeModal1">닫기</p>
     </MyModal1>
     <MyModal2 @click="closeModal2" v-if="modal2">
       <p>가방창</p>
