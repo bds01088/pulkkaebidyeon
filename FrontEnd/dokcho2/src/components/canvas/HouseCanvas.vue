@@ -118,7 +118,7 @@ export default {
     checkIntersects() {
       console.log('intersects 실행됨')
       this.raycaster.setFromCamera(this.mouse, this._camera)
-      // console.log('meshes', this.meshes[0])
+      console.log('meshes', this.meshes[0])
       const intersects = this.raycaster.intersectObjects(this.meshes)
       for (const item of intersects) {
         if (item.object.name[0] === 'monster') {
