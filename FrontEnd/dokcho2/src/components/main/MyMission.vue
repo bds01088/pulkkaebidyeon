@@ -1,10 +1,16 @@
 <template>
-  <div class="myMission">
-    <div>미션창</div>
-    <div v-for="(mission, i) in this.missions" :key="i">
-      {{ mission.characters }}
+  <div class="window">
+    <div class="myMission">
+      <div>미션창</div>
+      <div
+        v-for="(mission, i) in this.missions"
+        :key="i"
+        @click="openMissionDetail()"
+      >
+        {{ mission.characters }}
+      </div>
+      <div>{{ this.missions[0] }}</div>
     </div>
-    <div>{{ this.missions[0] }}</div>
   </div>
 </template>
 
@@ -15,7 +21,8 @@ import { BASE_URL } from '@/constant/BASE_URL'
 export default {
   data() {
     return {
-      missions: []
+      missions: [],
+      missionDetail: false
     }
   },
   methods: {
@@ -33,6 +40,12 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    openMissionDetail() {
+      this.missionDetail = true
+    },
+    closeMissionDetail() {
+      this.missionDetail = false
     }
   },
   created() {
@@ -53,6 +66,6 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.9);
 }
 </style>
