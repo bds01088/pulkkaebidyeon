@@ -1,113 +1,152 @@
 <template>
   <div>
     <nav class="navbar">
-      <div class="navbar__logo">
-        <a href="/main">
-          <img src="" alt="" class="navbar__logoImg" />
-        </a>
-        <div class="navbar__toggleBtn" @click="menuOpen()">
-          <font-awesome-icon icon="fa-solid fa-bars" size="xl" />
-        </div>
-      </div>
-      <div class="navbar__centerMenu">
-        <div>
-          <ul class="navbar__centerIcons">
-            <li>
-              <a @click="popon('/camera')">
-                <p class="TITLE">사 진</p>
-              </a>
-            </li>
-            <li>
-              <a @click="popon('/encyclopedia')">
-                <p class="TITLE">도 감</p>
-              </a>
-            </li>
-            <li>
-              <a @click="popon('/game')">
-                <p class="TITLE">게 임</p>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="navbar__sideMenu">
-        <div>
-          <ul class="navbar__sideIcons">
-            <li>
-              <a href="/mypage">
-                <font-awesome-icon icon="fa-solid fa-user" size="xl" />
-              </a>
-            </li>
-            <li>
-              <a href="#" @click="logout()">
-                <font-awesome-icon icon="fa-solid fa-door-open" size="xl" />
-              </a>
-            </li>
-          </ul>
-        </div>
+      <div>
+        <ul>
+          <li>
+            <a @click="openModal1">
+              <p class="TITLE">미 션</p>
+              <font-awesome-icon icon="fa-solid fa-scroll" size="xl" />
+            </a>
+          </li>
+
+          <li>
+            <a @click="openModal2">
+              <p class="TITLE">가 방</p>
+              <font-awesome-icon icon="fa-solid fa-suitcase" size="xl" />
+            </a>
+          </li>
+          <li>
+            <a @click="openModal3">
+              <p class="TITLE">지 도</p>
+              <font-awesome-icon icon="map-location-dot" size="xl" />
+            </a>
+          </li>
+          <li>
+            <a @click="logout">
+              <p class="TITLE">록 앗</p>
+              <font-awesome-icon
+                icon="fa-solid fa-right-from-bracket"
+                size="xl"
+              />
+            </a>
+          </li>
+        </ul>
       </div>
     </nav>
-    <div class="sideBar" :class="this.showMenu ? 'open-menu' : 'closed-menu'">
-      <div>
-        &nbsp;<font-awesome-icon
-          class="x__icon"
-          icon="fa-solid fa-x"
-          size="sm"
-          @click="menuOpen()"
-        />
-      </div>
-      <div class="sideBar__menu">
-        <div class="sideBar__items">
-          <ul class="sideBar__icons">
-            <li>
-              <a href="/camera">
-                <font-awesome-icon icon="fa-solid fa-camera" size="xl" />
-                <p class="TITLE">사진</p>
-              </a>
-            </li>
-            <li>
-              <a href="/encyclopedia">
-                <font-awesome-icon icon="fa-solid fa-book" size="xl" />
-                <p class="TITLE">도감</p>
-              </a>
-            </li>
-          </ul>
-          <ul class="sideBar__icons">
-            <li>
-              <a href="/game">
-                <font-awesome-icon icon="fa-solid fa-gamepad" size="xl" />
-                <p class="TITLE">게임</p>
-              </a>
-            </li>
-            <li>
-              <a href="/mypage">
-                <font-awesome-icon icon="fa-solid fa-user" size="xl" />
-                <p class="TITLE">내설정</p>
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div class="sideBar__logout" @click="logout()">
-          <a href="#">
-            <font-awesome-icon
-              icon="fa-solid fa-door-open"
-              class="sideBar__logoutIcon"
-            />
-            <span class="out__message TITLE">나가기</span>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div
-      class="blur"
-      :class="this.showMenu ? 'open-menu__blur' : ''"
-      @click="menuOpen()"
-    ></div>
+    <MyModal1 @click="closeModal1" v-if="modal1">
+      <p>미션창</p>
+      <div><input v-model="message1" /></div>
+    </MyModal1>
+    <MyModal2 @click="closeModal2" v-if="modal2">
+      <p>가방창</p>
+      <div><input v-model="message2" /></div>
+    </MyModal2>
+    <MyModal3 @click="closeModal3" v-if="modal3">
+      <p>지도창</p>
+      <div><input v-model="message3" /></div>
+    </MyModal3>
   </div>
 </template>
 
 <script>
-export default {}
+import axios from 'axios'
+import { BASE_URL } from '@/constant/BASE_URL'
+import MyModal1 from './MyMission.vue'
+import MyModal2 from './MyItem.vue'
+import MyModal3 from './MyMap.vue'
+import swal from 'sweetalert'
+import Swal from 'sweetalert2'
+const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    title: 'custom-title-class',
+    confirmButton: 'btn btn-success',
+    cancelButton: 'btn btn-danger'
+  }
+})
+export default {
+  data() {
+    return {
+      modal1: false,
+      modal2: false,
+      modal3: false,
+      message1: '',
+      message2: '',
+      message3: ''
+    }
+  },
+  components: { MyModal1, MyModal2, MyModal3 },
+  methods: {
+    openModal1() {
+      this.modal1 = true
+    },
+    closeModal1() {
+      this.modal1 = false
+    },
+    openModal2() {
+      this.modal2 = true
+    },
+    closeModal2() {
+      this.modal2 = false
+    },
+    openModal3() {
+      this.modal3 = true
+    },
+    closeModal3() {
+      this.modal3 = false
+    },
+    logout() {
+      swalWithBootstrapButtons
+        .fire({
+          title: '도감을 덮으시겠어요?',
+          text: '풀깨비들이 도감에서 웅성거리고 있어요 😥',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: '예',
+          cancelButtonText: '아니오',
+          reverseButtons: true
+        })
+        .then((res) => {
+          if (res.value) {
+            this.fetchLogout()
+          }
+        })
+    },
+    fetchLogout() {
+      axios
+        .put(BASE_URL + '/api/v1/user/logout', null, {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then((res) => {
+          console.log(res)
+          swal({
+            title: '로그아웃이 완료되었습니다!',
+            text: ' 다시 도감을 펼치는 날을 기다릴게요 🌻 ',
+            icon: 'success',
+            buttons: false,
+            timer: 1500
+          })
+          localStorage.clear()
+          this.$router.push({
+            path: '/'
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+  }
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.navbar {
+  position: absolute;
+  /* z-index: -9; */
+  margin-left: 500px;
+  margin-top: 20px;
+}
+</style>
+>
