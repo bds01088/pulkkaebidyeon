@@ -5,18 +5,22 @@
       <div
         v-for="(mission, i) in this.missions"
         :key="i"
-        @click="openMissionDetail()"
+        @click="openMissionDetail"
       >
         {{ mission.characters }}
       </div>
       <div>{{ this.missions[0] }}</div>
+      <button @click="this.$parent.closeModal1">닫기</button>
     </div>
   </div>
+  <MissionDetail @click="closeMissionDetail" v-if="missionDetail">
+  </MissionDetail>
 </template>
 
 <script>
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
+import MissionDetail from './MissionDetail.vue'
 
 export default {
   data() {
@@ -25,6 +29,7 @@ export default {
       missionDetail: false
     }
   },
+  components: { MissionDetail },
   methods: {
     fetchMissions() {
       axios({

@@ -50,7 +50,7 @@ canvas {
 
 .wholeCanvas {
   position: relative;
-  width: 1800px;
-  height: 800px;
+  width: 600px;
+  height: 600px;
 }
 </style>
