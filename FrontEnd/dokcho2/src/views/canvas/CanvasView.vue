@@ -43,7 +43,12 @@ export default {
 </script>
 
 <style>
+* {
+  outline: none;
+  margin: 0;
+}
 canvas {
+  position: relative;
   height: 600px;
   width: 600px;
 }
