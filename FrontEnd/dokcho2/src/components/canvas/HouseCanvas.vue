@@ -85,7 +85,8 @@ export default {
       this._divContainer = divContainer
 
       const renderer = new THREE.WebGLRenderer({ antialias: true })
-      renderer.setPixelRatio(window.devicePixelRatio)
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
       divContainer.appendChild(renderer.domElement)
 
       renderer.shadowMap.enabled = true
@@ -116,40 +117,43 @@ export default {
 
     // check click
     checkIntersects() {
-      console.log('intersects 실행됨')
+      // console.log('intersects 실행됨')
       this.raycaster.setFromCamera(this.mouse, this._camera)
-      console.log('meshes', this.meshes[0])
+      // console.log('meshes', this.meshes[0])
+      // console.log(this._scene.children[17])
       const intersects = this.raycaster.intersectObjects(this.meshes)
-      console.log(intersects)
-      for (const item of intersects) {
-        if (item.object.name[0] === 'monster') {
-          let monsterId = item.object.name[1]
-          console.log(monsterId)
-          axios({
-            url: BASE_URL + '/api/v1/monster/' + monsterId,
-            method: 'GET',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          })
-            .then((res) => {
-              this.monsterDetail = res.data
+      // console.log(intersects)
 
-              Swal.fire(`${this.monsterDetail.name}`)
-              this.showMonster()
+      if (intersects.length > 0) {
+        for (const item of intersects) {
+          if (item.object.name[0] === 'monster') {
+            let monsterId = item.object.name[1]
+            console.log(monsterId)
+            axios({
+              url: BASE_URL + '/api/v1/monster/' + monsterId,
+              method: 'GET',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
             })
-            .catch((err) => {
-              console.log(err)
-            })
-        } else {
-          console.log('안들어감')
+              .then((res) => {
+                this.monsterDetail = res.data
+
+                Swal.fire(`${this.monsterDetail.name}`)
+                this.showMonster()
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+          }
         }
-        break
+      } else {
+        console.log('비어있음')
       }
-
-      // console.log(intersects[0].name)
-      // console.log(this._model.children)
     },
+
+    // console.log(intersects[0].name)
+    // console.log(this._model.children)
 
     _setupOctree(model) {
       this._worldOctree = new Octree()
@@ -157,7 +161,10 @@ export default {
     },
 
     _setupControls() {
-      this._controls = new OrbitControls(this._camera, this._divContainer)
+      this._controls = new OrbitControls(
+        this._camera,
+        this._renderer.domElement
+      )
       this._controls.target.set(0, 100, 0)
       this._controls.enablePan = false
       this._controls.enableDamping = true
@@ -182,9 +189,9 @@ export default {
 
       // 클릭 이벤트 바인딩
       document.addEventListener('click', (e) => {
-        this.mouse.x = (e.clientX / this._divContainer.clientWidth) * 2 - 1
-        this.mouse.y = -((e.clientY / this._divContainer.clientHeight) * 2 - 1)
-        // console.log(this.mouse.x)
+        this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+        this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+        console.log(this.mouse.x, this.mouse.y)
         this.checkIntersects()
       })
     },
@@ -286,15 +293,15 @@ export default {
         this._boxHelper = boxHelper
         this._model = model
 
-        const boxG = new THREE.BoxGeometry(100, diameter - 5, 100)
+        const boxG = new THREE.BoxGeometry(100, 100, 100)
         const boxM = new THREE.MeshStandardMaterial({ color: 'plum' })
         const boxbox = new THREE.Mesh(boxG, boxM)
         boxbox.name = ['monster', 1]
         boxbox.receiveShadow = true
         boxbox.castShadow = true
-        // boxbox.position.set(0, 0, 0)
-        const move = new THREE.Vector3(10, 10, 10)
-        boxbox.translate(move)
+        boxbox.position.set(0, -1, 0)
+        // const move = new THREE.Vector3(10, 10, 10)
+        // boxbox.translate(move)
         this._scene.add(boxbox)
         this.meshes.push(boxbox)
 
@@ -561,13 +568,14 @@ export default {
     },
 
     resize() {
-      const width = 600
-      const height = 600
+      // const width = 600
+      // const height = 600
 
-      this._camera.aspect = width / height
+      // this._camera.aspect = width / height
+      this._camera.aspect = window.innerWidth / window.innerHeight
       this._camera.updateProjectionMatrix()
 
-      this._renderer.setSize(width, height)
+      this._renderer.setSize(window.innerWidth, window.innerHeight)
     },
 
     changeCanvas() {

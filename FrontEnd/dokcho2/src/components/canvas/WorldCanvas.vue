@@ -46,7 +46,8 @@ export default {
       this._divContainer = divContainer
 
       const renderer = new THREE.WebGLRenderer({ antialias: true })
-      renderer.setPixelRatio(window.devicePixelRatio)
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
       divContainer.appendChild(renderer.domElement)
 
       renderer.shadowMap.enabled = true
@@ -76,7 +77,10 @@ export default {
     },
 
     _setupControls() {
-      this._controls = new OrbitControls(this._camera, this._divContainer)
+      this._controls = new OrbitControls(
+        this._camera,
+        this._renderer.domElement
+      )
       this._controls.target.set(0, 100, 0)
       this._controls.enablePan = false
       this._controls.enableDamping = true
@@ -464,13 +468,17 @@ export default {
     },
 
     resize() {
-      const width = this._divContainer.clientWidth
-      const height = this._divContainer.clientHeight
+      // const width = this._divContainer.clientWidth
+      // const height = this._divContainer.clientHeight
 
-      this._camera.aspect = width / height
+      // this._camera.aspect = width / height
+      // this._camera.updateProjectionMatrix()
+
+      // this._renderer.setSize(width, height)
+      this._camera.aspect = window.innerWidth / window.innerHeight
       this._camera.updateProjectionMatrix()
 
-      this._renderer.setSize(width, height)
+      this._renderer.setSize(window.innerWidth, window.innerHeight)
     },
 
     changeCanvas() {
