@@ -8,26 +8,56 @@
       >
         <div
           id="enemyHp"
-          style="background-color: green; height: 30px; width: 101%"
+          style="background-color: green; height: 30px; width: 100%"
         ></div>
       </div>
     </div>
-    <div id="myStatus">내체력</div>
+    <div id="myStatus">
+      <p>내 이름</p>
+      <div
+        id="myMaxHp"
+        style="border: 5px solid black; height: 30px; width: 90%"
+      >
+        <div
+          id="myHp"
+          style="background-color: green; height: 30px; width: 100%"
+        ></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   data() {
-    return {}
+    return {
+      time: 0,
+
+      getEnemyHpBar: 100,
+      getmyHpBar: 100
+    }
   },
 
   props: { myHpBar: String, enemyHpBar: String },
 
+  created() {
+    setInterval(() => {
+      this.time += 1
+    }, 100)
+  },
+
   watch: {
-    myHpBar() {
-      console.log(this.myHpBar)
-      document.querySelector('#enemyHp').style.width = this.myHpBar
+    time() {
+      if (this.enemyHpBar < this.getEnemyHpBar) {
+        this.getEnemyHpBar -= 5
+      }
+      var enemyHpBarPer = this.getEnemyHpBar.toString() + '%'
+      document.querySelector('#enemyHp').style.width = enemyHpBarPer
+      if (this.myHpBar < this.getmyHpBar) {
+        this.getmyHpBar -= 5
+      }
+      var myHpBarPer = this.getmyHpBar.toString() + '%'
+      document.querySelector('#myHp').style.width = myHpBarPer
     }
   },
 
@@ -38,24 +68,25 @@ export default {
 <style>
 #enemyStatus {
   position: absolute;
+  top: 100px;
+  left: 200px;
 
-  width: 200px;
+  padding: 10px;
+  width: 400px;
   height: 100px;
   background-color: white;
-}
-
-#enemyMaxHp {
-  margin: 0;
-  padding: 0;
+  z-index: 1;
 }
 
 #myStatus {
   position: absolute;
   top: 400px;
-  left: 500px;
+  left: 1000px;
 
-  width: 200px;
+  padding: 10px;
+  width: 400px;
   height: 100px;
   background-color: white;
+  z-index: 1;
 }
 </style>
