@@ -44,9 +44,10 @@ export default {
       acceleration: 0,
 
       bOnTheGround: false,
+      jump: false,
       fallingAcceleration: 0,
       fallingSpeed: 0,
-      jumpingSpeed: 0,
+      isjumped: false,
 
       isPressed: false,
 
@@ -77,7 +78,6 @@ export default {
     init() {
       this.fallingAcceleration = 0
       this.fallingSpeed = 0
-      this.jumpingSpeed = 0
 
       // canvas === divContainer
       const divContainer = document.querySelector('#house')
@@ -177,6 +177,7 @@ export default {
       this._pressedKeys = {}
 
       document.addEventListener('keydown', (event) => {
+        console.log(event.key.toLowerCase())
         this._pressedKeys[event.key.toLowerCase()] = true
         this._processAnimation()
       })
@@ -221,11 +222,22 @@ export default {
           //     this.maxSpeed = 80
           //     this.acceleration = 3
           //   }
+        } else if (this._pressedKeys[' '] && this.isjumped === false) {
+          this.bOnTheGround = false
+          this.jump = true
+          this.isjumped = true
+          setTimeout(() => {
+            this.jump = false
+          }, 400)
+          setTimeout(() => {
+            this.isjumped = false
+          }, 1000)
         } else {
           // this._currentAnimationAction = this._animationMap['Idle']
           this.speed = 0
           this.maxSpeed = 0
           this.acceleration = 0
+          // this.jump = false
         }
 
         if (previousAnimationAction !== this._currentAnimationAction) {
@@ -433,28 +445,69 @@ export default {
       this._scene.add(shadowCameraHelper)
     },
 
+    _jump() {
+      this.jump = true
+      this.isjumped = true
+      setTimeout(() => {
+        this.jump = false
+      }, 400)
+      setTimeout(() => {
+        this.isjumped = false
+      }, 1000)
+    },
+
     _directionOffset() {
       const pressedKeys = this._pressedKeys
       let directionOffset = 0 // w
 
       if (pressedKeys['w']) {
-        if (pressedKeys['a']) {
-          directionOffset = Math.PI / 4 // w+a (45도)
-        } else if (pressedKeys['d']) {
-          directionOffset = -Math.PI / 4 // w+d (-45도)
+        if (pressedKeys[' '] && this.isjumped === false) {
+          this._jump()
+          if (pressedKeys['a']) {
+            directionOffset = Math.PI / 4 // w+a (45도)
+          } else if (pressedKeys['d']) {
+            directionOffset = -Math.PI / 4 // w+d (-45도)
+          }
+        } else {
+          if (pressedKeys['a']) {
+            directionOffset = Math.PI / 4 // w+a (45도)
+          } else if (pressedKeys['d']) {
+            directionOffset = -Math.PI / 4 // w+d (-45도)
+          }
         }
       } else if (pressedKeys['s']) {
-        if (pressedKeys['a']) {
-          directionOffset = Math.PI / 4 + Math.PI / 2 // s+a (135도)
-        } else if (pressedKeys['d']) {
-          directionOffset = -Math.PI / 4 - Math.PI / 2 // s+d (-135도)
+        if (pressedKeys[' '] && this.isjumped === false) {
+          this._jump()
+          if (pressedKeys['a']) {
+            directionOffset = Math.PI / 4 + Math.PI / 2 // s+a (135도)
+          } else if (pressedKeys['d']) {
+            directionOffset = -Math.PI / 4 - Math.PI / 2 // s+d (-135도)
+          } else {
+            directionOffset = Math.PI // s (180도)
+          }
         } else {
-          directionOffset = Math.PI // s (180도)
+          if (pressedKeys['a']) {
+            directionOffset = Math.PI / 4 + Math.PI / 2 // s+a (135도)
+          } else if (pressedKeys['d']) {
+            directionOffset = -Math.PI / 4 - Math.PI / 2 // s+d (-135도)
+          } else {
+            directionOffset = Math.PI // s (180도)
+          }
         }
       } else if (pressedKeys['a']) {
-        directionOffset = Math.PI / 2 // a (90도)
+        if (pressedKeys[' '] && this.isjumped === false) {
+          this._jump()
+          directionOffset = Math.PI / 2 // a (90도)
+        } else {
+          directionOffset = Math.PI / 2 // a (90도)
+        }
       } else if (pressedKeys['d']) {
-        directionOffset = -Math.PI / 2 // d (-90도)
+        if (pressedKeys[' '] && this.isjumped === false) {
+          this._jump()
+          directionOffset = -Math.PI / 2 // d (-90도)
+        } else {
+          directionOffset = -Math.PI / 2 // d (-90도)
+        }
       } else {
         directionOffset = this.previousDirectionOffset
       }
@@ -500,7 +553,13 @@ export default {
         this._camera.getWorldDirection(walkDirection)
 
         //walkDirection.y = 0;
-        walkDirection.y = this.bOnTheGround ? 0 : -1
+        if (!this.bOnTheGround) {
+          walkDirection.y = -1
+        }
+        if (this.jump) {
+          walkDirection.y = 1
+        }
+        // walkDirection.y = this.bOnTheGround ? 0 : -1
         walkDirection.normalize()
 
         walkDirection.applyAxisAngle(
@@ -515,6 +574,8 @@ export default {
           // this.fallingAcceleration += 0.1
           // this.fallingSpeed += Math.pow(this.fallingAcceleration, 2)
           this.fallingSpeed = 300
+        } else if (this.jump) {
+          this.fallingSpeed = 600
         } else {
           this.fallingAcceleration = 0
           this.fallingSpeed = 0
