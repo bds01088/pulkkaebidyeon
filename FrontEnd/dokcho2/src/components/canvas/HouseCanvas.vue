@@ -74,12 +74,15 @@ export default {
   },
 
   methods: {
+    // myPage 열고 닫는 코드
     openModal() {
       this.modal = true
     },
     closeModal() {
       this.modal = false
     },
+
+    // monsterDetail 보여주기용 코드였는데 지금은 사용 X
     showMonster() {
       console.log(this.monster)
       if (this.monster === true) {
@@ -88,6 +91,7 @@ export default {
         this.monster = true
       }
     },
+
     init() {
       this.fallingAcceleration = 0
       this.fallingSpeed = 0
@@ -109,11 +113,6 @@ export default {
       const scene = new THREE.Scene()
       this._scene = scene
 
-      // raycaster
-      // this.raycaster = new THREE.Raycaster()
-
-      // this.mouse = new THREE.Vector2()
-
       //this._setupOctree();
       this._setupCamera()
       this._setupLight()
@@ -127,14 +126,24 @@ export default {
       requestAnimationFrame(this.render.bind(this))
     },
 
-    // check click
-    checkIntersects() {
-      // console.log('intersects 실행됨')
+    onPointerMove(e) {
+      this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+      this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+
       this.raycaster.setFromCamera(this.mouse, this._camera)
-      // console.log('meshes', this.meshes[0])
-      // console.log(this._scene.children[17])
       const intersects = this.raycaster.intersectObjects(this.meshes)
-      // console.log(intersects)
+
+      if (intersects && intersects.length > 0) {
+        document.body.style.cursor = 'pointer'
+      } else {
+        document.body.style.cursor = 'default'
+      }
+    },
+
+    // check click event
+    checkIntersects() {
+      this.raycaster.setFromCamera(this.mouse, this._camera)
+      const intersects = this.raycaster.intersectObjects(this.meshes)
 
       if (intersects.length > 0) {
         for (const item of intersects) {
@@ -168,9 +177,6 @@ export default {
         console.log('비어있음')
       }
     },
-
-    // console.log(intersects[0].name)
-    // console.log(this._model.children)
 
     _setupOctree(model) {
       this._worldOctree = new Octree()
@@ -211,6 +217,13 @@ export default {
         this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
         console.log(this.mouse.x, this.mouse.y)
         this.checkIntersects()
+      })
+
+      // pointer 이동 커서 변환 함수
+      document.addEventListener('pointermove', (e) => {
+        if (this.nowPage === 1) {
+          this.onPointerMove(e)
+        }
       })
     },
 
