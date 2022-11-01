@@ -1,6 +1,7 @@
 <template>
   <div class="myMap">
     <div>지도창</div>
+    <button @click="this.$parent.closeModal3">닫기</button>
   </div>
 </template>
 
