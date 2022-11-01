@@ -78,6 +78,20 @@ export default {
       requestAnimationFrame(this.render.bind(this))
     },
 
+    onPointerMove(e) {
+      this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+      this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+
+      this.raycaster.setFromCamera(this.mouse, this._camera)
+      const intersects = this.raycaster.intersectObjects(this.meshes)
+
+      if (intersects && intersects.length > 0) {
+        document.body.style.cursor = 'pointer'
+      } else {
+        document.body.style.cursor = 'default'
+      }
+    },
+
     // check click
     checkIntersects() {
       // console.log('intersects 실행됨')
@@ -153,6 +167,13 @@ export default {
         this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
         console.log(this.mouse.x, this.mouse.y)
         this.checkIntersects()
+      })
+
+      // pointer 이동 커서 변환 함수
+      document.addEventListener('pointermove', (e) => {
+        if (this.nowPage === 0) {
+          this.onPointerMove(e)
+        }
       })
     },
 
