@@ -86,8 +86,7 @@ export default {
       const intersects = this.raycaster.intersectObjects(this.meshes)
 
       if (intersects && intersects.length > 0) {
-        document.body.style.cursor =
-          'url("http://www.rw-designer.com/cursor-extern.php?id=66718"), auto'
+        document.body.style.cursor = 'pointer'
       } else {
         document.body.style.cursor = 'default'
       }
