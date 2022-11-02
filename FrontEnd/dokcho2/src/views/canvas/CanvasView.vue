@@ -4,11 +4,17 @@
     <WorldCanvas
       v-show="this.nowPage === 0"
       @changeCanvas="changeCanvas"
+      @changeBattle="changeBattle"
       :nowPage="this.nowPage"
     />
     <HouseCanvas
       v-show="this.nowPage === 1"
       @changeCanvas="changeCanvas"
+      :nowPage="this.nowPage"
+    />
+    <BattleCanvas
+      v-show="this.nowPage === 3"
+      @changeBattle="changeBattle"
       :nowPage="this.nowPage"
     />
   </div>
@@ -19,6 +25,8 @@ import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
 import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
 import NavBar from '../../components/main/NavBar.vue'
 
+import BattleCanvas from '../../components/battle/BattleCanvas.vue'
+
 export default {
   data() {
     return {
@@ -28,12 +36,21 @@ export default {
   components: {
     WorldCanvas: WorldCanvas,
     HouseCanvas: HouseCanvas,
-    NavBar: NavBar
+    NavBar: NavBar,
+    BattleCanvas: BattleCanvas
   },
   methods: {
     changeCanvas() {
       if (this.nowPage === 0) {
         this.nowPage = 1
+      } else {
+        this.nowPage = 0
+      }
+    },
+
+    changeBattle() {
+      if (this.nowPage === 0) {
+        this.nowPage = 3
       } else {
         this.nowPage = 0
       }
