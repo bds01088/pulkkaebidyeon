@@ -2,6 +2,7 @@
   <div class="myItem">
     <div>가방창</div>
     <p>{{ this.items }}</p>
+    <button @click="this.$parent.closeModal2">닫기</button>
   </div>
 </template>
 
