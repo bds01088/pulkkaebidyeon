@@ -230,7 +230,7 @@ export default {
     _processAnimation() {
       const previousAnimationAction = this._currentAnimationAction
 
-      if (this.nowPage === 1) {
+      if (this.nowPage === 1 && this.modal === false) {
         if (
           this._pressedKeys['w'] ||
           this._pressedKeys['a'] ||
