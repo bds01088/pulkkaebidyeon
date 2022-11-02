@@ -381,10 +381,10 @@ export default {
       })
     },
 
-    async _setupBack() {
+    _setupBack() {
       const loader = new GLTFLoader()
 
-      await loader.load('/models/space.glb', (gltf) => {
+      loader.load('/models/space.glb', (gltf) => {
         // gltf.scene.scale.set(0.1, 0.1, 0.1)
         const model = gltf.scene
 
@@ -399,29 +399,6 @@ export default {
         this._setupOctree(model)
       })
       // this._setupModel()
-    },
-
-    _setupBback() {
-      const textureLoader = new THREE.TextureLoader()
-      const floorTexture = textureLoader.load('/images/grid.png')
-      floorTexture.wrapS = THREE.RepeatWrapping
-      floorTexture.wrapT = THREE.RepeatWrapping
-      floorTexture.repeat.x = 10
-      floorTexture.repeat.y = 10
-
-      const floorMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(100, 100),
-        new THREE.MeshStandardMaterial({
-          map: floorTexture
-        })
-      )
-      floorMesh.name = 'floor'
-      floorMesh.rotation.x = -Math.PI / 2
-      floorMesh.receiveShadow = true
-      this._scene.add(floorMesh)
-      this._setupOctree(floorMesh)
-
-      setTimeout(this._setupModel(), 1000)
     },
 
     _setupCamera() {
