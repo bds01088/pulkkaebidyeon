@@ -1,25 +1,40 @@
 <template>
   <div>
-    <div id="battle">
-      <battle-status
-        id="status"
-        :myHpBar="myHpBar"
-        :enemyHpBar="enemyHpBar"
-      ></battle-status>
+    <battle-status
+      id="status"
+      :myHpBar="myHpBar"
+      :enemyHpBar="enemyHpBar"
+      :begin="begin"
+    ></battle-status>
+
+    <div id="battleDiv">
+      <div id="battle"></div>
     </div>
-    <div id="console" @click="changePhase()" style="cursor: pointer">
-      <p v-show="this.phase === 'start'">적을 만남!!!</p>
-      <p v-show="this.phase === 'ready'">기술을 선택하세요!!!</p>
-      <p v-show="this.phase === 'mySelect'">
-        <span v-for="(tech, idx) in myTech" :key="idx">
-          <button @click="doMySelect(tech)">{{ tech.name }}</button>
-        </span>
-      </p>
-      <p v-show="this.phase === 'myAct'">{{ actMsg[1] }}</p>
-      <p v-show="this.phase === 'enemyAct'">{{ actMsg[1] }}</p>
-      <p v-show="this.phase === 'enemyResult'">{{ actMsg[1] }}</p>
+
+    <div id="consoleDiv">
+      <div id="console" @click="changePhase()">
+        <p v-show="this.phase === 'start'">적을 만남!!!</p>
+        <p v-show="this.phase === 'ready'">기술을 선택하세요!!!</p>
+        <p v-show="this.phase === 'mySelect'">
+          <span v-for="(tech, idx) in myTech" :key="idx">
+            <button @click="doMySelect(tech)">{{ tech.name }}</button>
+          </span>
+        </p>
+        <p v-show="this.phase === 'showMySelect'">{{ actMyMsg[1] }}</p>
+        <p v-show="this.phase === 'myAct'">{{ actMyMsg[1] }}</p>
+        <p v-show="this.phase === 'enemyAct'">{{ actEnemyMsg[1] }}</p>
+        <p v-show="this.phase === 'enemyResult'">
+          {{ actEnemyMsg[1] }}
+        </p>
+        <p v-show="this.phase === 'win'" @click="changeBattle()">
+          {{ endMsg }}
+        </p>
+        <p v-show="this.phase === 'lose'" @click="changeBattle()">
+          {{ endMsg }}
+        </p>
+      </div>
+      <!-- <button @click="changeBattle()">rr</button> -->
     </div>
-    <div></div>
   </div>
 </template>
 
@@ -40,6 +55,7 @@ export default {
   components: { BattleStatus },
   data() {
     return {
+      begin: 0,
       turn: 1,
       phase: 'start',
       status: 'normal',
@@ -50,16 +66,17 @@ export default {
       myHpBar: 100,
       myAttack: 10,
       myDefense: 10,
-      mySpeed: 20,
+      mySpeed: 5,
       myTech: [
         { name: '공격', type: 'att', value: 3 },
         { name: '버프', type: 'buff', value: 0.5 }
       ],
+      mySelectTech: { name: '', type: '', value: 0 },
 
       enemyMaxHp: 100,
       enemyHp: 100,
       enemyHpBar: 100,
-      enemyAttack: 10,
+      enemyAttack: 20,
       enemyDefense: 10,
       enemySpeed: 10,
       enemyTech: [
@@ -67,14 +84,43 @@ export default {
         { name: '버프', type: 'buff', value: 0.2 }
       ],
 
-      actMsg: [],
+      actMyMsg: [],
+      actEnemyMsg: [],
       myDamage: 0,
-      enemyDamage: 0
+      enemyDamage: 0,
+
+      endMsg: ''
     }
   },
 
-  mounted() {
-    this.init()
+  // mounted() {
+  //   this.init()
+  // },
+
+  watch: {
+    nowPage() {
+      if (this.nowPage == 3) {
+        this.begin += 1
+        const battleDiv = document.querySelector('#battleDiv')
+        const battle = document.querySelector('#battle')
+        battle.remove()
+
+        const newBattle = document.createElement('div')
+        newBattle.id = 'battle'
+        battleDiv.appendChild(newBattle)
+
+        // 초기화
+        this.phase = 'start'
+        this.myMaxHp = 100
+        this.myHp = 100
+        this.myHpBar = 100
+        this.enemyMaxHp = 100
+        this.enemyHp = 100
+        this.enemyHpBar = 100
+
+        this.init()
+      }
+    }
   },
 
   methods: {
@@ -97,8 +143,9 @@ export default {
       //this._setupOctree();
       this._setupCamera()
       this._setupLight()
-      this._setupBack()
-      this._setupModel()
+      // this._setupBack()
+      this._setupBackground()
+      // this._setupModel()
       // this._setupEnemy()
       this._setupControls()
 
@@ -111,8 +158,9 @@ export default {
     _setupControls() {
       this._controls = new OrbitControls(this._camera, this._divContainer)
       this._controls.target.set(100, 0, -40)
-      this._controls.enablePan = false
-      this._controls.enableDamping = true
+      this._controls.enabled = false
+      // this._controls.enablePan = false
+      // this._controls.enableDamping = true
     },
 
     _processAnimation() {
@@ -151,113 +199,61 @@ export default {
       }
     },
 
-    async _setupModel() {
-      const loader = new GLTFLoader()
+    _setupModel() {
+      const gltfLoader = new GLTFLoader()
 
-      loader.load('/models/character.glb', (gltf) => {
-        gltf.scene.scale.set(10, 10, 10)
-        const model = gltf.scene
-        this._scene.add(model)
+      const items = [
+        { url: '/models/character.glb' },
+        { url: '/models/enemy.glb' }
+      ]
 
-        model.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
+      items.forEach((item, index) => {
+        gltfLoader.load(item.url, (gltf) => {
+          if (index == 0) {
+            gltf.scene.scale.set(10, 10, 10)
+          } else if (index == 1) {
+            gltf.scene.scale.set(50, 50, 50)
+          }
+
+          const obj3d = gltf.scene
+          this._scene.add(obj3d)
+
+          obj3d.traverse((child) => {
             child.castShadow = true
+            child.receiveShadow = true
+          })
+
+          const animationClips = gltf.animations // THREE.AnimationClip[]
+          const mixer = new THREE.AnimationMixer(obj3d)
+          const animationsMap = {}
+          animationClips.forEach((clip) => {
+            const name = clip.name
+            // console.log(name)
+            animationsMap[name] = mixer.clipAction(clip) // THREE.AnimationAction
+          })
+
+          if (index == 0) {
+            // obj3d.position.set(-100, 0, 100)
+            obj3d.position.set(-120, 0, 100)
+            obj3d.lookAt(170, 0, -30)
+
+            this._myModel = obj3d
+            this._myMixer = mixer
+            // this._myAnimationMap = animationsMap
+            // this._myCurrentAnimationAction = this._animationMap['Idle']
+            // this._myCurrentAnimationAction.play()
+          } else if (index == 1) {
+            // obj3d.position.set(170, 20, 90)
+            obj3d.position.set(170, 20, 120)
+            obj3d.lookAt(-100, -10, 100)
+
+            this._enemyModel = obj3d
+            this._enemyMixer = mixer
+            // this._enemyAnimationMap = animationsMap
+            // this._enemyCurrentAnimationAction = this._animationMap['Idle']
+            // this._enemyCurrentAnimationAction.play()
           }
         })
-
-        const animationClips = gltf.animations // THREE.AnimationClip[]
-        const mixer = new THREE.AnimationMixer(model)
-        const animationsMap = {}
-        animationClips.forEach((clip) => {
-          const name = clip.name
-          // console.log(name)
-          animationsMap[name] = mixer.clipAction(clip) // THREE.AnimationAction
-        })
-
-        this._mixer = mixer
-        // this._animationMap = animationsMap
-        // this._currentAnimationAction = this._animationMap['Idle']
-        // this._currentAnimationAction.play()
-
-        model.position.set(-100, 0, 100)
-
-        const axisHelper = new THREE.AxesHelper(1000)
-        this._scene.add(axisHelper)
-
-        const boxHelper = new THREE.BoxHelper(model)
-        this._scene.add(boxHelper)
-        this._boxHelper = boxHelper
-        this._model = model
-      })
-
-      loader.load('/models/enemy.glb', (gltf) => {
-        gltf.scene.scale.set(50, 0, 50)
-        const enemyModel = gltf.scene
-        this._scene.add(enemyModel)
-
-        enemyModel.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true
-          }
-        })
-
-        const enemyAnimationClips = gltf.animations // THREE.AnimationClip[]
-        const enemyMixer = new THREE.AnimationMixer(enemyModel)
-        const enemyAnimationsMap = {}
-        enemyAnimationClips.forEach((clip) => {
-          const name = clip.name
-          // console.log(name)
-          enemyAnimationsMap[name] = enemyMixer.clipAction(clip) // THREE.AnimationAction
-        })
-
-        this._enemyMixer = enemyMixer
-        // this._animationMap = animationsMap
-        // this._currentAnimationAction = this._animationMap['Idle']
-        // this._currentAnimationAction.play()
-
-        enemyModel.position.set(100, 0, -100)
-
-        // const boxHelper = new THREE.BoxHelper(model)
-        // this._scene.add(boxHelper)
-        // this._enemyBoxHelper = boxHelper
-        // this._enemyModel = model
-      })
-    },
-
-    _setupEnemy() {
-      const enemyLoader = new GLTFLoader()
-
-      enemyLoader.load('/models/enemy.glb', (gltf) => {
-        gltf.scene.scale.set(50, 0, 50)
-        const enemyModel = gltf.scene
-        this._scene.add(enemyModel)
-
-        enemyModel.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true
-          }
-        })
-
-        const enemyAnimationClips = gltf.animations // THREE.AnimationClip[]
-        const enemyMixer = new THREE.AnimationMixer(enemyModel)
-        const enemyAnimationsMap = {}
-        enemyAnimationClips.forEach((clip) => {
-          const name = clip.name
-          // console.log(name)
-          enemyAnimationsMap[name] = enemyMixer.clipAction(clip) // THREE.AnimationAction
-        })
-
-        this._enemyMixer = enemyMixer
-        // this._animationMap = animationsMap
-        // this._currentAnimationAction = this._animationMap['Idle']
-        // this._currentAnimationAction.play()
-
-        enemyModel.position.set(100, 0, -100)
-
-        // const boxHelper = new THREE.BoxHelper(model)
-        // this._scene.add(boxHelper)
-        // this._enemyBoxHelper = boxHelper
-        // this._enemyModel = model
       })
     },
 
@@ -281,15 +277,33 @@ export default {
       this._scene.add(floorMesh)
     },
 
+    _setupBackground() {
+      const loader = new THREE.CubeTextureLoader()
+      loader.load(
+        [
+          '/cubemap/Lycksele/posx.jpg',
+          '/cubemap/Lycksele/negx.jpg',
+          '/cubemap/Lycksele/posy.jpg',
+          '/cubemap/Lycksele/negy.jpg',
+          '/cubemap/Lycksele/posz.jpg',
+          '/cubemap/Lycksele/negz.jpg'
+        ],
+        (cubeTexture) => {
+          this._scene.background = cubeTexture
+          this._setupModel()
+        }
+      )
+    },
+
     _setupCamera() {
       const camera = new THREE.PerspectiveCamera(
         60,
         window.innerWidth / window.innerHeight,
-        1,
+        2,
         5000
       )
-
-      camera.position.set(-150, 10, 150)
+      // camera.position.set(100, 0, -40)
+      camera.position.set(-120, 15, 130)
       this._camera = camera
     },
 
@@ -351,17 +365,25 @@ export default {
       this._controls.update()
 
       // this._fps.update()
-      if (this._mixer) {
-        this._mixer.update(time)
+      if (this._myMixer) {
+        this._myMixer.update(time)
+
+        if (this._myModel) {
+          if (this._myModel.position.x <= -100) {
+            this._myModel.position.x += 0.2
+          }
+        }
       }
 
       if (this._enemyMixer) {
         this._enemyMixer.update(time)
-      }
 
-      // if (this._enemyMixer) {
-      //   this._enemyMixer.update(time)
-      // }
+        if (this._enemyModel) {
+          if (this._enemyModel.position.z >= 70) {
+            this._enemyModel.position.z -= 0.4
+          }
+        }
+      }
     },
 
     render(time) {
@@ -386,8 +408,8 @@ export default {
       this._renderer.setSize(window.innerWidth, window.innerHeight)
     },
 
-    changeCanvas() {
-      this.$emit('changeCanvas')
+    changeBattle() {
+      this.$emit('changeBattle')
     },
 
     changeTurn() {
@@ -425,10 +447,83 @@ export default {
     },
 
     doMySelect(item) {
-      if (item.type == 'att') {
-        this.myDamage = this.myAttack * item.value - this.enemyDefense
-        this.actMsg = ['att', `${this.myDamage}의 피해를 입혔다!!!`]
+      this.mySelectTech.type = item.type
+      this.mySelectTech.name = item.name
+      this.mySelectTech.value = item.value
 
+      this.actMyMsg = [
+        this.mySelectTech.type,
+        this.mySelectTech.name + '를 사용했다!!!'
+      ]
+
+      // 선공
+      if (this.first == 'me') {
+        this.phase = 'showMySelect'
+
+        setTimeout(() => {
+          this.phase = 'myAct'
+          this.getMySelect()
+        }, 500)
+      }
+      // 후공
+      else {
+        setTimeout(() => {
+          this.doEnemyAct()
+          this.phase = 'enemyAct'
+        }, 500)
+      }
+    },
+
+    getMySelect() {
+      if (this.mySelectTech.type == 'att') {
+        // this.myDamage =
+        //   this.myAttack * this.mySelectTech.value - this.enemyDefense
+        // this.actMyMsg[1] = `${this.myDamage}의 피해를 입혔다!!!`
+
+        // 선공
+        if (this.first == 'me') {
+          setTimeout(() => {
+            this.phase = 'myAct'
+            this.getMyResult()
+
+            if (this.enemyHp <= 0) {
+              setTimeout(() => {
+                this.phase = 'win'
+                this.endMsg = '이김!!!!!!!!!!!!1'
+              }, 2000)
+            } else {
+              setTimeout(() => {
+                this.doEnemyAct()
+                this.phase = 'enemyAct'
+              }, 2000)
+            }
+          }, 300)
+        }
+        // 후공
+        else {
+          setTimeout(() => {
+            this.phase = 'myAct'
+            this.getMyResult()
+
+            if (this.enemyHp <= 0) {
+              setTimeout(() => {
+                this.phase = 'win'
+                this.endMsg = '이김!!!!!!!!!!!!1'
+              }, 2000)
+            } else {
+              setTimeout(() => {
+                this.phase = 'ready'
+              }, 2000)
+            }
+          }, 300)
+        }
+      } else if (this.mySelectTech.type == 'buff') {
+        // this.myAttack += this.myAttack * this.mySelectTech.value
+        // this.actMyMsg[1] = `${
+        //   this.myAttack * this.mySelectTech.value
+        // }만큼 공격력 상승!!!`
+
+        // 선공
         if (this.first == 'me') {
           setTimeout(() => {
             this.phase = 'myAct'
@@ -440,32 +535,39 @@ export default {
             }, 2000)
           }, 300)
         }
-      } else if (item.type == 'buff') {
-        this.myAttack += this.myAttack * item.value
-        this.actMsg = [
-          'buff',
-          `${this.myAttack * item.value}만큼 공격력 상승!!!`
-        ]
-
-        if (this.first == 'me') {
+        // 후공
+        else {
           setTimeout(() => {
             this.phase = 'myAct'
             this.getMyResult()
 
-            setTimeout(() => {
-              this.doEnemyAct()
-              this.phase = 'enemyAct'
-            }, 2000)
+            if (this.enemyHp <= 0) {
+              setTimeout(() => {
+                this.phase = 'win'
+                this.endMsg = '이김!!!!!!!!!!1'
+              }, 2000)
+            } else {
+              setTimeout(() => {
+                this.phase = 'ready'
+              }, 2000)
+            }
           }, 300)
         }
       }
     },
 
     getMyResult() {
-      if (this.actMsg[0] === 'att') {
+      if (this.actMyMsg[0] === 'att') {
+        this.myDamage =
+          this.myAttack * this.mySelectTech.value - this.enemyDefense
         this.enemyHp -= this.myDamage
         this.enemyHpBar = Math.round((this.enemyHp / this.enemyMaxHp) * 100)
-        console.log(this.enemyHpBar)
+        this.actMyMsg[1] = `${this.myDamage}의 피해를 입혔다!!!`
+      } else if (this.actMyMsg[0] === 'buff') {
+        this.myAttack += this.myAttack * this.mySelectTech.value
+        this.actMyMsg[1] = `${
+          this.myAttack * this.mySelectTech.value
+        }만큼 공격력 상승!!!`
       }
     },
 
@@ -473,7 +575,7 @@ export default {
       const roll = Math.random(0, 1)
 
       if (roll >= 0.3) {
-        this.actMsg = [
+        this.actEnemyMsg = [
           'enemyAtt',
           `적은 ${this.enemyTech[0].name}을 사용했다!!!`
         ]
@@ -482,7 +584,7 @@ export default {
           this.phase = 'enemyResult'
         }, 800)
       } else {
-        this.actMsg = [
+        this.actEnemyMsg = [
           'enemyBuff',
           `적은 ${this.enemyTech[1].name}을 사용했다!!!`
         ]
@@ -495,29 +597,65 @@ export default {
     },
 
     getEnemyResult() {
-      if (this.actMsg[0] == 'enemyAtt') {
+      if (this.actEnemyMsg[0] == 'enemyAtt') {
         this.enemyDamage =
           this.enemyAttack * this.enemyTech[0].value - this.myDefense
-        this.actMsg[1] = `${this.enemyDamage}의 피해를 입었다!!!`
+        this.actEnemyMsg[1] = `${this.enemyDamage}의 피해를 입었다!!!`
 
         this.myHp -= this.enemyDamage
         this.myHpBar = Math.round((this.myHp / this.myMaxHp) * 100)
 
+        // 선공
+        if (this.first == 'me') {
+          if (this.myHp <= 0) {
+            setTimeout(() => {
+              this.phase = 'lose'
+              this.endMsg = '짐!!!!!!!!!!!11'
+            }, 2000)
+          } else {
+            setTimeout(() => {
+              this.phase = 'ready'
+            }, 2000)
+          }
+        }
+        // 후공
+        else {
+          if (this.myHp <= 0) {
+            setTimeout(() => {
+              this.phase = 'lose'
+              this.endMsg = '짐!!!!!!!!!!!11'
+            }, 2000)
+          } else {
+            setTimeout(() => {
+              this.phase = 'showMySelect'
+
+              setTimeout(() => {
+                this.getMySelect()
+              }, 500)
+            }, 500)
+          }
+        }
+      } else if (this.actEnemyMsg[0] == 'enemyBuff') {
+        this.enemyAttack += this.enemyAttack * this.enemyTech[1].value
+        this.actEnemyMsg[1] = `${
+          this.enemyAttack * this.enemyTech[1].value
+        }만큼 적의 공격력 상승!!!`
+
+        // 선공
         if (this.first == 'me') {
           setTimeout(() => {
             this.phase = 'ready'
           }, 2000)
         }
-      } else if (this.actMsg[0] == 'enemyBuff') {
-        this.enemyAttack += this.enemyAttack * this.enemyTech[1].value
-        this.actMsg[1] = `${
-          this.myAttack * this.enemyTech[1].value
-        }만큼 적의 공격력 상승!!!`
-
-        if (this.first == 'me') {
+        // 후공
+        else {
           setTimeout(() => {
-            this.phase = 'ready'
-          }, 2000)
+            this.phase = 'showMySelect'
+
+            setTimeout(() => {
+              this.getMySelect()
+            }, 500)
+          }, 500)
         }
       }
     }
