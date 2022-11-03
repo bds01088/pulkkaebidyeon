@@ -1,44 +1,37 @@
 <template>
-  <div class="background">
-    <div class="loginpage">
-      <!-- <img
+  <div class="startpage">
+          <img
         class="logo__img"
-        src="https://yt3.ggpht.com/ytc/AMLnZu8SkLy7ITHxlvAZAMnH3KfJj9taeckkzgOIJmfH=s900-c-k-c0x00ffffff-no-rj"
+        src="../../assets/logo.png"
         alt="logo"
-      /> -->
-      <div class="loginpage__right">
-        <input v-model="username" placeholder="아이디를 입력하세요" />
+      />
+    <div class="loginpage">
+      <div class="login__form">
+         <input v-model="username" placeholder="아이디를 입력하세요" />
         <input
           @keyup.enter="login()"
           v-model="password"
           type="password"
           placeholder="비밀번호를 입력하세요"
         />
-        <div class="loginpage__btn">
+        <a class="findpassword__a" href="#" @click="findpassword()">비밀번호를 잊으셨나요?</a>
+      </div>
+      <div class="login__button">
           <button class="login__btn" @click="login()">로그인</button>
-        </div>
-
-        <div class="loginpage__btn">
-          <img
+                    <img
             class="kakaologin__btn"
             @click="kakaoLogin()"
             src="@/assets/kakao_login_medium_wide.png"
             alt=""
           />
         </div>
-        <div class="loginpage__btn">
-          <div class="signfind">
-            <button class="findpassword__btn" @click="findpassword()">
-              비밀번호 찾기
-            </button>
-            <button class="findpassword__btn" @click="signUp()">
-              회원가입
-            </button>
-          </div>
-        </div>
+        
       </div>
+                <div class="other__btn">
+            <img class="howto__btn" @click="howtoGame()" src="../../assets/game.png" alt="" />
+            <img class="signup__btn" @click="signUp()" src="../../assets/join.png" alt="" />
+          </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -67,6 +60,9 @@ export default {
     },
     signUp() {
       this.$router.push({ name: 'signup' })
+    },
+    howtoGame(){
+
     },
     async login() {
       console.log(this.username)
@@ -112,3 +108,90 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+.startpage {
+  background-image: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ),url("../../assets/startimg.png");
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  
+}
+input {
+  display: block;
+  width: 20vw;
+  height: 7vh;
+  margin: 8px 0 8px 0;
+  padding: 10px 15px 10px 25px;
+  font-size: 16px;
+  border: #ececec solid 2px;
+  border-radius: 20px;
+}
+
+input::placeholder {
+  color: #467302;
+}
+
+input:focus {
+  outline: none;
+  border: #467302 solid 2px;
+}
+.loginpage{
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  height: 10vh;
+  justify-content: center;
+}
+
+.login__form{
+  display: flex;
+  flex-direction: column;
+}
+.logo__img{
+  display: block;
+  margin: auto;
+  padding-top: 10vh;
+  width: 70vw;
+}
+
+.login__button{
+margin: 1vw;
+  display: flex;
+  flex-direction : column
+}
+
+.other__btn{
+display: flex;
+flex-direction: row;
+justify-content: center;
+margin-top : 10vmin
+}
+
+.howto__btn, .signup__btn{
+  width: 15%;
+  margin-top: 8%;
+  margin-left: 2%;
+  margin-bottom: 8%;
+}
+
+.howto__btn:hover, .signup__btn:hover {
+  cursor: pointer;
+}
+
+.findpassword__a{
+  color: white;
+  text-decoration: none;
+  font-size: 1.5vh;
+}
+
+.login__btn{
+  height: 5vmin;
+  border-radius: 50px;
+  border: none;
+  width: 40%;
+  margin-bottom: 1vmin;
+}
+
+</style>
