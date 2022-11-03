@@ -6,7 +6,7 @@
       @changeCanvas="changeCanvas"
       :nowPage="this.nowPage"
     />
-    <HouseCanvas2
+    <HouseCanvas
       v-show="this.nowPage === 1"
       @changeCanvas="changeCanvas"
       :nowPage="this.nowPage"
@@ -16,7 +16,7 @@
 
 <script>
 import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
-import HouseCanvas2 from '../../components/canvas/HouseCanvas2.vue'
+import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
 import NavBar from '../../components/main/NavBar.vue'
 
 export default {
@@ -27,7 +27,7 @@ export default {
   },
   components: {
     WorldCanvas: WorldCanvas,
-    HouseCanvas2: HouseCanvas2,
+    HouseCanvas: HouseCanvas,
     NavBar: NavBar
   },
   methods: {
