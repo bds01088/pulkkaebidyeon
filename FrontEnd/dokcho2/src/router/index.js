@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 // import { BASE_URL } from '@/constant/BASE_URL'
 // import axios from 'axios'
 import StartView from '../views/start/StartView'
+import BattleCanvas from '../components/battle/BattleCanvas'
 
 // webpackPrefetch:true 가 추가되어있으면 제일 처음에 데이터 받아옴
 // 빈도가 많거나 사이즈가 크면 추가
@@ -58,6 +59,12 @@ import StartView from '../views/start/StartView'
 // }
 
 const routes = [
+  // 테스트
+  {
+    path: '/battle',
+    name: 'battle',
+    component: BattleCanvas
+  },
   // 시작 (로그인 페이지)
   {
     path: '/',
@@ -65,14 +72,14 @@ const routes = [
     component: StartView
   },
   // 비밀번호 찾기
-  // {
-  //   path: '/findpassword',
-  //   name: 'findpassword',
-  //   component: () =>
-  //     import(
-  //       /* webpackChunkName: "findpassword" */ '../views/start/FindPasswordView.vue'
-  //     )
-  // },
+  {
+    path: '/findpassword',
+    name: 'findpassword',
+    component: () =>
+      import(
+        /* webpackChunkName: "findpassword" */ '../views/start/FindPasswordView.vue'
+      )
+  },
   // 회원가입
   {
     path: '/signup',
@@ -115,7 +122,7 @@ const routes = [
     name: 'main',
     component: () =>
       import(
-        /* webpackChunkName: "main", webpackPrefetch:true */ '../views/CanvasView.vue'
+        /* webpackChunkName: "main", webpackPrefetch:true */ '../views/canvas/CanvasView.vue'
       )
   }, // 404 에러
   // {

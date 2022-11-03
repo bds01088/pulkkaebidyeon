@@ -22,13 +22,13 @@
       </div>
     </div>
     <div class="introCard__bottom">
-      <div
+      <!-- <div
         class="checkBtn"
         :class="this.isChecked ? 'none' : ''"
         @click="onClickBtn()"
       >
         눌러서 확인하기
-      </div>
+      </div> -->
       <div
         class="checkBtn"
         :class="this.isChecked ? '' : 'none'"
