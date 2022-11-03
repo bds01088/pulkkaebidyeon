@@ -38,7 +38,7 @@ export default {
     }
   },
 
-  props: { myHpBar: String, enemyHpBar: String },
+  props: { myHpBar: String, enemyHpBar: String, begin: Number },
 
   created() {
     setInterval(() => {
@@ -58,6 +58,14 @@ export default {
       }
       var myHpBarPer = this.getmyHpBar.toString() + '%'
       document.querySelector('#myHp').style.width = myHpBarPer
+    },
+
+    begin() {
+      this.getEnemyHpBar = 100
+      this.getmyHpBar = 100
+
+      document.querySelector('#enemyHp').style.width = this.getEnemyHpBar
+      document.querySelector('#myHp').style.width = this.getmyHpBar
     }
   },
 
