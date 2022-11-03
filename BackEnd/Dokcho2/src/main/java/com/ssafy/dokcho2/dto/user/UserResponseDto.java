@@ -34,7 +34,7 @@ public class UserResponseDto {
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
-                //.representMonster(entity.getRepresentMonster().getMonsterId())
+                .representMonster(entity.getRepresentMonster().getMonsterId())
                 .position(UserPositionDto.from(entity))
                 .role(entity.getRole())
                 .createDate(createDate)
