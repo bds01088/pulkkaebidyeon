@@ -11,6 +11,7 @@ import com.ssafy.dokcho2.dto.exception.item.ItemNotUsable;
 import com.ssafy.dokcho2.dto.exception.item.UserItemNotExistException;
 import com.ssafy.dokcho2.dto.exception.user.UserNotFoundException;
 import com.ssafy.dokcho2.dto.item.ItemDto;
+import com.ssafy.dokcho2.dto.item.RawItemDto;
 import com.ssafy.dokcho2.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -120,5 +121,12 @@ public class ItemServiceImpl implements ItemService{
         }
         userItemRepository.save(userItem);
         return ItemDto.from(userItem);
+    }
+
+    @Override
+    public List<RawItemDto> getWholeItemList() {
+        List<RawItemDto> rawItemDtoList = itemRepository.findAll().stream().map(s -> RawItemDto.from(s)).collect(Collectors.toList());
+
+        return rawItemDtoList;
     }
 }
