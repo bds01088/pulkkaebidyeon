@@ -1,6 +1,8 @@
 package com.ssafy.dokcho2.controller;
 
+import com.ssafy.dokcho2.domain.item.Item;
 import com.ssafy.dokcho2.dto.item.ItemDto;
+import com.ssafy.dokcho2.dto.item.RawItemDto;
 import com.ssafy.dokcho2.service.item.ItemService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping()
-    @ApiOperation(value = "아이템 리스트 불러오기")
+    @ApiOperation(value = "보유한 아이템 리스트 불러오기")
     public ResponseEntity<List<ItemDto>> getInventory(){
         List<ItemDto> itemDtoList = itemService.getItemList();
 
@@ -44,6 +46,14 @@ public class ItemController {
         List<ItemDto> itemDtoList = itemService.useItem(itemId);
 
         return new ResponseEntity<>(itemDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("/itemList")
+    @ApiOperation(value = "전체 아이템 리스트 반환")
+    public ResponseEntity<List<RawItemDto>> wholeItem() {
+        List<RawItemDto> rawItemDtoList = itemService.getWholeItemList();
+
+        return new ResponseEntity<>(rawItemDtoList, HttpStatus.OK);
     }
 
 }

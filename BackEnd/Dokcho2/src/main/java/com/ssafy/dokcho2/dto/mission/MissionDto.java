@@ -30,8 +30,10 @@ public class MissionDto {
             line = entity.getLine2();
         }else if (status == MissionStatus.QUIZ_PASSED){
             line = entity.getLine3();
-        }else {
+        }else if(status == MissionStatus.BATTLE_WIN){
             line = entity.getLine4();
+        } else {
+            line = entity.getLine0();
         }
 
         return MissionDto.builder()

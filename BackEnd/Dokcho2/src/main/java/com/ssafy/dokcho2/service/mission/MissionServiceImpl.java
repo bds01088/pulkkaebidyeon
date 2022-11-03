@@ -82,6 +82,8 @@ public class MissionServiceImpl implements MissionService{
         }else if(nowStatus == MissionStatus.STARTED){
             newStatus = MissionStatus.QUIZ_PASSED;
         }else if(nowStatus == MissionStatus.QUIZ_PASSED){
+            newStatus = MissionStatus.BATTLE_WIN;
+        }else if(nowStatus == MissionStatus.BATTLE_WIN){
             newStatus = MissionStatus.FINISHED;
         }else{
             newStatus = nowStatus;
