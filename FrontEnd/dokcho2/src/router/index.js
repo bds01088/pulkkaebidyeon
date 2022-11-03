@@ -72,14 +72,14 @@ const routes = [
     component: StartView
   },
   // 비밀번호 찾기
-  // {
-  //   path: '/findpassword',
-  //   name: 'findpassword',
-  //   component: () =>
-  //     import(
-  //       /* webpackChunkName: "findpassword" */ '../views/start/FindPasswordView.vue'
-  //     )
-  // },
+  {
+    path: '/findpassword',
+    name: 'findpassword',
+    component: () =>
+      import(
+        /* webpackChunkName: "findpassword" */ '../views/start/FindPasswordView.vue'
+      )
+  },
   // 회원가입
   {
     path: '/signup',
