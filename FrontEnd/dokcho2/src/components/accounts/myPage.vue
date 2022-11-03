@@ -2,12 +2,15 @@
   <div class="myPage">
     <h1>{{ this.userInfo.nickname }}님!</h1>
     <br />
+    <p>대표 독초몬 :</p>
     <p>이메일 : {{ this.userInfo.email }}</p>
     <p>가입일 : {{ this.userInfo.createDate }}</p>
     <br />
-    <button @click="deleteUser()">회원 탈퇴</button>
-    <br />
-    <button @click="openPassword()">비밀번호변경</button>
+    <div>
+      <button @click="openPassword()">비밀번호변경</button>
+      <button @click="deleteUser()">회원 탈퇴</button>
+    </div>
+
     <changePassword v-if="password"></changePassword>
     <br />
     <button @click="this.$parent.closeModal">닫기</button>
@@ -45,7 +48,8 @@ export default {
       isPasswordChecked: false,
       today: '',
       cdate: '',
-      password: false
+      password: false,
+      monsterDetail: {}
     }
   },
   methods: {
@@ -163,14 +167,26 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    fetchrepresentMonster() {
+      const id = this.userInfo.representMonster
+      axios({
+        url: BASE_URL + '/api/v1/monster/' + id,
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          this.monsterDetail = res.data
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
-  // watch: {
-  //   showChangeDokchoMenu() {
-  //     this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
-  //   }
-  // },
   created() {
+    this.fetchrepresentMonster()
     this.today = new Date()
     this.cdate = new Date(this.userInfo.createDate)
   }
@@ -185,10 +201,10 @@ export default {
   justify-content: center;
   position: fixed;
   z-index: 30;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  height: 70%;
   background: rgba(255, 255, 255, 0.9);
 }
 </style>
