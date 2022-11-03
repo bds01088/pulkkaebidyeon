@@ -17,6 +17,8 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
+// import SplineLoader from '@splinetool/loader'
 // import Stats from 'three/examples/jsm/libs/stats.module.js'
 
 import { Octree } from 'three/examples/jsm/math/Octree.js'
@@ -30,6 +32,9 @@ import myPage from '../accounts/myPage.vue'
 
 // import monsterDetail from '../monster/monsterDetail.vue'
 
+let scene = null
+let camera = null
+let renderer = null
 export default {
   name: 'HouseView',
   components: {
@@ -100,7 +105,7 @@ export default {
       const divContainer = document.querySelector('#house')
       this._divContainer = divContainer
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true })
+      renderer = new THREE.WebGLRenderer({ antialias: true })
       renderer.setSize(window.innerWidth, window.innerHeight)
       renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
       divContainer.appendChild(renderer.domElement)
@@ -110,7 +115,7 @@ export default {
 
       this._renderer = renderer
 
-      const scene = new THREE.Scene()
+      scene = new THREE.Scene()
       this._scene = scene
 
       //this._setupOctree();
@@ -286,10 +291,23 @@ export default {
 
       // this._worldOctree.fromGraphNode(plane);
       const loader = new GLTFLoader()
+      // const splineLoader = new SplineLoader()
+
+      // splineLoader.load(
+      //   'https://prod.spline.design/nnc7BKAPttVOW0ev/scene.splinecode',
+      //   (molang) => {
+      //     this._scene.add(molang)
+
+      //     this.meshes.push(molang)
+
+      //     this._worldOctree.fromGraphNode(molang)
+      //   }
+      // )
 
       loader.load('/models/character.glb', (gltf) => {
         gltf.scene.scale.set(10, 10, 10)
         const model = gltf.scene
+        model.position.set(50, 0, 50)
         this._scene.add(model)
 
         model.traverse((child) => {
@@ -384,10 +402,9 @@ export default {
     async _setupBack() {
       const loader = new GLTFLoader()
 
-      await loader.load('/models/space.glb', (gltf) => {
-        // gltf.scene.scale.set(0.1, 0.1, 0.1)
-        const model = gltf.scene
-
+      await loader.load('/models/toonisland.glb', (object) => {
+        object.scene.scale.set(100, 100, 100)
+        const model = object.scene
         this._scene.add(model)
 
         model.traverse((child) => {
@@ -425,7 +442,7 @@ export default {
     },
 
     _setupCamera() {
-      const camera = new THREE.PerspectiveCamera(
+      camera = new THREE.PerspectiveCamera(
         60,
         window.innerWidth / window.innerHeight,
         1,
