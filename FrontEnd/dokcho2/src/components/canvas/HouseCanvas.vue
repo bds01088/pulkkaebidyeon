@@ -321,6 +321,7 @@ export default {
       await loader.load('/models/toonisland.glb', (gltf) => {
         gltf.scene.scale.set(50, 50, 50)
         const model = gltf.scene
+        model.position.set(0, 0, 0)
 
         model.traverse((child) => {
           if (child instanceof THREE.Mesh) {
@@ -342,7 +343,6 @@ export default {
       loader.load('/models/character.glb', (gltf) => {
         gltf.scene.scale.set(10, 10, 10)
         const model = gltf.scene
-        // model.position.set(10, 10, 10)
 
         model.traverse((child) => {
           if (child instanceof THREE.Mesh) {
