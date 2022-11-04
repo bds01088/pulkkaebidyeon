@@ -1,10 +1,12 @@
 <template>
   <div class="wholeCanvas">
     <NavBar />
+    <TalkComponent v-if="isTalk" />
     <WorldCanvas
       v-show="this.nowPage === 0"
       @changeCanvas="changeCanvas"
       @changeBattle="changeBattle"
+      @talkStart="talkStart"
       :nowPage="this.nowPage"
     />
     <HouseCanvas
@@ -24,20 +26,23 @@
 import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
 import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
 import NavBar from '../../components/main/NavBar.vue'
+import TalkComponent from '../../components/script/TalkComponent.vue'
 
 import BattleCanvas from '../../components/battle/BattleCanvas.vue'
 
 export default {
   data() {
     return {
-      nowPage: 0
+      nowPage: 0,
+      isTalk: false
     }
   },
   components: {
     WorldCanvas: WorldCanvas,
     HouseCanvas: HouseCanvas,
     NavBar: NavBar,
-    BattleCanvas: BattleCanvas
+    BattleCanvas: BattleCanvas,
+    TalkComponent: TalkComponent
   },
   methods: {
     changeCanvas() {
@@ -46,6 +51,7 @@ export default {
       } else {
         this.nowPage = 0
       }
+      console.log(this.nowPage)
     },
 
     changeBattle() {
@@ -54,7 +60,14 @@ export default {
       } else {
         this.nowPage = 0
       }
+    },
+
+    talkStart() {
+      this.isTalk = true
     }
+  },
+  mounted() {
+    console.log(this.nowPage)
   }
 }
 </script>

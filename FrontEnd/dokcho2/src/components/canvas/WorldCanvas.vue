@@ -1,5 +1,5 @@
 <template>
-  <canvas id="canvas"> </canvas>
+  <canvas id="WorldCanvas"> </canvas>
 </template>
 
 <script>
@@ -7,8 +7,9 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
 import { House } from '../modules/House'
-import gsap from 'gsap'
+import { Character } from '../modules/Character'
 import { KeyController } from '../modules/CharacterControl'
+import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
 
 export default {
@@ -19,7 +20,6 @@ export default {
   setup(props, { emit }) {
     setTimeout(() => {
       // Texture
-
       const textureLoader = new THREE.TextureLoader()
       const floorTexture = textureLoader.load('/images/grid.png')
       floorTexture.wrapS = THREE.RepeatWrapping
@@ -28,7 +28,7 @@ export default {
       floorTexture.repeat.y = 1
 
       // Renderer
-      let canvas = document.querySelector('#canvas')
+      let canvas = document.querySelector('#WorldCanvas')
       console.log(canvas)
       const renderer = new THREE.WebGLRenderer({
         canvas,
@@ -99,8 +99,8 @@ export default {
 
       const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
       const boxBody = new CANNON.Body({
-        mass: 1,
-        position: new CANNON.Vec3(0, 10, 0),
+        mass: 0,
+        position: new CANNON.Vec3(0, 0, 0),
         shape: boxShape
       })
       cannonWorld.addBody(boxBody)
@@ -164,7 +164,7 @@ export default {
         gltfLoader,
         modelSrc: '/models/bbb.glb'
       })
-      console.log(player)
+
       const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
       const boxMaterial = new THREE.MeshStandardMaterial({
         color: 'seagreen'
@@ -174,6 +174,19 @@ export default {
       boxMesh.name = 'box'
       scene.add(boxMesh)
       meshes.push(boxMesh)
+
+      const Characters = ['dangun']
+      Characters.forEach((element) => {
+        new Character({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/${element}.glb`,
+          position: { x: 1, y: 0, z: 1 },
+          name: element
+        })
+      })
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -230,7 +243,6 @@ export default {
               Math.abs(destinationPoint.z - player.modelMesh.position.z) < 0.02
             ) {
               player.moving = false
-              console.log('멈춤')
             }
 
             if (
@@ -297,6 +309,11 @@ export default {
           }
           if (item.object.name === 'box') {
             onClick()
+            isPressed = false
+          }
+          if (item.object.name === 'dangun') {
+            console.log('단군!')
+            emit('talkStart')
             isPressed = false
           }
           break
@@ -400,6 +417,7 @@ export default {
 
       function onClick() {
         alert('aa')
+        emit('changeCanvas')
       }
     }, 100)
   }
