@@ -1,5 +1,6 @@
 <template>
   <canvas id="WorldCanvas"> </canvas>
+  <TalkComponent v-if="isTalk.talk" />
 </template>
 
 <script>
@@ -11,13 +12,19 @@ import { Character } from '../modules/Character'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
+import TalkComponent from '../script/TalkComponent.vue'
+import { ref } from 'vue'
 
 export default {
   name: 'WorldCanvas',
   props: {
     nowPage: Number
   },
+  components: {
+    TalkComponent: TalkComponent
+  },
   setup(props, { emit }) {
+    let isTalk = ref({ talk: false })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
@@ -312,8 +319,8 @@ export default {
             isPressed = false
           }
           if (item.object.name === 'dangun') {
-            console.log('단군!')
-            emit('talkStart')
+            console.log('단군!!')
+            isTalk.value.talk = true
             isPressed = false
           }
           break
@@ -420,6 +427,9 @@ export default {
         emit('changeCanvas')
       }
     }, 100)
+    return {
+      isTalk
+    }
   }
 }
 </script>
