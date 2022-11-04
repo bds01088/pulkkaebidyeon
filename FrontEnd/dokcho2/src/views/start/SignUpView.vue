@@ -3,7 +3,19 @@
     <div class="signuppage">
       <div class="signuppage__left">
         <div class="termsofservice">
-          <div class="termsofservice__text">이용약관</div>
+          <div class="termsofservice__text">
+            제 1 장 총 칙<br />제 1 조 (목적)<br />이 약관은 {독초도감}(이하
+            "사이트"라 합니다)에서 제공하는 인터넷서비스(이하 "서비스"라
+            합니다)의 이용 조건 및 절차에 관한 기본적인 사항을 규정함을 목적으로
+            합니다.<br />제 2조 (약관의 효력 및 변경)<br />① 이 약관은 서비스
+            화면이나 기타의 방법으로 이용고객에게 공지함으로써 효력을
+            발생합니다.<br />② 사이트는 이 약관의 내용을 변경할 수 있으며,
+            변경된 약관은 제1항과 같은 방법으로 공지 또는 통지함으로써 효력을
+            발생합니다.<br />제 3 조 (용어의 정의) 이 약관에서 사용하는 용어의
+            정의는 다음과 같습니다.<br />① 회원 : 사이트와 서비스 이용계약을
+            체결하거나 이용자 아이디(ID)를 부여받은 개인 또는 단체를
+            말합니다.<br />
+          </div>
         </div>
         <div class="agreement">
           <div class="checkbox__label">
@@ -17,77 +29,103 @@
           />
         </div>
         <div class="checkbox__text">
-          <span class="allowedtext" v-if="termsAgreed"
+          <!-- <span class="allowedtext" v-if="termsAgreed"
             >회원가입을 계속해서 진행해주세요😎</span
+          > -->
+          <span class="warningtext" v-if="!termsAgreed"
+            >약관 동의가 필요합니다.</span
           >
-          <span class="warningtext" v-else>약관에 동의해주세요🙏</span>
         </div>
       </div>
       <div class="signuppage__right">
         <div class="logo">
           <!-- <img class="logo__img" src="@/assets/dokcho_logo.png" alt="" /> -->
         </div>
+        <div class="oktext">
+          <span>아이디 : 영문자나 숫자의 조합으로 5~20자리</span>
+        </div>
+        <div class="username__input">
+          <div class="usr__ipt">
+            <input
+              @keyup="checkUsername()"
+              v-model="username"
+              placeholder="아이디"
+            />
+            <div class="oktext">
+              <span
+                class="allowedtext"
+                v-if="this.isUsernameChecked && !this.usernameDuplicate"
+                >이 아이디는 사용하셔도 좋아요 👌</span
+              >
+              <span
+                class="warningtext"
+                v-else-if="this.isUsernameChecked && this.usernameDuplicate"
+                >아이디가 중복인지 확인해주세요!</span
+              >
+              <span
+                class="warningtext"
+                v-else-if="!this.isUsernameChecked && !this.usernameDuplicate"
+                >아이디 생성 조건을 확인해주세요 🙏</span
+              >
+              <span
+                class="warningtext"
+                v-else-if="this.username !== undefined && this.username !== ''"
+                >아이디 생성 조건을 확인해주세요</span
+              >
+            </div>
+          </div>
 
-        <div>
-          <div class="oktext">
-            <span>영문자나 숫자의 조합으로 5~20자리</span>
+          <div class="btn">
+            <button
+              class="duplicate__button"
+              type="submit"
+              @click="isUsernameDuplicate()"
+            >
+              아이디중복확인
+            </button>
           </div>
-          <input
-            @keyup="checkUsername()"
-            v-model="username"
-            placeholder="아이디"
-          />
-          <div class="oktext">
-            <span
-              class="allowedtext"
-              v-if="this.isUsernameChecked && !this.usernameDuplicate"
-              >이 아이디는 사용하셔도 좋아요 👌</span
-            >
-            <span
-              class="warningtext"
-              v-else-if="this.isUsernameChecked && this.usernameDuplicate"
-              >아이디가 중복인지 확인해주세요 🙏</span
-            >
-            <span class="warningtext" v-else
-              >아이디 생성 조건을 확인해주세요 🙏</span
-            >
-          </div>
-          <button
-            class="duplicate__button"
-            type="submit"
-            @click="isUsernameDuplicate()"
-          >
-            아이디중복확인
-          </button>
         </div>
-        <div>
-          <input @keyup="checkEmail()" v-model="email" placeholder="이메일" />
-          <div class="oktext">
-            <span
-              class="allowedtext"
-              v-if="this.isEmailChecked && !this.emailDuplicate"
-              >이 이메일은 사용하셔도 좋아요 👌</span
-            >
-            <span
-              class="warningtext"
-              v-else-if="this.isEmailChecked && this.emailDuplicate"
-              >이메일이 중복인지 확인해주세요 🙏</span
-            >
-            <span class="warningtext" v-else
-              >이메일 입력 조건을 확인해주세요 🙏</span
-            >
+        <div class="email__input">
+          <div class="email__ipt">
+            <input @keyup="checkEmail()" v-model="email" placeholder="이메일" />
+            <div class="oktext">
+              <span
+                class="allowedtext"
+                v-if="this.isEmailChecked && !this.emailDuplicate"
+                >이 이메일은 사용하셔도 좋아요 👌</span
+              >
+              <span
+                class="warningtext"
+                v-else-if="this.isEmailChecked && this.emailDuplicate"
+                >이메일 중복확인을 해주세요!
+              </span>
+              <span
+                class="warningtext"
+                v-else-if="!this.isEmailChecked && !this.emailDuplicate"
+                >이메일 양식에 맞게 작성해주세요!</span
+              >
+              <span
+                class="warningtext"
+                v-else-if="this.email !== undefined && this.email !== ''"
+                >이메일 양식에 맞게 작성해주세요!</span
+              >
+            </div>
           </div>
-          <button
-            class="duplicate__button"
-            type="submit"
-            @click="isEmailDuplicate()"
-          >
-            이메일중복확인
-          </button>
+
+          <div class="btn">
+            <button
+              class="duplicate__button"
+              type="submit"
+              @click="isEmailDuplicate()"
+            >
+              이메일중복확인
+            </button>
+          </div>
         </div>
+        <br />
         <div>
           <div class="oktext">
-            <span>영문자+숫자+특수문자 조합으로 8~25자리</span>
+            <span>비밀번호 : 영문자+숫자+특수문자 조합으로 8~25자리</span>
           </div>
           <input
             @keyup="checkPassword()"
@@ -99,7 +137,13 @@
             <span class="allowedtext" v-if="this.isPasswordChecked"
               >이 비밀번호는 사용하셔도 좋아요 👌</span
             >
-            <span class="warningtext" v-else
+            <span
+              class="warningtext"
+              v-else-if="
+                !this.isPasswordChecked &&
+                this.password !== undefined &&
+                this.password !== ''
+              "
               >비밀번호 생성 조건을 확인해주세요 🙏</span
             >
           </div>
@@ -112,13 +156,18 @@
             placeholder="비밀번호 확인"
           />
           <div class="oktext">
-            <span class="warningtext" v-if="this.password !== this.password2"
+            <span
+              class="warningtext"
+              v-if="
+                this.password !== this.password2 &&
+                this.password2 !== undefined &&
+                this.password2 !== ''
+              "
               >비밀번호를 확인해주세요 🙏</span
             >
-            <span class="warningtext" v-else-if="this.password == null"
-              >비밀번호를 확인해주세요 🙏</span
-            >
-            <span class="allowedtext" v-else
+            <span
+              class="allowedtext"
+              v-else-if="this.password === this.password2"
               >비밀번호 확인이 완료되었습니다 👌</span
             >
           </div>
@@ -349,10 +398,10 @@ export default {
             region: this.region,
             username: this.username
           })
-          .then((res) => {
+          .then(() => {
             swal({
               title: '회원가입을 축하드립니다!',
-              text: `${res}`,
+              text: '   ',
               icon: 'success',
               buttons: false,
               timer: 1500
@@ -383,3 +432,306 @@ export default {
   // }
 }
 </script>
+
+<style scoped>
+button {
+  height: 4vh;
+  border-radius: 50px;
+  border: none;
+  width: 10vw;
+  margin: 10px;
+  transition: 0.3s;
+}
+.duplicate__button:hover {
+  background-color: #467302;
+  color: white;
+}
+.background {
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  /* background-image: url('@/assets/game_background.png'); */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.signuppage {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: white;
+}
+.signuppage__left {
+  margin-left: 20px;
+  margin-right: 30px;
+}
+.signuppage__right {
+  margin-right: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.logo {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.logo__img {
+  width: 15vw;
+}
+.signup {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.signup__btn {
+  background-color: #a7c957;
+  transition: 0.3s;
+  height: 5vh;
+}
+.signup__btn:hover {
+  background-color: #467302;
+  color: white;
+}
+.cancel__btn {
+  background-color: #bfbfbf;
+  transition: 0.3s;
+  height: 5vh;
+}
+.cancel__btn:hover {
+  background-color: #ff4444;
+  color: white;
+}
+
+.username__input,
+.email__input {
+  display: flex;
+  flex-direction: row;
+}
+
+.usr__ipt {
+  display: flex;
+  flex-direction: column;
+}
+
+.email__ipt {
+  display: flex;
+  flex-direction: column;
+}
+.btn {
+  display: flex;
+  align-items: center;
+}
+.duplicate__button {
+  /* display: table-cell; */
+  height: 5vh;
+  text-align: center;
+  vertical-align: middle;
+}
+.username__input input {
+  width: 20vw;
+}
+
+.email__input input {
+  width: 20vw;
+}
+
+input {
+  display: block;
+  width: 30vw;
+  height: 7vh;
+  margin: 8px 0 8px 0;
+  padding: 10px 15px 10px 25px;
+  font-size: 16px;
+  border: #ececec solid 2px;
+  border-radius: 20px;
+}
+.termsofservice {
+  width: 50vw;
+  height: 30vw;
+  margin: 20px;
+  overflow: auto;
+  background-image: url('@/assets/hanji.jpeg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 50px;
+}
+.termsofservice__text {
+  margin: 4vh;
+  height: 40vh;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.checkbox {
+  width: 2vw;
+  margin: 0;
+  margin-left: 0.5vw;
+  height: 3vh;
+}
+.checkbox__label {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  text-align: center;
+  align-items: center;
+}
+
+.agreement {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  text-align: center;
+  margin-right: 3vw;
+}
+.checkbox__text {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  text-align: center;
+  margin-top: 1vh;
+  margin-right: 3vw;
+}
+.allowedtext {
+  color: #29cd2e;
+}
+.warningtext {
+  color: #be0000;
+}
+
+@media screen and (max-width: 850px) {
+  .background {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .signuppage {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90vw;
+    height: 95%;
+    background-color: white;
+    border-radius: 40px;
+  }
+  .signuppage__left {
+    margin-left: 5vw;
+    margin-right: 5vw;
+    margin-top: 35vh;
+  }
+  .termsofservice {
+    width: 75vw;
+    height: 30vh;
+    margin: 5vw;
+    margin-top: 10vh;
+    margin-bottom: 0;
+    /* background-image: url('@/assets/hanji.jpeg'); */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 50px;
+  }
+  .termsofservice__text {
+    overflow: auto;
+    height: 35vh;
+    margin: 5vw;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  .checkbox {
+    width: 6vw;
+    margin: 0;
+    margin-left: 0.5vw;
+    height: 3vh;
+  }
+  .checkbox__label {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    text-align: center;
+    align-items: center;
+    margin-right: 2vw;
+  }
+
+  .agreement {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    text-align: center;
+    margin-top: 1vh;
+    margin-right: 5vw;
+  }
+  .checkbox__text {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    text-align: center;
+    margin-top: 1vh;
+    margin-right: 5vw;
+  }
+
+  .signuppage__right {
+    margin-left: 5vw;
+    margin-right: 5vw;
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .logo__img {
+    width: 60vw;
+  }
+  input {
+    width: 80vw;
+    height: 7vh;
+    font-size: 1.5vh;
+    background-size: 3vw 3vw;
+    padding-left: 4vw;
+  }
+  .oktext {
+    margin-left: 3vw;
+  }
+  button {
+    height: 5vh;
+    border-radius: 50px;
+    border: none;
+    width: 35vw;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+  }
+  .signup__btn {
+    background-color: #a7c957;
+    transition: 0.3s;
+    height: 6vh;
+    margin-left: 2vw;
+  }
+  .cancel__btn {
+    background-color: #bfbfbf;
+    transition: 0.3s;
+    height: 6vh;
+    margin-right: 2vw;
+  }
+}
+</style>

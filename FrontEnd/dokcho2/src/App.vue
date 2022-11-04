@@ -13,7 +13,27 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Mabinogi';
+  src: url('fonts/Mabinogi_Classic_TTF.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Shilla_CultureB-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/Shilla_CultureB-Bold.woff2%27')
+    format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/*
 * {
   font-family: 'IM_Hyemin-Bold';
+} */
+
+* {
+  font-family: 'Mabinogi';
 }
 </style>

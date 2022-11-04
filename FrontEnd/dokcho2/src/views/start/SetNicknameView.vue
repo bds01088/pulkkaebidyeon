@@ -6,7 +6,11 @@
         풀깨비뎐에 새겨질 당신의 이름을 알려주세요 🐯
       </div>
 
-      <div>한글이나 영문자, 숫자의 조합으로 1~4자리</div>
+      <div>
+        한글이나 영문자, 숫자의 조합으로 1~4자리
+        <br />
+        <br />
+      </div>
       <input v-model="nickname" placeholder="닉네임" />
 
       <div class="setnicknamepage__button">
@@ -64,8 +68,8 @@ export default {
               this.nicknameDuplicate = false
 
               swal({
-                title: '이 닉네임은 사용하셔도 좋아용😎',
-                text: '🐯',
+                title: `<${this.nickname}> 닉네임 사용 가능!`,
+                text: '   ',
                 icon: 'success',
                 buttons: false,
                 timer: 1500
@@ -132,3 +136,115 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+button {
+  height: 7vh;
+  border-radius: 50px;
+  border: none;
+  width: 15vw;
+  margin: 10px;
+}
+.setnickname__button:hover {
+  background-color: #467302;
+  color: white;
+}
+
+.login__button:hover {
+  background-color: #467302;
+  color: white;
+}
+
+.setnicknamepage__img {
+  width: 30vw;
+}
+
+.background {
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('@/assets/startimg.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.setnicknamepage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 60%;
+  width: 70vw;
+  background-color: white;
+}
+
+input {
+  display: block;
+  width: 30vw;
+  height: 7vh;
+  margin: 8px 0 8px 0;
+  padding: 10px 15px 10px 25px;
+  font-size: 16px;
+  border: #ececec solid 2px;
+  border-radius: 20px;
+}
+
+input::placeholder {
+  color: #467302;
+}
+
+input:focus {
+  outline: none;
+  border: #467302 solid 2px;
+}
+
+.setnicknamepage__text {
+  font-size: 2vw;
+  margin-bottom: 3vh;
+}
+
+.setnicknamepage__button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 850px) {
+  button {
+    height: 6vh;
+    border-radius: 50px;
+    border: none;
+    width: 35vw;
+    margin: 10px;
+  }
+
+  .setnicknamepage {
+    height: 95%;
+    border-radius: 40px;
+  }
+
+  .setnicknamepage__img {
+    width: 80vw;
+  }
+
+  .setnicknamepage__text {
+    font-size: 5vw;
+    text-align: center;
+    margin: 3vw;
+  }
+  input {
+    width: 70vw;
+    height: 8vh;
+    font-size: 2vh;
+    background-size: 3vw 3vw;
+    padding-left: 4vw;
+  }
+}
+</style>
