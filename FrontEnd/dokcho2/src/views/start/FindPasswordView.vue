@@ -1,7 +1,7 @@
 <template>
   <div class="background">
     <div class="findpasswordpage">
-      <img class="findpasswordpage__img" src="" alt="" />
+      <!-- <img class="findpasswordpage__img" src="" alt="" /> -->
       <div class="findpasswordpage__text">
         회원가입할 때 입력하신 이메일로 비밀번호 변경 메일을 보내드릴게요 🐯
       </div>
@@ -98,14 +98,15 @@ button {
   border: none;
   width: 15vw;
   margin: 10px;
+  background-color: #f5e4c3;
 }
 .findpassword__button:hover {
-  background-color: #467302;
+  background-color: #dba437;
   color: white;
 }
 
 .login__button:hover {
-  background-color: #467302;
+  background-color: #dba437;
   color: white;
 }
 
@@ -117,7 +118,8 @@ button {
   height: 100vh;
   overflow: hidden;
   margin: 0;
-  /* background-image: url('@/assets/game_background.png'); */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('../../assets/startimg.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -132,15 +134,21 @@ button {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  width: 90vw;
-  background-color: white;
+  height: 60%;
+  width: 60vw;
+  /* background-color: white; */
+  background-image: url('@/assets/Paper.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  padding: 5%;
 }
 
 input {
   display: block;
   width: 30vw;
-  height: 7vh;
+  height: 5vh;
   margin: 8px 0 8px 0;
   padding: 10px 15px 10px 25px;
   font-size: 16px;
@@ -149,16 +157,16 @@ input {
 }
 
 input::placeholder {
-  color: #467302;
+  color: #ff9604;
 }
 
 input:focus {
   outline: none;
-  border: #467302 solid 2px;
+  border: #ff9604 solid 2px;
 }
 
 .findpasswordpage__text {
-  font-size: 2vw;
+  font-size: 3vmin;
   margin-bottom: 3vh;
 }
 
@@ -167,9 +175,10 @@ input:focus {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  margin-top: 3vh;
 }
 
-@media screen and (max-width: 850px) {
+/* @media screen and (max-width: 850px) {
   button {
     height: 6vh;
     border-radius: 50px;
@@ -199,5 +208,5 @@ input:focus {
     background-size: 3vw 3vw;
     padding-left: 4vw;
   }
-}
+} */
 </style>
