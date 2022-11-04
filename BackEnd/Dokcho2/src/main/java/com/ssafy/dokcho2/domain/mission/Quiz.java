@@ -28,6 +28,8 @@ public class Quiz {
     private String answer3;
     @Column(name = "answer4")
     private String answer4;
+    @Column(name = "img")
+    private String img;
     @Column(name = "right_answer")
     private String rightAnswer;
     @ManyToOne
