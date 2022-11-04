@@ -1,18 +1,18 @@
 import { Body, Box, Vec3 } from 'cannon-es'
 
-export class Player {
+export class Character {
   constructor(info) {
     this.moving = false
     this.scene = info.scene
+    this.meshes = info.meshes
     this.cannonWorld = info.cannonWorld
     this.rotationY = info.rotationY || 0
     this.width = info.width || 0.8
     this.height = info.height || 0.5
     this.depth = info.depth || 1
-    this.x = 0
-    this.y = 0
-    this.z = 0
-
+    this.x = info.position.x
+    this.y = info.position.y
+    this.z = info.position.z
     info.gltfLoader.load(info.modelSrc, (glb) => {
       glb.scene.traverse((child) => {
         if (child.isMesh) {
@@ -21,13 +21,13 @@ export class Player {
       })
 
       this.modelMesh = glb.scene
-      this.modelMesh.scale.x = 0.3
-      this.modelMesh.scale.y = 0.3
-      this.modelMesh.scale.z = 0.3
+      this.modelMesh.scale.x = 0.4
+      this.modelMesh.scale.y = 0.4
+      this.modelMesh.scale.z = 0.4
       this.modelMesh.position.set(this.x, this.y, this.z)
-      this.modelMesh.name = 'player'
+      this.modelMesh.name = info.name
       this.scene.add(this.modelMesh)
-
+      this.meshes.push(this.modelMesh)
       this.setCannonBody()
     })
   }

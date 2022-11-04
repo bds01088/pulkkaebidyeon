@@ -1,5 +1,5 @@
 <template>
-  <canvas id="canvas"> </canvas>
+  <canvas id="HouseCanvas"> </canvas>
 </template>
 
 <script>
@@ -28,7 +28,7 @@ export default {
       floorTexture.repeat.y = 1
 
       // Renderer
-      let canvas = document.querySelector('#canvas')
+      let canvas = document.querySelector('#HouseCanvas')
       console.log(canvas)
       const renderer = new THREE.WebGLRenderer({
         canvas,
@@ -204,7 +204,7 @@ export default {
         if (player.modelMesh) {
           camera.lookAt(player.modelMesh.position)
         }
-        if (player.modelMesh && props.nowPage === 0) {
+        if (player.modelMesh && props.nowPage === 1) {
           if (isPressed) {
             raycasting()
           }
@@ -400,6 +400,7 @@ export default {
 
       function onClick() {
         alert('aa')
+        emit('changeCanvas')
       }
     }, 100)
   }
