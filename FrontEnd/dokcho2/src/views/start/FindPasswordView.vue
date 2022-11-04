@@ -26,7 +26,7 @@
           비밀번호찾기
         </button>
         <button class="login__button" type="submit" @click="to_login()">
-          로그인
+          취소
         </button>
       </div>
     </div>
