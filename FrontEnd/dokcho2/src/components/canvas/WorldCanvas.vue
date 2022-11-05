@@ -3,8 +3,10 @@
   <TalkComponent
     v-if="isTalk.talk"
     @talkClose="talkClose"
+    @quizStart="quizStart"
     :name="isTalk.name"
   />
+  <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
 </template>
 
 <script>
@@ -17,6 +19,7 @@ import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
 import TalkComponent from '../script/TalkComponent.vue'
+import QuizComponent from '../script/QuizComponent.vue'
 import { ref } from 'vue'
 
 export default {
@@ -25,10 +28,12 @@ export default {
     nowPage: Number
   },
   components: {
-    TalkComponent: TalkComponent
+    TalkComponent: TalkComponent,
+    QuizComponent: QuizComponent
   },
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '' })
+    let isQuiz = ref({ quiz: false })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
@@ -439,9 +444,21 @@ export default {
       isTalk.value.talk = false
     }
 
+    function quizStart() {
+      isTalk.value.talk = false
+      isQuiz.value.quiz = true
+    }
+
+    function quizClose() {
+      isQuiz.value.quiz = false
+    }
+
     return {
       isTalk,
-      talkClose
+      isQuiz,
+      talkClose,
+      quizStart,
+      quizClose
     }
   }
 }
