@@ -24,6 +24,8 @@ public class UserResponseDto {
     private Role role;
     private String createDate;
     private UserPositionDto position;
+    //현재 진행중인 미션 번호를 알기 위해 미션 번호 담아주기
+    private Long nowMissionId;
 
 
     public static UserResponseDto from(User entity){
@@ -38,6 +40,7 @@ public class UserResponseDto {
                 .position(UserPositionDto.from(entity))
                 .role(entity.getRole())
                 .createDate(createDate)
+                .nowMissionId(entity.getNowMissionId())
                 .build();
     }
 }

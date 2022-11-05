@@ -31,4 +31,6 @@ public interface UserService {
     void changeRepresentMonster(Long monsterId);
 
     void savePosition(UserPositionDto positionDto);
+
+    void changeNowMission(Long missionId);
 }

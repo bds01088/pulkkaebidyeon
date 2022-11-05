@@ -160,4 +160,11 @@ public class UserController {
         userService.changeRepresentMonster(monsterId);
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
+
+    @PutMapping("/nowMission")
+    @ApiOperation(value = "현재 진행중인 미션 변경")
+    public ResponseEntity<String> setNowMission(@RequestBody Long missionId){
+        userService.changeNowMission(missionId);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
 }
