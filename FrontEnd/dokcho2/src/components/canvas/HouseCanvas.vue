@@ -138,7 +138,7 @@ export default {
       floorMesh.rotation.x = -Math.PI / 2
       floorMesh.receiveShadow = true
       scene.add(floorMesh)
-      meshes.push(floorMesh)
+      // meshes.push(floorMesh)
 
       const pointerMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(0.5, 0.5),
@@ -400,19 +400,19 @@ export default {
       }
 
       // 클릭할 수 있으면 커서 변경하기 (지금 안먹는듯)
-      // function onPointerMove(e) {
-      //   mouse.x = (e.clientX / window.innerWidth) * 2 - 1
-      //   mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+      function onPointerMove(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+        mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
 
-      //   raycaster.setFromCamera(mouse, camera)
-      //   const intersects = raycaster.intersectObjects(meshes)
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObjects(meshes)
 
-      //   if (intersects && intersects.length > 0) {
-      //     canvas.body.style.cursor = 'pointer'
-      //   } else {
-      //     canvas.body.style.cursor = 'default'
-      //   }
-      // }
+        if (intersects && intersects.length > 0) {
+          document.body.style.cursor = 'pointer'
+        } else {
+          document.body.style.cursor = 'default'
+        }
+      }
 
       // 마우스 이벤트
       canvas.addEventListener('mousedown', (e) => {
@@ -426,9 +426,9 @@ export default {
         if (isPressed) {
           calculateMousePosition(e)
         }
-        // if (this.nowPage === 1) {
-        //   onPointerMove(e)
-        // }
+        if (props.nowPage === 1) {
+          onPointerMove(e)
+        }
       })
 
       // 터치 이벤트
