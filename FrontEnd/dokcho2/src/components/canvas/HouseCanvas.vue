@@ -449,25 +449,6 @@ export default {
         alert('aa')
         emit('changeCanvas')
       }
-
-      // function fetchUserMonster() {
-      //   axios({
-      //     url: BASE_URL + '/api/v1/monster',
-      //     method: 'GET',
-      //     headers: {
-      //       AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-      //     }
-      //   })
-      //     .then((res) => {
-      //       userMonster.value = res.data
-      //       console.log('axios 내부', userMonster.value)
-      //     })
-      //     .catch((err) => {
-      //       console.log(err)
-      //     })
-      // }
-
-      // fetchUserMonster()
     }, 100)
 
     function fetchUserMonster() {
