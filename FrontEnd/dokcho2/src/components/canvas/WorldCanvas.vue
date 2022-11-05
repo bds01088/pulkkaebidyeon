@@ -228,7 +228,7 @@ export default {
         if (player.modelMesh) {
           camera.lookAt(player.modelMesh.position)
         }
-        if (player.modelMesh && props.nowPage === 0) {
+        if (player.modelMesh && props.nowPage === 0 && !isTalk.value.talk) {
           if (isPressed) {
             raycasting()
           }

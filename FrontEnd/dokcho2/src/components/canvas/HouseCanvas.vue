@@ -1,5 +1,11 @@
 <template>
-  <canvas id="HouseCanvas"> </canvas>
+  <canvas v-show="this.nowPage === 1" id="HouseCanvas"> </canvas>
+  <monsterDetail
+    v-if="monster.monster"
+    :monsterDetail="monsterDetail.monsterDetail"
+    @monsterClose="monsterClose"
+  />
+  <myPage v-if="myPage.myPage" @mypageClose="mypageClose" />
 </template>
 
 <script>
@@ -10,13 +16,28 @@ import { House } from '../modules/House'
 import gsap from 'gsap'
 import { KeyController } from '../modules/CharacterControl'
 import * as CANNON from 'cannon-es'
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { BASE_URL } from '@/constant/BASE_URL'
+import monsterDetail from '@/components/monster/monsterDetail.vue'
+import myPage from '@/components/accounts/myPage.vue'
 
 export default {
   name: 'HouseCanvas',
   props: {
     nowPage: Number
   },
+  components: {
+    monsterDetail: monsterDetail,
+    myPage: myPage
+  },
   setup(props, { emit }) {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    const userMonster = ref({ userMonster: {} })
+    const monster = ref({ monster: false })
+    const monsterDetail = ref({ monsterDetail: {} })
+    const myPage = ref({ myPage: false })
+
     setTimeout(() => {
       // Texture
 
@@ -147,6 +168,20 @@ export default {
 
       const gltfLoader = new GLTFLoader()
 
+      // 내가 가진 풀깨비 넣기
+      for (let monsterID in userMonster.value.userMonster) {
+        let id = Number(monsterID) + 1
+        gltfLoader.load(`/models/${id}.glb`, (item) => {
+          const monster = item.scene
+          monster.name = ['monster', `${id}`]
+          monster.position.x = (Math.random() - 0.5) * 5
+          monster.position.z = (Math.random() - 0.5) * 5
+          monster.scale.set(0.5, 0.5, 0.5)
+          scene.add(monster)
+          meshes.push(monster)
+        })
+      }
+
       const house = new House({
         gltfLoader,
         scene,
@@ -174,6 +209,18 @@ export default {
       boxMesh.name = 'box'
       scene.add(boxMesh)
       meshes.push(boxMesh)
+
+      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+      const material = new THREE.MeshBasicMaterial({
+        color: 'blue',
+        side: THREE.DoubleSide
+      })
+      const plane = new THREE.Mesh(geometry, material)
+      plane.name = 'mypage'
+      plane.position.x = -2
+
+      scene.add(plane)
+      meshes.push(plane)
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -204,7 +251,12 @@ export default {
         if (player.modelMesh) {
           camera.lookAt(player.modelMesh.position)
         }
-        if (player.modelMesh && props.nowPage === 1) {
+        if (
+          player.modelMesh &&
+          props.nowPage === 1 &&
+          !monster.value.monster &&
+          !myPage.value.myPage
+        ) {
           if (isPressed) {
             raycasting()
           }
@@ -279,25 +331,43 @@ export default {
       }
       function checkIntersects() {
         raycaster.setFromCamera(mouse, camera)
-        console.log(meshes)
         const intersects = raycaster.intersectObjects(meshes)
-        console.log(intersects)
         for (const item of intersects) {
-          if (item.object.name === 'floor') {
-            destinationPoint.x = item.point.x
-            destinationPoint.z = item.point.z
-            player.modelMesh.lookAt(destinationPoint)
+          // if (item.object.name === 'floor') {
+          //   destinationPoint.x = item.point.x
+          //   destinationPoint.z = item.point.z
+          //   player.modelMesh.lookAt(destinationPoint)
 
-            // console.log(item.point)
+          //   player.moving = true
 
-            player.moving = true
+          //   pointerMesh.position.x = destinationPoint.x
+          //   pointerMesh.position.z = destinationPoint.z
+          // }
 
-            pointerMesh.position.x = destinationPoint.x
-            pointerMesh.position.z = destinationPoint.z
+          if (item.object.name === 'mypage') {
+            myPage.value.myPage = true
           }
           if (item.object.name === 'box') {
             onClick()
             isPressed = false
+          }
+          // 몬1_2 형태로 object.name 옴 / 몬스터 눌렀을때 detail 받아서 저장
+          if (item.object.name[0] === '몬') {
+            let monsterId = item.object.name[1]
+            axios({
+              url: BASE_URL + '/api/v1/monster/' + monsterId,
+              method: 'GET',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            })
+              .then((res) => {
+                monsterDetail.value.monsterDetail = res.data
+                monster.value.monster = true
+              })
+              .catch((err) => {
+                console.log(err)
+              })
           }
           break
         }
@@ -329,6 +399,21 @@ export default {
         checkIntersects()
       }
 
+      // 클릭할 수 있으면 커서 변경하기 (지금 안먹는듯)
+      // function onPointerMove(e) {
+      //   mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+      //   mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+
+      //   raycaster.setFromCamera(mouse, camera)
+      //   const intersects = raycaster.intersectObjects(meshes)
+
+      //   if (intersects && intersects.length > 0) {
+      //     canvas.body.style.cursor = 'pointer'
+      //   } else {
+      //     canvas.body.style.cursor = 'default'
+      //   }
+      // }
+
       // 마우스 이벤트
       canvas.addEventListener('mousedown', (e) => {
         isPressed = true
@@ -341,6 +426,9 @@ export default {
         if (isPressed) {
           calculateMousePosition(e)
         }
+        // if (this.nowPage === 1) {
+        //   onPointerMove(e)
+        // }
       })
 
       // 터치 이벤트
@@ -373,7 +461,7 @@ export default {
           destinationPoint.x = player.modelMesh.position.x - 1
         }
         if (player.modelMesh.position.z) {
-          console.log(destinationPoint.z, player.modelMesh.position.z)
+          // console.log(destinationPoint.z, player.modelMesh.position.z)
         }
         player.modelMesh.lookAt(destinationPoint)
       }
@@ -403,6 +491,44 @@ export default {
         emit('changeCanvas')
       }
     }, 100)
+
+    function fetchUserMonster() {
+      axios({
+        url: BASE_URL + '/api/v1/monster',
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          userMonster.value.userMonster = res.data
+          console.log('axios 내부', userMonster.value.userMonster)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+
+    function monsterClose() {
+      monster.value.monster = false
+    }
+
+    function mypageClose() {
+      myPage.value.myPage = false
+    }
+
+    onMounted(() => fetchUserMonster())
+
+    return {
+      userInfo,
+      fetchUserMonster,
+      monsterClose,
+      userMonster,
+      monster,
+      monsterDetail,
+      mypageClose,
+      myPage
+    }
   }
 }
 </script>
