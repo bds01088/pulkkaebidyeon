@@ -1,6 +1,10 @@
 <template>
   <canvas v-show="this.nowPage === 0" id="WorldCanvas"> </canvas>
-  <TalkComponent v-if="isTalk.talk" @talkClose="talkClose" />
+  <TalkComponent
+    v-if="isTalk.talk"
+    @talkClose="talkClose"
+    :name="isTalk.name"
+  />
 </template>
 
 <script>
@@ -24,7 +28,7 @@ export default {
     TalkComponent: TalkComponent
   },
   setup(props, { emit }) {
-    let isTalk = ref({ talk: false })
+    let isTalk = ref({ talk: false, name: '' })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
@@ -182,7 +186,7 @@ export default {
       scene.add(boxMesh)
       meshes.push(boxMesh)
 
-      const Characters = ['dangun']
+      const Characters = ['단군']
       Characters.forEach((element) => {
         new Character({
           scene,
@@ -318,9 +322,12 @@ export default {
             onClick()
             isPressed = false
           }
-          if (item.object.name === 'dangun') {
+          if (item.object.name.includes('단군')) {
             console.log('단군!!')
-            isTalk.value.talk = true
+            isTalk.value.name = '단군'
+            setTimeout(() => {
+              isTalk.value.talk = true
+            }, 100)
             isPressed = false
           }
           break

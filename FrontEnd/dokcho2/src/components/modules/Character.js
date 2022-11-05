@@ -29,6 +29,8 @@ export class Character {
       this.scene.add(this.modelMesh)
       this.meshes.push(this.modelMesh)
       this.setCannonBody()
+      console.log(this.modelMesh)
+      console.log(this.meshes)
     })
   }
   setCannonBody() {
