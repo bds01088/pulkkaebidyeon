@@ -17,6 +17,7 @@ public class QuizDto {
     private String answer1;
     private String answer2;
     private String answer3;
+    private String answer4;
     private String right_answer;
 
     public static QuizDto from(Quiz entity){
@@ -25,6 +26,7 @@ public class QuizDto {
                 .answer1(entity.getAnswer1())
                 .answer2(entity.getAnswer2())
                 .answer3(entity.getAnswer3())
+                .answer4(entity.getAnswer4())
                 .right_answer(entity.getRightAnswer())
                 .build();
     }
