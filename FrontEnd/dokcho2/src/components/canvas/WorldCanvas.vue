@@ -1,6 +1,6 @@
 <template>
-  <canvas id="WorldCanvas"> </canvas>
-  <TalkComponent v-if="isTalk.talk" @end="talkClose" />
+  <canvas v-show="this.nowPage === 0" id="WorldCanvas"> </canvas>
+  <TalkComponent v-if="isTalk.talk" @talkClose="talkClose" />
 </template>
 
 <script>
