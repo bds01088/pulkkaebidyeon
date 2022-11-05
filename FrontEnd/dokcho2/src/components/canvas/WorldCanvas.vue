@@ -1,6 +1,6 @@
 <template>
   <canvas id="WorldCanvas"> </canvas>
-  <TalkComponent v-if="isTalk.talk" />
+  <TalkComponent v-if="isTalk.talk" @end="talkClose" />
 </template>
 
 <script>
@@ -427,8 +427,14 @@ export default {
         emit('changeCanvas')
       }
     }, 100)
+
+    function talkClose() {
+      isTalk.value.talk = false
+    }
+
     return {
-      isTalk
+      isTalk,
+      talkClose
     }
   }
 }
