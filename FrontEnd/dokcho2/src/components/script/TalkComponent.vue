@@ -1,5 +1,9 @@
 <template>
-  <div class="talk">대화창!</div>
+  <div class="talk">
+    대화창!
+
+    <button @click="$emit('talkClose')">닫기</button>
+  </div>
 </template>
 
 <script>
