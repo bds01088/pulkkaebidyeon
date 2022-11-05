@@ -1,10 +1,11 @@
 <template>
-  <canvas id="HouseCanvas"> </canvas>
+  <canvas v-show="this.nowPage === 1" id="HouseCanvas"> </canvas>
   <monsterDetail
     v-if="monster.monster"
     :monsterDetail="monsterDetail.monsterDetail"
     @monsterClose="monsterClose"
   />
+  <myPage v-if="myPage.myPage" @mypageClose="mypageClose" />
 </template>
 
 <script>
@@ -19,6 +20,7 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import monsterDetail from '@/components/monster/monsterDetail.vue'
+import myPage from '@/components/accounts/myPage.vue'
 
 export default {
   name: 'HouseCanvas',
@@ -26,13 +28,15 @@ export default {
     nowPage: Number
   },
   components: {
-    monsterDetail: monsterDetail
+    monsterDetail: monsterDetail,
+    myPage: myPage
   },
   setup(props, { emit }) {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
     const userMonster = ref({ userMonster: {} })
     const monster = ref({ monster: false })
     const monsterDetail = ref({ monsterDetail: {} })
+    const myPage = ref({ myPage: false })
 
     setTimeout(() => {
       // Texture
@@ -206,6 +210,18 @@ export default {
       scene.add(boxMesh)
       meshes.push(boxMesh)
 
+      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+      const material = new THREE.MeshBasicMaterial({
+        color: 'blue',
+        side: THREE.DoubleSide
+      })
+      const plane = new THREE.Mesh(geometry, material)
+      plane.name = 'mypage'
+      plane.position.x = -2
+
+      scene.add(plane)
+      meshes.push(plane)
+
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
       let destinationPoint = new THREE.Vector3()
@@ -235,7 +251,12 @@ export default {
         if (player.modelMesh) {
           camera.lookAt(player.modelMesh.position)
         }
-        if (player.modelMesh && props.nowPage === 1 && !monster.value.monster) {
+        if (
+          player.modelMesh &&
+          props.nowPage === 1 &&
+          !monster.value.monster &&
+          !myPage.value.myPage
+        ) {
           if (isPressed) {
             raycasting()
           }
@@ -312,17 +333,19 @@ export default {
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
         for (const item of intersects) {
-          if (item.object.name === 'floor') {
-            destinationPoint.x = item.point.x
-            destinationPoint.z = item.point.z
-            player.modelMesh.lookAt(destinationPoint)
+          // if (item.object.name === 'floor') {
+          //   destinationPoint.x = item.point.x
+          //   destinationPoint.z = item.point.z
+          //   player.modelMesh.lookAt(destinationPoint)
 
-            // console.log(item.point)
+          //   player.moving = true
 
-            player.moving = true
+          //   pointerMesh.position.x = destinationPoint.x
+          //   pointerMesh.position.z = destinationPoint.z
+          // }
 
-            pointerMesh.position.x = destinationPoint.x
-            pointerMesh.position.z = destinationPoint.z
+          if (item.object.name === 'mypage') {
+            myPage.value.myPage = true
           }
           if (item.object.name === 'box') {
             onClick()
@@ -376,6 +399,21 @@ export default {
         checkIntersects()
       }
 
+      // 클릭할 수 있으면 커서 변경하기 (지금 안먹는듯)
+      // function onPointerMove(e) {
+      //   mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+      //   mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+
+      //   raycaster.setFromCamera(mouse, camera)
+      //   const intersects = raycaster.intersectObjects(meshes)
+
+      //   if (intersects && intersects.length > 0) {
+      //     canvas.body.style.cursor = 'pointer'
+      //   } else {
+      //     canvas.body.style.cursor = 'default'
+      //   }
+      // }
+
       // 마우스 이벤트
       canvas.addEventListener('mousedown', (e) => {
         isPressed = true
@@ -388,6 +426,9 @@ export default {
         if (isPressed) {
           calculateMousePosition(e)
         }
+        // if (this.nowPage === 1) {
+        //   onPointerMove(e)
+        // }
       })
 
       // 터치 이벤트
@@ -472,6 +513,10 @@ export default {
       monster.value.monster = false
     }
 
+    function mypageClose() {
+      myPage.value.myPage = false
+    }
+
     onMounted(() => fetchUserMonster())
 
     return {
@@ -480,7 +525,9 @@ export default {
       monsterClose,
       userMonster,
       monster,
-      monsterDetail
+      monsterDetail,
+      mypageClose,
+      myPage
     }
   }
 }
