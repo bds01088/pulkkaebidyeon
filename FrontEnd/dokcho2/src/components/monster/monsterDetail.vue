@@ -1,6 +1,9 @@
 <template>
   <div class="monsterDetail">
-    <h3>{{ this.monsterDetail.name }} ({{ this.monsterDetail.level }}레벨)</h3>
+    <h3>
+      {{ this.monsterDetail.name }} <br />
+      ({{ this.monsterDetail.level }}레벨)
+    </h3>
     <p>경험치 {{ this.monsterDetail.exp }}</p>
     <p>
       hp : {{ this.monsterDetail.hp }} attack : {{ this.monsterDetail.attack }}
@@ -9,7 +12,7 @@
     <br />
     <div>
       <button @click="setrepresentMonster()">대표 풀깨비로 설정</button>
-      <button @click="this.$parent.closeMonster">닫기</button>
+      <button @click="$emit('monsterClose')">닫기</button>
     </div>
   </div>
 </template>
@@ -28,18 +31,17 @@ export default {
   },
   methods: {
     setrepresentMonster() {
-      const id = this.monsterDetail.monsterId
-      // console.log(id)
+      const id = Number(this.monsterDetail.monsterId)
+
       axios({
-        url: BASE_URL + '/api/v1/user/represent',
+        url: BASE_URL + '/api/v1/user/represent/' + id,
         method: 'PUT',
         headers: {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-        },
-        body: { id }
+        }
       })
         .then(() => {
-          Swal('대표 풀깨비로 설정되었습니다!')
+          Swal.fire('대표 풀깨비로 설정되었습니다!', '    ', 'success')
         })
         .catch((err) => {
           console.log(err)
