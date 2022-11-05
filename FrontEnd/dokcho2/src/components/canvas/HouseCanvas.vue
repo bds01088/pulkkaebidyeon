@@ -1,5 +1,10 @@
 <template>
   <canvas id="HouseCanvas"> </canvas>
+  <monsterDetail
+    v-if="monster.monster"
+    :monsterDetail="monsterDetail.monsterDetail"
+    @monsterClose="monsterClose"
+  />
 </template>
 
 <script>
@@ -10,13 +15,25 @@ import { House } from '../modules/House'
 import gsap from 'gsap'
 import { KeyController } from '../modules/CharacterControl'
 import * as CANNON from 'cannon-es'
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { BASE_URL } from '@/constant/BASE_URL'
+import monsterDetail from '@/components/monster/monsterDetail.vue'
 
 export default {
   name: 'HouseCanvas',
   props: {
     nowPage: Number
   },
+  components: {
+    monsterDetail: monsterDetail
+  },
   setup(props, { emit }) {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    const userMonster = ref({ userMonster: {} })
+    const monster = ref({ monster: false })
+    const monsterDetail = ref({ monsterDetail: {} })
+
     setTimeout(() => {
       // Texture
 
@@ -147,6 +164,20 @@ export default {
 
       const gltfLoader = new GLTFLoader()
 
+      // 내가 가진 풀깨비 넣기
+      for (let monsterID in userMonster.value.userMonster) {
+        let id = Number(monsterID) + 1
+        gltfLoader.load(`/models/${id}.glb`, (item) => {
+          const monster = item.scene
+          monster.name = ['monster', `${id}`]
+          monster.position.x = (Math.random() - 0.5) * 5
+          monster.position.z = (Math.random() - 0.5) * 5
+          monster.scale.set(0.5, 0.5, 0.5)
+          scene.add(monster)
+          meshes.push(monster)
+        })
+      }
+
       const house = new House({
         gltfLoader,
         scene,
@@ -204,7 +235,7 @@ export default {
         if (player.modelMesh) {
           camera.lookAt(player.modelMesh.position)
         }
-        if (player.modelMesh && props.nowPage === 1) {
+        if (player.modelMesh && props.nowPage === 1 && !monster.value.monster) {
           if (isPressed) {
             raycasting()
           }
@@ -279,9 +310,7 @@ export default {
       }
       function checkIntersects() {
         raycaster.setFromCamera(mouse, camera)
-        console.log(meshes)
         const intersects = raycaster.intersectObjects(meshes)
-        console.log(intersects)
         for (const item of intersects) {
           if (item.object.name === 'floor') {
             destinationPoint.x = item.point.x
@@ -298,6 +327,24 @@ export default {
           if (item.object.name === 'box') {
             onClick()
             isPressed = false
+          }
+          // 몬1_2 형태로 object.name 옴 / 몬스터 눌렀을때 detail 받아서 저장
+          if (item.object.name[0] === '몬') {
+            let monsterId = item.object.name[1]
+            axios({
+              url: BASE_URL + '/api/v1/monster/' + monsterId,
+              method: 'GET',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            })
+              .then((res) => {
+                monsterDetail.value.monsterDetail = res.data
+                monster.value.monster = true
+              })
+              .catch((err) => {
+                console.log(err)
+              })
           }
           break
         }
@@ -373,7 +420,7 @@ export default {
           destinationPoint.x = player.modelMesh.position.x - 1
         }
         if (player.modelMesh.position.z) {
-          console.log(destinationPoint.z, player.modelMesh.position.z)
+          // console.log(destinationPoint.z, player.modelMesh.position.z)
         }
         player.modelMesh.lookAt(destinationPoint)
       }
@@ -402,7 +449,58 @@ export default {
         alert('aa')
         emit('changeCanvas')
       }
+
+      // function fetchUserMonster() {
+      //   axios({
+      //     url: BASE_URL + '/api/v1/monster',
+      //     method: 'GET',
+      //     headers: {
+      //       AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+      //     }
+      //   })
+      //     .then((res) => {
+      //       userMonster.value = res.data
+      //       console.log('axios 내부', userMonster.value)
+      //     })
+      //     .catch((err) => {
+      //       console.log(err)
+      //     })
+      // }
+
+      // fetchUserMonster()
     }, 100)
+
+    function fetchUserMonster() {
+      axios({
+        url: BASE_URL + '/api/v1/monster',
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          userMonster.value.userMonster = res.data
+          console.log('axios 내부', userMonster.value.userMonster)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+
+    function monsterClose() {
+      monster.value.monster = false
+    }
+
+    onMounted(() => fetchUserMonster())
+
+    return {
+      userInfo,
+      fetchUserMonster,
+      monsterClose,
+      userMonster,
+      monster,
+      monsterDetail
+    }
   }
 }
 </script>
