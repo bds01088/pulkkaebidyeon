@@ -3,6 +3,7 @@
     <div class="quiz__box">
       <div class="box" v-if="quiz.content[quiz.nowPage]">
         <div class="question">{{ quiz.content[quiz.nowPage].question }}</div>
+        <img :src="quiz.content[quiz.nowPage].img" alt="quiz-image" />
         <div
           class="answer1"
           @click="nextQuiz(quiz.content[quiz.nowPage].answer1)"
