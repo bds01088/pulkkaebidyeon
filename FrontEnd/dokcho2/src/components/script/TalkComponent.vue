@@ -51,19 +51,23 @@ export default {
       const content = talk.value.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
       console.log(content, userInfo)
-      if (userInfo.nowMissionId === content.missionId) {
-        axios({
-          url:
-            BASE_URL +
-            '/api/v1/mission/' +
-            userInfo.nowMissionId +
-            '?nowStatus=' +
-            content.status,
-          method: 'PUT',
-          headers: {
-            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-          }
-        }).then(() => emit('talkClose'))
+      if (content.status !== 'STARTED') {
+        if (userInfo.nowMissionId === content.missionId) {
+          axios({
+            url:
+              BASE_URL +
+              '/api/v1/mission/' +
+              userInfo.nowMissionId +
+              '?nowStatus=' +
+              content.status,
+            method: 'PUT',
+            headers: {
+              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+            }
+          }).then(() => emit('talkClose'))
+        }
+      } else {
+        emit('quizStart')
       }
     }
 
