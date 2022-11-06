@@ -161,9 +161,9 @@ public class UserController {
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
-    @PutMapping("/nowMission")
+    @PutMapping("/nowMission/{missionId}")
     @ApiOperation(value = "현재 진행중인 미션 변경")
-    public ResponseEntity<String> setNowMission(@RequestBody Long missionId){
+    public ResponseEntity<String> setNowMission(@PathVariable Long missionId){
         userService.changeNowMission(missionId);
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
