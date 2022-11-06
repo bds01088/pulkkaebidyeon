@@ -4,32 +4,29 @@
       <div>
         <ul>
           <li>
-            <a @click="openModal1">
-              <p class="TITLE">미 션</p>
-              <font-awesome-icon icon="fa-solid fa-scroll" size="xl" />
-            </a>
+            <div class="navbar__item">
+              <p>미션</p>
+              <img @click="openModal1" src="@/assets/navbar/004.png" alt="" />
+            </div>
           </li>
 
           <li>
-            <a @click="openModal2">
-              <p class="TITLE">가 방</p>
-              <font-awesome-icon icon="fa-solid fa-suitcase" size="xl" />
-            </a>
+            <div class="navbar__item">
+              <p>아이템</p>
+              <img @click="openModal2" src="@/assets/navbar/005.png" alt="" />
+            </div>
           </li>
           <li>
-            <a @click="openModal3">
-              <p class="TITLE">지 도</p>
-              <font-awesome-icon icon="map-location-dot" size="xl" />
-            </a>
+            <div class="navbar__item">
+              <p>지도</p>
+              <img @click="openModal3" src="@/assets/navbar/006.png" alt="" />
+            </div>
           </li>
           <li>
-            <a @click="logout">
-              <p class="TITLE">록 앗</p>
-              <font-awesome-icon
-                icon="fa-solid fa-right-from-bracket"
-                size="xl"
-              />
-            </a>
+            <div class="navbar__item">
+              <p>로그아웃</p>
+              <img @click="logout" src="@/assets/navbar/007.png" alt="" />
+            </div>
           </li>
         </ul>
       </div>
@@ -135,14 +132,29 @@ export default {
 <style scoped>
 .navbar {
   position: absolute;
-  z-index: 10;
-  /* display: flex; */
-  height: 100px;
-  width: 100px;
-  margin-top: 30px;
-  margin-left: 1430px;
-  /* float: right; */
-  color: aliceblue;
+  z-index: 9999;
+  width: 8vw;
+  margin: 0;
+  top: 5%;
+  left: 90%;
+}
+
+img {
+  width: 40%;
+  margin-bottom: 1.5vh;
+}
+
+p {
+  font-size: 0.8rem;
+  margin-bottom: 0.5vh;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0px;
+}
+
+.navbar__item {
+  text-align: center;
 }
 </style>
->
