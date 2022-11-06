@@ -23,9 +23,6 @@ public class Monster {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "line")
-    private String line;
-
     @Column(name = "skill")
     private String skill;
 

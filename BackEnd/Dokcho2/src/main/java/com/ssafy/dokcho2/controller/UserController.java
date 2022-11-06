@@ -154,10 +154,17 @@ public class UserController {
         return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
     }
 
-    @PutMapping("/represent")
+    @PutMapping("/represent/{monsterId}")
     @ApiOperation(value = "대표 풀깨비 변경")
-    public ResponseEntity<String> setRepresentMonster(@RequestBody Long monsterId){
+    public ResponseEntity<String> setRepresentMonster(@PathVariable Long monsterId){
         userService.changeRepresentMonster(monsterId);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
+
+    @PutMapping("/nowMission")
+    @ApiOperation(value = "현재 진행중인 미션 변경")
+    public ResponseEntity<String> setNowMission(@RequestBody Long missionId){
+        userService.changeNowMission(missionId);
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 }
