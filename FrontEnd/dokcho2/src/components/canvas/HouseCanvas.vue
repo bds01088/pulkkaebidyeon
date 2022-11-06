@@ -1,11 +1,13 @@
 <template>
-  <canvas v-show="this.nowPage === 1" id="HouseCanvas"> </canvas>
-  <monsterDetail
-    v-if="monster.monster"
-    :monsterDetail="monsterDetail.monsterDetail"
-    @monsterClose="monsterClose"
-  />
-  <myPage v-if="myPage.myPage" @mypageClose="mypageClose" />
+  <div>
+    <canvas id="HouseCanvas"> </canvas>
+    <monsterDetail
+      v-if="monster.monster"
+      :monsterDetail="monsterDetail.monsterDetail"
+      @monsterClose="monsterClose"
+    />
+    <myPage v-if="myPage.myPage" @mypageClose="mypageClose" />
+  </div>
 </template>
 
 <script>
@@ -140,18 +142,18 @@ export default {
       scene.add(floorMesh)
       // meshes.push(floorMesh)
 
-      const pointerMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.5, 0.5),
-        new THREE.MeshBasicMaterial({
-          color: 'crimson',
-          transparent: true,
-          opacity: 0.5
-        })
-      )
-      pointerMesh.rotation.x = -Math.PI / 2
-      pointerMesh.position.y = 0.01
-      pointerMesh.receiveShadow = true
-      scene.add(pointerMesh)
+      // const pointerMesh = new THREE.Mesh(
+      //   new THREE.PlaneGeometry(0.5, 0.5),
+      //   new THREE.MeshBasicMaterial({
+      //     color: 'crimson',
+      //     transparent: true,
+      //     opacity: 0.5
+      //   })
+      // )
+      // pointerMesh.rotation.x = -Math.PI / 2
+      // pointerMesh.position.y = 0.01
+      // pointerMesh.receiveShadow = true
+      // scene.add(pointerMesh)
 
       const spotMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 3),
@@ -345,6 +347,7 @@ export default {
           // }
 
           if (item.object.name === 'mypage') {
+            isPressed = false
             myPage.value.myPage = true
           }
           if (item.object.name === 'box') {
@@ -353,6 +356,7 @@ export default {
           }
           // 몬1_2 형태로 object.name 옴 / 몬스터 눌렀을때 detail 받아서 저장
           if (item.object.name[0] === '몬') {
+            isPressed = false
             let monsterId = item.object.name[1]
             axios({
               url: BASE_URL + '/api/v1/monster/' + monsterId,
