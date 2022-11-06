@@ -206,5 +206,6 @@ export default {
   width: 50%;
   height: 70%;
   background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
 }
 </style>

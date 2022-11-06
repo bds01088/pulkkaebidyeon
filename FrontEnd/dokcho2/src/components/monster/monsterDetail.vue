@@ -21,6 +21,7 @@
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import Swal from 'sweetalert2'
+import { mapActions } from 'vuex'
 
 export default {
   props: {
@@ -30,6 +31,7 @@ export default {
     return {}
   },
   methods: {
+    ...mapActions(['fetchnowUserInfo']),
     setrepresentMonster() {
       const id = Number(this.monsterDetail.monsterId)
 
@@ -41,6 +43,7 @@ export default {
         }
       })
         .then(() => {
+          this.fetchnowUserInfo()
           Swal.fire('대표 풀깨비로 설정되었습니다!', '    ', 'success')
         })
         .catch((err) => {
@@ -64,6 +67,7 @@ export default {
   width: 30%;
   height: 30%;
   background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
 }
 
 .p {
