@@ -41,9 +41,9 @@ public class MissionServiceImpl implements MissionService{
     private final BossRepository bossRepository;
 
     @Override
-    public MissionDto getMissionInfo(String characters) {
+    public MissionDto getMissionInfo(Long missionId) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
-        Mission mission = missionRepository.findMissionByCharacters(characters).orElseThrow(MissionNotFoundException::new);
+        Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
         UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
         return MissionDto.from(mission, userMission.getStatus());
     }

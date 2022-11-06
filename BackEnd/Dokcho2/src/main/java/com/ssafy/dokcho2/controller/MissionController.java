@@ -22,10 +22,10 @@ public class MissionController {
     private final MissionService missionService;
     private final ItemService itemService;
 
-    @GetMapping("/{characters}")
+    @GetMapping("/{missionId}")
     @ApiOperation(value = "캐릭터와 상호작용 시 미션 정보 주기")
-    public ResponseEntity<MissionDto> getMissionInfo(@PathVariable String characters){
-        return new ResponseEntity<>(missionService.getMissionInfo(characters), HttpStatus.OK);
+    public ResponseEntity<MissionDto> getMissionInfo(@PathVariable Long missionId){
+        return new ResponseEntity<>(missionService.getMissionInfo(missionId), HttpStatus.OK);
     }
 
     @GetMapping("/quiz/{missionId}")
