@@ -35,7 +35,7 @@
       </div>
     </div>
     <!-- <div>{{ missions.missions[0] }}</div> -->
-    <button @click="$emit('closeModal1')">닫기</button>
+    <button @click="closeModal1()">닫기</button>
   </div>
 
   <MissionDetail @click="closeMissionDetail" v-if="missionDetail.missionDetail">
@@ -50,7 +50,7 @@ import { ref, onMounted } from 'vue'
 
 export default {
   components: { MissionDetail },
-  setup() {
+  setup(props, { emit }) {
     const missions = ref({ missions: [] })
     const missionDetail = ref({ missionDetail: false })
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
@@ -79,6 +79,10 @@ export default {
       missionDetail.value.missionDetail = false
     }
 
+    function closeModal1() {
+      emit('closeModal1')
+    }
+
     onMounted(() => {
       fetchMissions()
     })
@@ -89,7 +93,8 @@ export default {
       userInfo,
       fetchMissions,
       openMissionDetail,
-      closeMissionDetail
+      closeMissionDetail,
+      closeModal1
     }
   }
 }

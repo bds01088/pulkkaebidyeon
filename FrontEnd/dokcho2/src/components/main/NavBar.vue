@@ -6,12 +6,7 @@
           <li>
             <div class="navbar__item">
               <p>미션</p>
-              <img
-                @click="openModal1"
-                @closeModal1="closeModal1"
-                src="@/assets/navbar/004.png"
-                alt=""
-              />
+              <img @click="openModal1" src="@/assets/navbar/004.png" alt="" />
             </div>
           </li>
 
@@ -36,9 +31,9 @@
         </ul>
       </div>
     </nav>
-    <MyModal1 v-if="modal1"> </MyModal1>
-    <MyModal2 v-if="modal2"> </MyModal2>
-    <MyModal3 v-if="modal3"> </MyModal3>
+    <MyModal1 v-if="modal1.modal1" @closeModal1="closeModal1" />
+    <MyModal2 v-if="modal2.modal2" @closeModal2="closeModal2" />
+    <MyModal3 v-if="modal3.modal3" @closeModal3="closeModal3" />
   </div>
 </template>
 
@@ -50,6 +45,9 @@ import MyModal2 from './MyItem.vue'
 import MyModal3 from './MyMap.vue'
 import swal from 'sweetalert'
 import Swal from 'sweetalert2'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 const swalWithBootstrapButtons = Swal.mixin({
   customClass: {
     title: 'custom-title-class',
@@ -58,44 +56,43 @@ const swalWithBootstrapButtons = Swal.mixin({
   }
 })
 export default {
-  data() {
-    return {
-      modal1: false,
-      modal2: false,
-      modal3: false,
-      message1: '',
-      message2: '',
-      message3: ''
+  components: { MyModal1: MyModal1, MyModal2: MyModal2, MyModal3: MyModal3 },
+  setup(props, { emit }) {
+    const router = useRouter()
+
+    const modal1 = ref({ modal1: false })
+    const modal2 = ref({ modal2: false })
+    const modal3 = ref({ modal3: false })
+    const message1 = ref({ message1: '' })
+    const message2 = ref({ message2: '' })
+    const message3 = ref({ message3: '' })
+
+    function openModal1() {
+      modal1.value.modal1 = true
+      emit('changeNavbar')
     }
-  },
-  components: { MyModal1, MyModal2, MyModal3 },
-  methods: {
-    openModal1() {
-      this.modal1 = true
-      this.$emit('changeNavbar')
-    },
-    closeModal1() {
+    function closeModal1() {
       console.log('닫음')
-      this.modal1 = false
-      this.$emit('changeNavbar')
-    },
-    openModal2() {
-      this.modal2 = true
-      this.$emit('changeNavbar')
-    },
-    closeModal2() {
-      this.modal2 = false
-      this.$emit('changeNavbar')
-    },
-    openModal3() {
-      this.modal3 = true
-      this.$emit('changeNavbar')
-    },
-    closeModal3() {
-      this.modal3 = false
-      this.$emit('changeNavbar')
-    },
-    logout() {
+      modal1.value.modal1 = false
+      emit('changeNavbar')
+    }
+    function openModal2() {
+      modal2.value.modal2 = true
+      emit('changeNavbar')
+    }
+    function closeModal2() {
+      modal2.value.modal2 = false
+      emit('changeNavbar')
+    }
+    function openModal3() {
+      modal3.value.modal3 = true
+      emit('changeNavbar')
+    }
+    function closeModal3() {
+      modal3.value.modal3 = false
+      emit('changeNavbar')
+    }
+    function logout() {
       swalWithBootstrapButtons
         .fire({
           title: '도감을 덮으시겠어요?',
@@ -108,11 +105,11 @@ export default {
         })
         .then((res) => {
           if (res.value) {
-            this.fetchLogout()
+            fetchLogout()
           }
         })
-    },
-    fetchLogout() {
+    }
+    function fetchLogout() {
       axios
         .put(BASE_URL + '/api/v1/user/logout', null, {
           headers: {
@@ -129,13 +126,30 @@ export default {
             timer: 1500
           })
           localStorage.clear()
-          this.$router.push({
+          router.push({
             path: '/'
           })
         })
         .catch((err) => {
           console.log(err)
         })
+    }
+
+    return {
+      modal1,
+      modal2,
+      modal3,
+      message1,
+      message2,
+      message3,
+      openModal1,
+      closeModal1,
+      openModal2,
+      closeModal2,
+      openModal3,
+      closeModal3,
+      logout,
+      fetchLogout
     }
   }
 }
