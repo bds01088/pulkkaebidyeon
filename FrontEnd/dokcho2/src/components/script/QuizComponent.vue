@@ -41,7 +41,7 @@ import { ref } from 'vue'
 
 export default {
   setup(props, { emit }) {
-    let quiz = ref({ content: [], nowPage: 0, rightAnswer: [] })
+    let quiz = ref({ content: [], nowPage: 0 })
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
 
     function getQuiz() {
@@ -60,38 +60,27 @@ export default {
     }
 
     function endQuiz() {
-      let pass = true
-      quiz.value.rightAnswer.forEach((e) => {
-        if (e === false) {
-          pass = false
+      alert('다맞춤')
+      axios({
+        url:
+          BASE_URL +
+          '/api/v1/mission/' +
+          userInfo.nowMissionId +
+          '?nowStatus=STARTED',
+        method: 'PUT',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
         }
       })
-      if (pass === true) {
-        alert('다맞춤')
-        axios({
-          url:
-            BASE_URL +
-            '/api/v1/mission/' +
-            userInfo.nowMissionId +
-            '?nowStatus=STARTED',
-          method: 'PUT',
-          headers: {
-            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-          }
-        })
-      } else {
-        alert('더 공부하셈')
-      }
       emit('quizClose')
     }
 
     function nextQuiz(answer) {
       if (answer === quiz.value.content[quiz.value.nowPage].right_answer) {
-        quiz.value.rightAnswer.push(true)
         alert('정답')
       } else {
-        quiz.value.rightAnswer.push(false)
-        alert('오답')
+        alert('더 공부하셈')
+        emit('quizClose')
       }
       quiz.value.nowPage += 1
       if (quiz.value.nowPage === quiz.value.content.length) {

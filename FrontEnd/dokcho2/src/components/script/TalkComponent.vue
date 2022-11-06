@@ -1,14 +1,14 @@
 <template>
   <div class="talk">
     <div class="talk__box">
-      <div class="box" v-if="talk.content.line">
-        <div class="name">{{ this.name }}</div>
+      <div class="box" v-if="this.isTalk.content.line">
+        <div class="name">{{ this.isTalk.name }}</div>
         <div class="content">
-          {{ talk.content.line[talk.nowPage] }}
+          {{ this.isTalk.content.line[nowPage.nowPage] }}
         </div>
         <button
           @click="nextTalk()"
-          v-if="talk.content.line.length !== talk.nowPage + 1"
+          v-if="this.isTalk.content.line.length !== nowPage.nowPage + 1"
         >
           다음
         </button>
@@ -21,37 +21,21 @@
 <script>
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
-import { onMounted } from '@vue/runtime-core'
 import { ref } from 'vue'
 
 export default {
   props: {
-    name: String
+    isTalk: Object
   },
   setup(props, { emit }) {
-    let talk = ref({ content: {}, nowPage: 0 })
-
-    function getLine() {
-      axios({
-        url: BASE_URL + '/api/v1/mission/' + props.name,
-        method: 'GET',
-        headers: {
-          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-        }
-      })
-        .then((res) => {
-          console.log(res.data)
-          talk.value.content = res.data
-          talk.value.content.line = res.data.line.split('\\t')
-        })
-        .catch((err) => console.log(err))
-    }
+    let nowPage = ref({ nowPage: 0 })
 
     function endTalk() {
-      const content = talk.value.content
+      const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
-      console.log(content, userInfo)
-      if (content.status !== 'STARTED') {
+      if (content.status === 'STARTED') {
+        emit('quizStart')
+      } else {
         if (userInfo.nowMissionId === content.missionId) {
           axios({
             url:
@@ -64,21 +48,34 @@ export default {
             headers: {
               AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
             }
-          }).then(() => emit('talkClose'))
+          }).then(() => {
+            if (content.status === 'BATTLE_WIN') {
+              let nextMissionId = userInfo.nowMissionId + 1
+              axios({
+                url: BASE_URL + '/api/v1/user/nowMission/' + nextMissionId,
+                method: 'PUT',
+                headers: {
+                  AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+                }
+              }).then(() => {
+                userInfo.nowMissionId += 1
+                localStorage.setItem('userInfo', JSON.stringify(userInfo))
+              })
+            }
+            emit('talkClose')
+          })
+        } else {
+          emit('talkClose')
         }
-      } else {
-        emit('quizStart')
       }
     }
 
     function nextTalk() {
-      talk.value.nowPage += 1
+      nowPage.value.nowPage += 1
     }
 
-    onMounted(() => getLine())
-
     return {
-      talk,
+      nowPage,
       endTalk,
       nextTalk
     }
