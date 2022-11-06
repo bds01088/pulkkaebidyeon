@@ -30,7 +30,8 @@ import { BASE_URL } from '@/constant/BASE_URL'
 export default {
   name: 'WorldCanvas',
   props: {
-    nowPage: Number
+    nowPage: Number,
+    nowNavbar: Boolean
   },
   components: {
     TalkComponent: TalkComponent,
@@ -257,7 +258,12 @@ export default {
         if (player.modelMesh) {
           camera.lookAt(player.modelMesh.position)
         }
-        if (player.modelMesh && props.nowPage === 0 && !isTalk.value.talk) {
+        if (
+          player.modelMesh &&
+          props.nowPage === 0 &&
+          !props.nowNavbar &&
+          !isTalk.value.talk
+        ) {
           if (isPressed) {
             raycasting()
           }

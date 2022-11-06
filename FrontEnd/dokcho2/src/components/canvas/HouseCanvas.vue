@@ -27,7 +27,8 @@ import myPage from '@/components/accounts/myPage.vue'
 export default {
   name: 'HouseCanvas',
   props: {
-    nowPage: Number
+    nowPage: Number,
+    nowNavbar: Boolean
   },
   components: {
     monsterDetail: monsterDetail,
@@ -257,7 +258,8 @@ export default {
           player.modelMesh &&
           props.nowPage === 1 &&
           !monster.value.monster &&
-          !myPage.value.myPage
+          !myPage.value.myPage &&
+          !props.nowNavbar
         ) {
           if (isPressed) {
             raycasting()
