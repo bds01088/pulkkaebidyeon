@@ -1,583 +1,473 @@
 <template>
-  <div>
-    <div id="world"></div>
-  </div>
+  <canvas v-show="this.nowPage === 0" id="WorldCanvas"> </canvas>
+  <TalkComponent
+    v-if="isTalk.talk"
+    @talkClose="talkClose"
+    @quizStart="quizStart"
+    :name="isTalk.name"
+  />
+  <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
 </template>
 
 <script>
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-// import Stats from 'three/examples/jsm/libs/stats.module.js'
-
-import { Octree } from 'three/examples/jsm/math/Octree.js'
-import { Capsule } from 'three/examples/jsm/math/Capsule.js'
-
-import axios from 'axios'
-import { BASE_URL } from '@/constant/BASE_URL'
-import Swal from 'sweetalert2'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { Player } from '../modules/Player'
+import { House } from '../modules/House'
+import { Character } from '../modules/Character'
+import { KeyController } from '../modules/CharacterControl'
+import gsap from 'gsap'
+import * as CANNON from 'cannon-es'
+import TalkComponent from '../script/TalkComponent.vue'
+import QuizComponent from '../script/QuizComponent.vue'
+import { ref } from 'vue'
 
 export default {
-  name: 'WorldView',
+  name: 'WorldCanvas',
   props: {
     nowPage: Number
   },
-  data() {
-    return {
-      previousDirectionOffset: 0,
-      speed: 0,
-      maxSpeed: 0,
-      acceleration: 0,
-      bOnTheGround: false,
-      fallingAcceleration: 0,
-      fallingSpeed: 0,
-      isPressed: false,
-      //raycaster
-      raycaster: new THREE.Raycaster(),
-      mouse: new THREE.Vector2(),
-      meshes: []
-    }
+  components: {
+    TalkComponent: TalkComponent,
+    QuizComponent: QuizComponent
   },
+  setup(props, { emit }) {
+    let isTalk = ref({ talk: false, name: '' })
+    let isQuiz = ref({ quiz: false })
+    setTimeout(() => {
+      // Texture
+      const textureLoader = new THREE.TextureLoader()
+      const floorTexture = textureLoader.load('/images/grid.png')
+      floorTexture.wrapS = THREE.RepeatWrapping
+      floorTexture.wrapT = THREE.RepeatWrapping
+      floorTexture.repeat.x = 1
+      floorTexture.repeat.y = 1
 
-  mounted() {
-    this.init()
-  },
-
-  methods: {
-    init() {
-      this.fallingAcceleration = 0
-      this.fallingSpeed = 0
-
-      const divContainer = document.querySelector('#world')
-      this._divContainer = divContainer
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true })
+      // Renderer
+      let canvas = document.querySelector('#WorldCanvas')
+      console.log(canvas)
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true
+      })
       renderer.setSize(window.innerWidth, window.innerHeight)
       renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
-      divContainer.appendChild(renderer.domElement)
-
       renderer.shadowMap.enabled = true
-      renderer.shadowMap.type = THREE.VSMShadowMap
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
-      this._renderer = renderer
-
+      // Scene
       const scene = new THREE.Scene()
-      this._scene = scene
 
-      //this._setupOctree();
-      this._setupCamera()
-      this._setupLight()
-      this._setupBack()
-      this._setupModel()
-      this._setupControls()
+      // Camera
+      const camera = new THREE.OrthographicCamera(
+        -(window.innerWidth / window.innerHeight), // left
+        window.innerWidth / window.innerHeight, // right,
+        1, // top
+        -1, // bottom
+        -1000,
+        1000
+      )
 
-      window.onresize = this.resize.bind(this)
-      this.resize()
+      const cameraPosition = new THREE.Vector3(1, 5, 5)
+      camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
+      camera.zoom = 0.2
+      camera.updateProjectionMatrix()
+      scene.add(camera)
 
-      requestAnimationFrame(this.render.bind(this))
-    },
+      // Light
+      const ambientLight = new THREE.AmbientLight('white', 0.7)
+      scene.add(ambientLight)
 
-    onPointerMove(e) {
-      this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1
-      this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+      const directionalLight = new THREE.DirectionalLight('white', 0.5)
+      const directionalLightOriginPosition = new THREE.Vector3(1, 1, 1)
+      directionalLight.position.x = directionalLightOriginPosition.x
+      directionalLight.position.y = directionalLightOriginPosition.y
+      directionalLight.position.z = directionalLightOriginPosition.z
+      directionalLight.castShadow = true
 
-      this.raycaster.setFromCamera(this.mouse, this._camera)
-      const intersects = this.raycaster.intersectObjects(this.meshes)
+      // mapSize 세팅으로 그림자 퀄리티 설정
+      directionalLight.shadow.mapSize.width = 2048
+      directionalLight.shadow.mapSize.height = 2048
+      // 그림자 범위
+      directionalLight.shadow.camera.left = -100
+      directionalLight.shadow.camera.right = 100
+      directionalLight.shadow.camera.top = 100
+      directionalLight.shadow.camera.bottom = -100
+      directionalLight.shadow.camera.near = -100
+      directionalLight.shadow.camera.far = 100
+      scene.add(directionalLight)
 
-      if (intersects && intersects.length > 0) {
-        document.body.style.cursor = 'pointer'
-      } else {
-        document.body.style.cursor = 'default'
-      }
-    },
+      // Cannon(물리 엔진)
+      const cannonWorld = new CANNON.World()
+      cannonWorld.gravity.set(0, -10, 0)
 
-    // check click
-    checkIntersects() {
-      // console.log('intersects 실행됨')
-      this.raycaster.setFromCamera(this.mouse, this._camera)
-      // console.log('meshes', this.meshes[0])
-      // console.log(this._scene.children[17])
-      const intersects = this.raycaster.intersectObjects(this.meshes)
-      // console.log(intersects)
+      const floorShape = new CANNON.Plane()
+      const floorBody = new CANNON.Body({
+        mass: 0,
+        position: new CANNON.Vec3(0, 0, 0),
+        shape: floorShape
+      })
+      floorBody.quaternion.setFromAxisAngle(
+        new CANNON.Vec3(-1, 0, 0),
+        Math.PI / 2
+      )
+      cannonWorld.addBody(floorBody)
 
-      if (intersects.length > 0) {
-        for (const item of intersects) {
-          if (item.object.name[0] === 'monster') {
-            let monsterId = item.object.name[1]
-            console.log(monsterId)
-            axios({
-              url: BASE_URL + '/api/v1/monster/' + monsterId,
-              method: 'GET',
-              headers: {
-                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+      const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
+      const boxBody = new CANNON.Body({
+        mass: 0,
+        position: new CANNON.Vec3(0, 0, 0),
+        shape: boxShape
+      })
+      cannonWorld.addBody(boxBody)
+
+      // Mesh
+      const meshes = []
+      const floorMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(50, 50),
+        new THREE.MeshStandardMaterial({
+          map: floorTexture
+        })
+      )
+      floorMesh.name = 'floor'
+      floorMesh.rotation.x = -Math.PI / 2
+      floorMesh.receiveShadow = true
+      scene.add(floorMesh)
+      meshes.push(floorMesh)
+
+      const pointerMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.5, 0.5),
+        new THREE.MeshBasicMaterial({
+          color: 'crimson',
+          transparent: true,
+          opacity: 0.5
+        })
+      )
+      pointerMesh.rotation.x = -Math.PI / 2
+      pointerMesh.position.y = 0.01
+      pointerMesh.receiveShadow = true
+      scene.add(pointerMesh)
+
+      const spotMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(3, 3),
+        new THREE.MeshStandardMaterial({
+          color: 'yellow',
+          transparent: true,
+          opacity: 0.5
+        })
+      )
+      spotMesh.position.set(5, 0.005, 5)
+      spotMesh.rotation.x = -Math.PI / 2
+      spotMesh.receiveShadow = true
+      scene.add(spotMesh)
+
+      const gltfLoader = new GLTFLoader()
+
+      const house = new House({
+        gltfLoader,
+        scene,
+        meshes,
+        modelSrc: '/models/house.glb',
+        x: 5,
+        y: 0,
+        z: 2
+      })
+
+      const player = new Player({
+        scene,
+        meshes,
+        cannonWorld,
+        gltfLoader,
+        modelSrc: '/models/bbb.glb'
+      })
+
+      const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
+      const boxMaterial = new THREE.MeshStandardMaterial({
+        color: 'seagreen'
+      })
+      const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
+      boxMesh.position.y = 0.5
+      boxMesh.name = 'box'
+      scene.add(boxMesh)
+      meshes.push(boxMesh)
+
+      const Characters = ['단군']
+      Characters.forEach((element) => {
+        new Character({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/${element}.glb`,
+          position: { x: 1, y: 0, z: 1 },
+          name: element
+        })
+      })
+
+      const raycaster = new THREE.Raycaster()
+      let mouse = new THREE.Vector2()
+      let destinationPoint = new THREE.Vector3()
+      let angle = 0
+      let isPressed = false // 마우스를 누르고 있는 상태
+
+      // 그리기
+      const clock = new THREE.Clock()
+      let keys = {}
+
+      function draw() {
+        const delta = clock.getDelta()
+
+        let cannonStepTime = 1 / 60
+        if (delta < 0.01) cannonStepTime = 1 / 120
+        cannonWorld.step(cannonStepTime, delta, 3)
+
+        boxMesh.position.copy(boxBody.position) // 위치
+        boxMesh.quaternion.copy(boxBody.quaternion) // 회전
+        if (player.modelMesh) {
+          player.modelMesh.position.copy(player.cannonBody.position)
+          player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
+        }
+
+        if (player.mixer) player.mixer.update(delta)
+
+        if (player.modelMesh) {
+          camera.lookAt(player.modelMesh.position)
+        }
+        if (player.modelMesh && props.nowPage === 0 && !isTalk.value.talk) {
+          if (isPressed) {
+            raycasting()
+          }
+
+          if (player.moving) {
+            // 걸어가는 상태
+            walk()
+            angle = Math.atan2(
+              destinationPoint.z - player.modelMesh.position.z,
+              destinationPoint.x - player.modelMesh.position.x
+            )
+            player.modelMesh.position.x += Math.cos(angle) * 0.02
+            player.modelMesh.position.z += Math.sin(angle) * 0.02
+            player.cannonBody.position.x += Math.cos(angle) * 0.02
+            player.cannonBody.position.z += Math.sin(angle) * 0.02
+
+            camera.position.x = cameraPosition.x + player.modelMesh.position.x
+            camera.position.z = cameraPosition.z + player.modelMesh.position.z
+
+            if (
+              Math.abs(destinationPoint.x - player.modelMesh.position.x) <
+                0.02 &&
+              Math.abs(destinationPoint.z - player.modelMesh.position.z) < 0.02
+            ) {
+              player.moving = false
+            }
+
+            if (
+              Math.abs(spotMesh.position.x - player.modelMesh.position.x) <
+                1.5 &&
+              Math.abs(spotMesh.position.z - player.modelMesh.position.z) < 1.5
+            ) {
+              if (!house.visible) {
+                console.log('나와')
+                house.visible = true
+                spotMesh.material.color.set('seagreen')
+                gsap.to(house.modelMesh.position, {
+                  duration: 1,
+                  y: 1,
+                  ease: 'Bounce.easeOut'
+                })
+                gsap.to(camera.position, {
+                  duration: 1,
+                  y: 3
+                })
+                setTimeout(() => {
+                  alert('집에 들어감')
+                  emit('now')
+                }, 1000)
               }
-            })
-              .then((res) => {
-                this.monsterDetail = res.data
-
-                Swal.fire(`${this.monsterDetail.name}`)
-                this.showMonster()
+            } else if (house.visible) {
+              console.log('들어가')
+              house.visible = false
+              spotMesh.material.color.set('yellow')
+              gsap.to(house.modelMesh.position, {
+                duration: 0.5,
+                y: -1.3
               })
-              .catch((err) => {
-                console.log(err)
+              gsap.to(camera.position, {
+                duration: 1,
+                y: 5
               })
-          } else if (item.object.name === 'move') {
-            this.changeCanvas()
-          } else if (item.object.name === 'battle') {
-            this.changeBattle()
+            }
+          } else {
+            // 서 있는 상태
           }
         }
-      } else {
-        console.log('비어있음')
+
+        renderer.render(scene, camera)
+        renderer.setAnimationLoop(draw)
       }
-    },
+      function checkIntersects() {
+        raycaster.setFromCamera(mouse, camera)
+        console.log(meshes)
+        const intersects = raycaster.intersectObjects(meshes)
+        console.log(intersects)
+        for (const item of intersects) {
+          if (item.object.name === 'floor') {
+            destinationPoint.x = item.point.x
+            destinationPoint.z = item.point.z
+            player.modelMesh.lookAt(destinationPoint)
 
-    _setupOctree(model) {
-      this._worldOctree = new Octree()
-      this._worldOctree.fromGraphNode(model)
-    },
+            // console.log(item.point)
 
-    _setupControls() {
-      this._controls = new OrbitControls(
-        this._camera,
-        this._renderer.domElement
-      )
-      this._controls.target.set(0, 100, 0)
-      this._controls.enablePan = false
-      this._controls.enableDamping = true
+            player.moving = true
 
-      // const stats = new Stats()
-      // this._divContainer.appendChild(stats.dom)
-      // this._fps = stats
-
-      this._pressedKeys = {}
-
-      document.addEventListener('keydown', (event) => {
-        this._pressedKeys[event.key.toLowerCase()] = true
-        this._processAnimation()
-      })
-
-      document.addEventListener('keyup', (event) => {
-        this._pressedKeys[event.key.toLowerCase()] = false
-        this._processAnimation()
-      })
-
-      // 클릭 이벤트 바인딩
-      document.addEventListener('dblclick', (e) => {
-        this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1
-        this.mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
-        console.log(this.mouse.x, this.mouse.y)
-        this.checkIntersects()
-      })
-
-      // pointer 이동 커서 변환 함수
-      document.addEventListener('pointermove', (e) => {
-        if (this.nowPage === 0) {
-          this.onPointerMove(e)
-        }
-      })
-    },
-
-    _processAnimation() {
-      const previousAnimationAction = this._currentAnimationAction
-      if (this.nowPage === 0) {
-        if (
-          this._pressedKeys['w'] ||
-          this._pressedKeys['a'] ||
-          this._pressedKeys['s'] ||
-          this._pressedKeys['d']
-        ) {
-          this.maxSpeed = 350
-          this.acceleration = 3
-          //   if (this._pressedKeys['shift']) {
-          //     this._currentAnimationAction = this._animationMap['Run']
-          //     // this.speed = 350;
-          //     this.maxSpeed = 350
-          //     this.acceleration = 3
-          //   } else {
-          //     this._currentAnimationAction = this._animationMap['Walk']
-          //     //this.speed = 80;
-          //     this.maxSpeed = 80
-          //     this.acceleration = 3
-          //   }
-        } else {
-          // this._currentAnimationAction = this._animationMap['Idle']
-          this.speed = 0
-          this.maxSpeed = 0
-          this.acceleration = 0
-        }
-
-        if (previousAnimationAction !== this._currentAnimationAction) {
-          previousAnimationAction.fadeOut(0.5)
-          this._currentAnimationAction.reset().fadeIn(0.5).play()
-        }
-      }
-    },
-
-    _setupModel() {
-      // const planeGeometry = new THREE.PlaneGeometry(1000, 1000);
-      // const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x878787 });
-      // const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-      // plane.rotation.x = -Math.PI/2;
-      // this._scene.add(plane);
-      // plane.receiveShadow = true;
-
-      // this._worldOctree.fromGraphNode(plane);
-      const loader = new GLTFLoader()
-
-      loader.load('/models/character.glb', (gltf) => {
-        gltf.scene.scale.set(10, 10, 10)
-        const model = gltf.scene
-        this._scene.add(model)
-
-        model.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true
+            pointerMesh.position.x = destinationPoint.x
+            pointerMesh.position.z = destinationPoint.z
           }
-        })
-
-        const animationClips = gltf.animations // THREE.AnimationClip[]
-        const mixer = new THREE.AnimationMixer(model)
-        const animationsMap = {}
-        animationClips.forEach((clip) => {
-          const name = clip.name
-          console.log(name)
-          animationsMap[name] = mixer.clipAction(clip) // THREE.AnimationAction
-        })
-
-        this._mixer = mixer
-        // this._animationMap = animationsMap
-        // this._currentAnimationAction = this._animationMap['Idle']
-        // this._currentAnimationAction.play()
-
-        const box = new THREE.Box3().setFromObject(model)
-        model.position.y = (box.max.y - box.min.y) / 2
-
-        const height = box.max.y - box.min.y
-        const diameter = box.max.z - box.min.z
-        console.log(diameter)
-
-        model._capsule = new Capsule(
-          new THREE.Vector3(0, diameter / 2, 0),
-          new THREE.Vector3(0, height - diameter / 2, 0),
-          diameter / 2
-        )
-        console.log(this._worldOctree)
-        console.log(model._capsule)
-
-        const axisHelper = new THREE.AxesHelper(1000)
-        this._scene.add(axisHelper)
-
-        const boxHelper = new THREE.BoxHelper(model)
-        this._scene.add(boxHelper)
-        this._boxHelper = boxHelper
-        this._model = model
-
-        // const boxG = new THREE.BoxGeometry(100, diameter-5, 100);
-        // const boxM = new THREE.Mesh(boxG, planeMaterial);
-        // boxM.receiveShadow = true;
-        // boxM.castShadow = true;
-        // boxM.position.set(150, 0, 0);
-        // this._scene.add(boxM);
-
-        // this._worldOctree.fromGraphNode(boxM);
-
-        // map 이동용
-        const boxG2 = new THREE.BoxGeometry(50, 50, 50)
-        const boxM2 = new THREE.MeshStandardMaterial({ color: 'green' })
-        const boxbox2 = new THREE.Mesh(boxG2, boxM2)
-        boxbox2.name = 'move'
-        boxbox2.receiveShadow = true
-        boxbox2.castShadow = true
-        boxbox2.position.set(100, 100, 200)
-
-        this._scene.add(boxbox2)
-        this.meshes.push(boxbox2)
-        this._worldOctree.fromGraphNode(boxbox2)
-
-        // 전투 이동용
-        const boxBattleGeo = new THREE.BoxGeometry(50, 50, 50)
-        const boxBattleMesh = new THREE.MeshStandardMaterial({
-          color: 'yellow'
-        })
-        const boxBattle = new THREE.Mesh(boxBattleGeo, boxBattleMesh)
-        boxBattle.name = 'battle'
-        boxBattle.receiveShadow = true
-        boxBattle.castShadow = true
-        boxBattle.position.set(300, 100, 300)
-
-        this._scene.add(boxBattle)
-        this.meshes.push(boxBattle)
-        this._worldOctree.fromGraphNode(boxBattle)
-      })
-    },
-
-    _setupBack() {
-      const loader = new GLTFLoader()
-
-      loader.load('/models/space.glb', (gltf) => {
-        // gltf.scene.scale.set(0.1, 0.1, 0.1)
-        const model = gltf.scene
-
-        this._scene.add(model)
-
-        model.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true
-            child.receiveShadow = true
+          if (item.object.name === 'box') {
+            onClick()
+            isPressed = false
           }
-        })
-        this._setupOctree(model)
+          if (item.object.name.includes('단군')) {
+            console.log('단군!!')
+            isTalk.value.name = '단군'
+            setTimeout(() => {
+              isTalk.value.talk = true
+            }, 100)
+            isPressed = false
+          }
+          break
+        }
+      }
+
+      function setSize() {
+        camera.left = -(window.innerWidth / window.innerHeight)
+        camera.right = window.innerWidth / window.innerHeight
+        camera.top = 1
+        camera.bottom = -1
+
+        camera.updateProjectionMatrix()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.render(scene, camera)
+      }
+
+      // 이벤트
+      window.addEventListener('resize', setSize)
+
+      // 마우스 좌표를 three.js에 맞게 변환
+      function calculateMousePosition(e) {
+        mouse.x = (e.clientX / canvas.clientWidth) * 2 - 1
+        mouse.y = -((e.clientY / canvas.clientHeight) * 2 - 1)
+      }
+
+      // 변환된 마우스 좌표를 이용해 래이캐스팅
+      function raycasting() {
+        raycaster.setFromCamera(mouse, camera)
+        checkIntersects()
+      }
+
+      // 마우스 이벤트
+      canvas.addEventListener('mousedown', (e) => {
+        isPressed = true
+        calculateMousePosition(e)
       })
-      // this._setupModel()
-    },
-
-    _setupCamera() {
-      const camera = new THREE.PerspectiveCamera(
-        60,
-        window.innerWidth / window.innerHeight,
-        1,
-        5000
-      )
-
-      camera.position.set(0, 100, 500)
-      this._camera = camera
-    },
-
-    _addPointLight(x, y, z, helperColor) {
-      const color = 0xffffff
-      const intensity = 1.5
-
-      const pointLight = new THREE.PointLight(color, intensity, 2000)
-      pointLight.position.set(x, y, z)
-
-      this._scene.add(pointLight)
-
-      const pointLightHelper = new THREE.PointLightHelper(
-        pointLight,
-        10,
-        helperColor
-      )
-      this._scene.add(pointLightHelper)
-    },
-
-    _setupLight() {
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
-      this._scene.add(ambientLight)
-
-      this._addPointLight(500, 150, 500, 0xff0000)
-      this._addPointLight(-500, 150, 500, 0xffff00)
-      this._addPointLight(-500, 150, -500, 0x00ff00)
-      this._addPointLight(500, 150, -500, 0x0000ff)
-
-      const shadowLight = new THREE.DirectionalLight(0xffffff, 0.2)
-      shadowLight.position.set(200, 500, 200)
-      shadowLight.target.position.set(0, 0, 0)
-      const directionalLightHelper = new THREE.DirectionalLightHelper(
-        shadowLight,
-        10
-      )
-      this._scene.add(directionalLightHelper)
-
-      this._scene.add(shadowLight)
-      this._scene.add(shadowLight.target)
-
-      shadowLight.castShadow = true
-      shadowLight.shadow.mapSize.width = 1024
-      shadowLight.shadow.mapSize.height = 1024
-      shadowLight.shadow.camera.top = shadowLight.shadow.camera.right = 700
-      shadowLight.shadow.camera.bottom = shadowLight.shadow.camera.left = -700
-      shadowLight.shadow.camera.near = 100
-      shadowLight.shadow.camera.far = 900
-      shadowLight.shadow.radius = 5
-      const shadowCameraHelper = new THREE.CameraHelper(
-        shadowLight.shadow.camera
-      )
-      this._scene.add(shadowCameraHelper)
-    },
-
-    _directionOffset() {
-      const pressedKeys = this._pressedKeys
-      let directionOffset = 0 // w
-
-      if (pressedKeys['w']) {
-        if (pressedKeys['a']) {
-          directionOffset = Math.PI / 4 // w+a (45도)
-        } else if (pressedKeys['d']) {
-          directionOffset = -Math.PI / 4 // w+d (-45도)
+      canvas.addEventListener('mouseup', () => {
+        isPressed = false
+      })
+      canvas.addEventListener('mousemove', (e) => {
+        if (isPressed) {
+          calculateMousePosition(e)
         }
-      } else if (pressedKeys['s']) {
-        if (pressedKeys['a']) {
-          directionOffset = Math.PI / 4 + Math.PI / 2 // s+a (135도)
-        } else if (pressedKeys['d']) {
-          directionOffset = -Math.PI / 4 - Math.PI / 2 // s+d (-135도)
-        } else {
-          directionOffset = Math.PI // s (180도)
+      })
+
+      // 터치 이벤트
+      canvas.addEventListener('touchstart', (e) => {
+        isPressed = true
+        calculateMousePosition(e.touches[0])
+      })
+      canvas.addEventListener('touchend', () => {
+        isPressed = false
+      })
+      canvas.addEventListener('touchmove', (e) => {
+        if (isPressed) {
+          calculateMousePosition(e.touches[0])
         }
-      } else if (pressedKeys['a']) {
-        directionOffset = Math.PI / 2 // a (90도)
-      } else if (pressedKeys['d']) {
-        directionOffset = -Math.PI / 2 // d (-90도)
-      } else {
-        directionOffset = this.previousDirectionOffset
+      })
+
+      const keyController = new KeyController()
+
+      function walk() {
+        if (keyController.keys['KeyW'] || keyController.keys['ArrowUp']) {
+          destinationPoint.z = player.modelMesh.position.z - 1
+        }
+        if (keyController.keys['KeyS'] || keyController.keys['ArrowDown']) {
+          destinationPoint.z = player.modelMesh.position.z + 1
+        }
+        if (keyController.keys['KeyD'] || keyController.keys['ArrowRight']) {
+          destinationPoint.x = player.modelMesh.position.x + 1
+        }
+        if (keyController.keys['KeyA'] || keyController.keys['ArrowLeft']) {
+          destinationPoint.x = player.modelMesh.position.x - 1
+        }
+        if (player.modelMesh.position.z) {
+          console.log(destinationPoint.z, player.modelMesh.position.z)
+        }
+        player.modelMesh.lookAt(destinationPoint)
       }
-
-      this.previousDirectionOffset = directionOffset
-
-      return directionOffset
-    },
-
-    update(time) {
-      time *= 0.001 // second unit
-
-      this._controls.update()
-
-      if (this._boxHelper) {
-        this._boxHelper.update()
-      }
-
-      // this._fps.update()
-
-      if (this._mixer) {
-        const deltaTime = time - this._previousTime
-        this._mixer.update(deltaTime)
-
-        const angleCameraDirectionAxisY =
-          Math.atan2(
-            this._camera.position.x - this._model.position.x,
-            this._camera.position.z - this._model.position.z
-          ) + Math.PI
-
-        const rotateQuarternion = new THREE.Quaternion()
-        rotateQuarternion.setFromAxisAngle(
-          new THREE.Vector3(0, 1, 0),
-          angleCameraDirectionAxisY + this._directionOffset()
-        )
-
-        this._model.quaternion.rotateTowards(
-          rotateQuarternion,
-          THREE.MathUtils.degToRad(5)
-        )
-
-        const walkDirection = new THREE.Vector3()
-        this._camera.getWorldDirection(walkDirection)
-
-        //walkDirection.y = 0;
-        walkDirection.y = this.bOnTheGround ? 0 : -1
-        walkDirection.normalize()
-
-        walkDirection.applyAxisAngle(
-          new THREE.Vector3(0, 1, 0),
-          this._directionOffset()
-        )
-
-        if (this.speed < this.maxSpeed) this.speed += this.acceleration
-        else this.speed -= this.acceleration * 2
-
-        if (!this.bOnTheGround) {
-          // this.fallingAcceleration += 0.1
-          // this.fallingSpeed += Math.pow(this.fallingAcceleration, 2)
-          this.fallingSpeed = 300
-        } else {
-          this.fallingAcceleration = 0
-          this.fallingSpeed = 0
+      window.addEventListener('keydown', (e) => {
+        if (!keys[e.key]) {
+          keys[e.key] = 1
         }
-
-        const velocity = new THREE.Vector3(
-          walkDirection.x * this.speed,
-          walkDirection.y * this.fallingSpeed,
-          walkDirection.z * this.speed
-        )
-
-        const deltaPosition = velocity.clone().multiplyScalar(deltaTime)
-
-        // const moveX = walkDirection.x * (this.speed * deltaTime);
-        // const moveZ = walkDirection.z * (this.speed * deltaTime);
-
-        // this._model.position.x += moveX;
-        // this._model.position.z += moveZ;
-
-        this._model._capsule.translate(deltaPosition)
-
-        const result = this._worldOctree.capsuleIntersect(this._model._capsule)
-        if (result) {
-          // 충돌한 경우
-          this._model._capsule.translate(
-            result.normal.multiplyScalar(result.depth)
-          )
-          this.bOnTheGround = true
-        } else {
-          // 충돌하지 않은 경우
-          this.bOnTheGround = false
+        console.log(keys)
+        player.moving = true
+      })
+      window.addEventListener('keyup', (e) => {
+        delete keys[e.key]
+        if (e.key === 'a' || e.key === 'd') {
+          destinationPoint.x = player.modelMesh.position.x
         }
+        if (e.key === 'w' || e.key === 's') {
+          destinationPoint.z = player.modelMesh.position.z
+        }
+        if (keys === {}) {
+          player.moving = false
+        }
+      })
+      draw()
 
-        const previousPosition = this._model.position.clone()
-        const capsuleHeight =
-          this._model._capsule.end.y -
-          this._model._capsule.start.y +
-          this._model._capsule.radius * 2
-        this._model.position.set(
-          this._model._capsule.start.x,
-          this._model._capsule.start.y -
-            this._model._capsule.radius +
-            capsuleHeight / 2,
-          this._model._capsule.start.z
-        )
-
-        // this._camera.position.x += moveX;
-        // this._camera.position.z += moveZ;
-        this._camera.position.x -= previousPosition.x - this._model.position.x
-        this._camera.position.z -= previousPosition.z - this._model.position.z
-
-        this._controls.target.set(
-          this._model.position.x,
-          this._model.position.y,
-          this._model.position.z
-        )
+      function onClick() {
+        alert('aa')
+        emit('changeCanvas')
       }
-      this._previousTime = time
-    },
+    }, 100)
 
-    render(time) {
-      this._renderer.render(this._scene, this._camera)
-      this.update(time)
+    function talkClose() {
+      isTalk.value.talk = false
+    }
 
-      requestAnimationFrame(this.render.bind(this))
-    },
+    function quizStart() {
+      isTalk.value.talk = false
+      isQuiz.value.quiz = true
+    }
 
-    resize() {
-      // const width = this._divContainer.clientWidth
-      // const height = this._divContainer.clientHeight
+    function quizClose() {
+      isQuiz.value.quiz = false
+    }
 
-      // this._camera.aspect = width / height
-      // this._camera.updateProjectionMatrix()
-
-      // this._renderer.setSize(width, height)
-      this._camera.aspect = window.innerWidth / window.innerHeight
-      this._camera.updateProjectionMatrix()
-
-      this._renderer.setSize(window.innerWidth, window.innerHeight)
-    },
-
-    changeCanvas() {
-      this.$emit('changeCanvas')
-    },
-
-    changeBattle() {
-      this.$emit('changeBattle')
+    return {
+      isTalk,
+      isQuiz,
+      talkClose,
+      quizStart,
+      quizClose
     }
   }
 }
 </script>
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-* {
-  outline: none;
-  margin: 0;
-}
-#world {
-  height: 100%;
-  width: 100%;
+canvas {
+  width: 100vw;
+  height: 100vh;
 }
 </style>
