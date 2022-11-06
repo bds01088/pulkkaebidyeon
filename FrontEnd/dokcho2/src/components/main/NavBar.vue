@@ -6,7 +6,12 @@
           <li>
             <div class="navbar__item">
               <p>미션</p>
-              <img @click="openModal1" src="@/assets/navbar/004.png" alt="" />
+              <img
+                @click="openModal1"
+                @closeModal1="closeModal1"
+                src="@/assets/navbar/004.png"
+                alt=""
+              />
             </div>
           </li>
 
@@ -67,21 +72,28 @@ export default {
   methods: {
     openModal1() {
       this.modal1 = true
+      this.$emit('changeNavbar')
     },
     closeModal1() {
+      console.log('닫음')
       this.modal1 = false
+      this.$emit('changeNavbar')
     },
     openModal2() {
       this.modal2 = true
+      this.$emit('changeNavbar')
     },
     closeModal2() {
       this.modal2 = false
+      this.$emit('changeNavbar')
     },
     openModal3() {
       this.modal3 = true
+      this.$emit('changeNavbar')
     },
     closeModal3() {
       this.modal3 = false
+      this.$emit('changeNavbar')
     },
     logout() {
       swalWithBootstrapButtons
@@ -132,7 +144,7 @@ export default {
 <style scoped>
 .navbar {
   position: absolute;
-  z-index: 9999;
+  z-index: 10;
   width: 8vw;
   margin: 0;
   top: 5%;
