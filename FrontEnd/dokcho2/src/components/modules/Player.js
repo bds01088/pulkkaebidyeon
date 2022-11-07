@@ -6,13 +6,14 @@ export class Player {
     this.scene = info.scene
     this.cannonWorld = info.cannonWorld
     this.rotationY = info.rotationY || 0
-    console.log('aaaa', info)
+
     this.width = info.width || 0.8
     this.height = info.height || 0.5
     this.depth = info.depth || 1
-    this.x = 0
-    this.y = 0
-    this.z = 0
+
+    this.x = info.x || 0
+    this.y = info.y || 0
+    this.z = info.z || 0
 
     info.gltfLoader.load(info.modelSrc, (glb) => {
       glb.scene.traverse((child) => {
@@ -25,6 +26,7 @@ export class Player {
       this.modelMesh.scale.x = 0.3
       this.modelMesh.scale.y = 0.3
       this.modelMesh.scale.z = 0.3
+
       this.modelMesh.position.set(this.x, this.y, this.z)
       this.modelMesh.name = 'ilbuni'
       this.scene.add(this.modelMesh)
@@ -32,6 +34,7 @@ export class Player {
       this.setCannonBody()
     })
   }
+
   setCannonBody() {
     const shape = new Box(
       new Vec3(this.width / 2, this.height / 2, this.depth / 2)
