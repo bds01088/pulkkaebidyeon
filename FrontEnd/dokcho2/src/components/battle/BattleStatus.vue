@@ -49,24 +49,29 @@ export default {
   watch: {
     time() {
       if (this.enemyHpBar < this.getEnemyHpBar) {
-        this.getEnemyHpBar -= 5
+        this.getEnemyHpBar -= 2
+      } else if (this.enemyHpBar > this.getEnemyHpBar) {
+        this.getEnemyHpBar += 2
       }
       var enemyHpBarPer = this.getEnemyHpBar.toString() + '%'
       document.querySelector('#enemyHp').style.width = enemyHpBarPer
+
       if (this.myHpBar < this.getmyHpBar) {
-        this.getmyHpBar -= 5
+        this.getmyHpBar -= 2
+      } else if (this.myHpBar > this.getmyHpBar) {
+        this.getmyHpBar += 2
       }
       var myHpBarPer = this.getmyHpBar.toString() + '%'
       document.querySelector('#myHp').style.width = myHpBarPer
-    },
-
-    begin() {
-      this.getEnemyHpBar = 100
-      this.getmyHpBar = 100
-
-      document.querySelector('#enemyHp').style.width = this.getEnemyHpBar
-      document.querySelector('#myHp').style.width = this.getmyHpBar
     }
+  },
+
+  begin() {
+    this.getEnemyHpBar = 100
+    this.getmyHpBar = 100
+
+    document.querySelector('#enemyHp').style.width = this.getEnemyHpBar
+    document.querySelector('#myHp').style.width = this.getmyHpBar
   },
 
   methods: {}
