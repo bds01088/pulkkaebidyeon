@@ -1,18 +1,19 @@
 <template>
-  <div class="myMission">
-    <div class="mission__header">
-      <p class="mission__user">{{ userInfo.nickname }}의 사건 수첩</p>
+  <div class="mission__container">
+    <div class="myMission">
+      <div class="mission__header">
+        <p class="mission__user">{{ userInfo.nickname }}의 사건 수첩</p>
 
-      <p>지금 해결 중인 사건 :</p>
-    </div>
+        <p>지금 해결 중인 사건 :</p>
+      </div>
 
-    <div
-      v-for="(mission, i) in missions.missions"
-      :key="i"
-      class="mission__body"
-    >
-      <!-- CSS 하고 주석 풀 예정 -->
-      <!-- <div v-if="mission.status !== 'NOT_YET'" class="mission__box">
+      <div
+        v-for="(mission, i) in missions.missions"
+        :key="i"
+        class="mission__body"
+      >
+        <!-- CSS 하고 주석 풀 예정 -->
+        <!-- <div v-if="mission.status !== 'NOT_YET'" class="mission__box">
         <p>{{ mission.missionId }}번째 사건. 해결 완료!</p>
         <p>{{ mission.characters }}의 고민을 해결하라!</p>
       </div>
@@ -21,35 +22,42 @@
         <p>미해결</p>
       </div> -->
 
-      <div
-        class="mission__box"
-        @click="openMissionDetail"
-        :class="{
-          mission__now: mission.status === 'STARTED',
-          mission__notyet: mission.status === 'NOT_YET',
-          mission__finished: mission.status === 'FINISHED'
-        }"
-      >
-        <p>{{ mission.missionId }}번째 사건</p>
-        <p>{{ mission.characters }}의 고민을 해결하라!</p>
+        <div
+          class="mission__box"
+          @click="openMissionDetail"
+          :class="{
+            mission__now: mission.status === 'STARTED',
+            mission__notyet: mission.status === 'NOT_YET',
+            mission__finished: mission.status === 'FINISHED'
+          }"
+        >
+          <p>{{ mission.missionId }}번째 사건</p>
+          <p>{{ mission.characters }}의 고민을 해결하라!</p>
+        </div>
       </div>
+      <img
+        class="exit__btn"
+        @click="closeModal1()"
+        src="@/assets/navbar/ExitButton.png"
+        alt=""
+      />
     </div>
-    <!-- <div>{{ missions.missions[0] }}</div> -->
-    <button @click="closeModal1()">닫기</button>
   </div>
 
-  <MissionDetail @click="closeMissionDetail" v-if="missionDetail.missionDetail">
-  </MissionDetail>
+  <!-- <MissionDetail
+    @click="closeMissionDetail"
+    v-if="missionDetail.missionDetail"
+  /> -->
 </template>
 
 <script>
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
-import MissionDetail from './MissionDetail.vue'
+// import MissionDetail from './MissionDetail.vue'
 import { ref, onMounted } from 'vue'
 
 export default {
-  components: { MissionDetail },
+  // components: { MissionDetail },
   setup(props, { emit }) {
     const missions = ref({ missions: [] })
     const missionDetail = ref({ missionDetail: false })
@@ -101,18 +109,29 @@ export default {
 </script>
 
 <style scoped>
+.mission__container {
+  width: 100%;
+  height: 100%;
+  /* backdrop-filter: blur(4px); */
+  z-index: 30;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+}
+
 .myMission {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: fixed;
-  z-index: 30;
+  z-index: 40;
   top: 10%;
   left: 25%;
   width: 50%;
   height: 80%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(169, 170, 150, 0.714);
   /* background-image: url('@/assets/Paper.png'); */
   background-size: cover;
   background-repeat: no-repeat;
@@ -154,5 +173,16 @@ export default {
 
 .mission__box p {
   margin: auto;
+}
+
+.exit__btn {
+  width: 4vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 4vh;
+  right: 4vw;
+  cursor: pointer;
 }
 </style>
