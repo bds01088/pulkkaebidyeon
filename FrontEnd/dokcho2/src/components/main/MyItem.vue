@@ -6,28 +6,55 @@
     </div>
     <div class="item__body" v-if="items.items.length > 0">
       <h3>미션 획득 아이템</h3>
-      <div class="item__body1">
+      <div class="item__body1" v-if="missionItems.missionItems.length > 0">
         <div
           class="item__item"
           v-for="item in missionItems.missionItems"
           :key="item.itemId"
         >
-          <p>{{ item.itemName }}</p>
+          <div class="tooltip">
+            <img
+              :src="require('@/assets/item/' + item.itemId + '.png')"
+              alt=""
+              class="item__image"
+            />
+            <span class="tooltiptext"
+              >"{{ item.itemName }}" <br />
+              {{ item.description }}</span
+            >
+          </div>
+
+          <!-- <p>{{ item.itemName }}</p> -->
         </div>
       </div>
+      <div class="item__body1" v-else>
+        <p>미션을 해결하고 아이템을 모아보세요!</p>
+      </div>
       <h3>배틀 사용 아이템</h3>
-      <div class="item__body2" v-if="items.items.length > 0">
+      <div class="item__body2" v-if="battleItems.battleItems.length > 0">
         <div
           class="item__item"
           v-for="item in battleItems.battleItems"
           :key="item.itemId"
         >
-          <p>{{ item.itemName }}</p>
-          <div class="item__count">
-            <p>1</p>
-            <p>{{ item.count }}</p>
+          <div class="tooltip">
+            <!-- 지금 이미지, count 안넣어서 주석처리해둠 -->
+            <!-- <img
+              :src="require('@/assets/item/' + item.itemId + '.png')"
+              alt=""
+              class="item__image"
+            /> -->
+            <span class="tooltiptext"> {{ item.description }}</span>
+            <div class="battle__item">
+              <p>{{ item.itemName }}</p>
+              <p>1</p>
+              <!-- <p>{{ item.count }}</p> -->
+            </div>
           </div>
         </div>
+      </div>
+      <div class="item__body2" v-else>
+        <p>미니게임을 통해 아이템을 모아봐요 >.^</p>
       </div>
     </div>
     <div class="item__x" v-else>
@@ -157,20 +184,35 @@ h3 {
 }
 
 .item__item {
-  width: 50px;
-  height: 50px;
-  border: 1px solid black;
+  width: 60px;
+  height: 60px;
+  /* border: 1px solid black; */
   background-color: #ffffff;
-  padding: 1vh;
+  /* padding: 1vh; */
   border-radius: 10px;
   /* box-shadow: 1px 1px 5px 1px gray; */
   margin-bottom: 2vh;
+  cursor: pointer;
+}
+
+.item__image {
+  width: 100%;
 }
 
 .item__item p {
   font-size: 0.5rem;
 }
 
+.battle__item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.battle__item p {
+  margin-left: 10%;
+}
 .item__count {
   border: 1px solid white;
   background-color: yellow;
@@ -198,5 +240,33 @@ h3 {
   top: 4vh;
   right: 4vw;
   cursor: pointer;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  /* border-bottom: 1px dotted black; */
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 0.8rem;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 </style>
