@@ -103,12 +103,16 @@ public class MissionServiceImpl implements MissionService{
 
     public void updateExp(User user, Monster monster, Integer rewardExp){
         UserMonster um = userMonsterRepository.findByUserAndMonster(user, monster).orElseThrow(MonsterNotFoundException::new);
-        if (um.getLevel()*100 <= (um.getExp()+rewardExp)) {
-            um.setExp((um.getExp()+rewardExp)-um.getLevel()*100);
-            um.setLevel(um.getLevel()+1);
-        } else {
-            um.setExp(um.getExp() + rewardExp);
+        Integer newLevel = um.getLevel();
+        Integer newExp = um.getExp()+rewardExp;
+        while (newLevel*100 <= newExp) {
+            newExp -= newLevel*100;
+            newLevel += 1;
         }
+
+        um.setExp(newExp);
+        um.setLevel(newLevel);
+
         userMonsterRepository.save(um);
     }
 
