@@ -10,7 +10,7 @@ import com.ssafy.dokcho2.dto.mission.QuizDto;
 import java.util.List;
 
 public interface MissionService {
-    MissionDto getMissionInfo(String characters);
+    MissionDto getMissionInfo(Long missionId);
     List<QuizDto> getQuizList(Long missionId);
     List<MissionDto> getMissionList();
     void changeMissionStatus(Long missionId, MissionStatus nowStatus);

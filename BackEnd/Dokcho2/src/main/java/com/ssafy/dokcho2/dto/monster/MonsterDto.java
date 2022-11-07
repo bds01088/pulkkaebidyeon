@@ -16,7 +16,6 @@ public class MonsterDto {
     private Long userId;
     private Long monsterId;
     private String name;
-    private String line;
     private String skill;
     private Integer hp;
     private Integer attack;
@@ -28,7 +27,6 @@ public class MonsterDto {
                 .userId(userMonster.getUser().getUserId())
                 .monsterId(userMonster.getMonster().getMonsterId())
                 .name(userMonster.getMonster().getName())
-                .line(userMonster.getMonster().getLine())
                 .skill(userMonster.getMonster().getSkill())
                 .hp(userMonster.getMonster().getHp() + userMonster.getLevel()*500)
                 .attack(userMonster.getMonster().getAttack() + userMonster.getLevel()*80)

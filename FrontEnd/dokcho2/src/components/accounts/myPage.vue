@@ -2,7 +2,7 @@
   <div class="myPage">
     <h1>{{ this.userInfo.nickname }}님!</h1>
     <br />
-    <p>대표 독초몬 :</p>
+    <p>대표 독초몬 : {{ this.monsterDetail.name }}</p>
     <p>이메일 : {{ this.userInfo.email }}</p>
     <p>가입일 : {{ this.userInfo.createDate }}</p>
     <br />
@@ -13,7 +13,7 @@
 
     <changePassword v-if="password"></changePassword>
     <br />
-    <button @click="this.$parent.closeModal">닫기</button>
+    <button @click="$emit('mypageClose')">닫기</button>
   </div>
 </template>
 

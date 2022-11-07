@@ -20,6 +20,7 @@ public class QuizDto {
     private String answer4;
     private String img;
     private String right_answer;
+    private String img;
 
     public static QuizDto from(Quiz entity){
         return QuizDto.builder()
@@ -30,6 +31,7 @@ public class QuizDto {
                 .answer4(entity.getAnswer4())
                 .img(entity.getImg())
                 .right_answer(entity.getRightAnswer())
+                .img(entity.getImg())
                 .build();
     }
 }

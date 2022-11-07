@@ -5,6 +5,7 @@
       v-show="this.nowPage === 0"
       @changeCanvas="changeCanvas"
       @changeBattle="changeBattle"
+      @talkStart="talkStart"
       :nowPage="this.nowPage"
     />
     <HouseCanvas
@@ -46,6 +47,7 @@ export default {
       } else {
         this.nowPage = 0
       }
+      console.log(this.nowPage)
     },
 
     changeBattle() {

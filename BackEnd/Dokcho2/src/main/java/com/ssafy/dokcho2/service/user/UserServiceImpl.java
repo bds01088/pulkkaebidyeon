@@ -140,18 +140,29 @@ public class UserServiceImpl implements UserService{
                 .password(passwordEncoder.encode(requestDto.getPassword()))
                 .representMonster(monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new))
                 .role(Role.ROLE_USER)
+                //현재 진행중인 미션 id 초기값으로 1줌
+                .nowMissionId((long)1)
                 .build();
         userRepository.save(user);
 
         // 유저-미션 테이블에 8개 넣는 코드
         for(int i=1; i<=8; i++){
             Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
-            UserMission um = UserMission.builder()
-                    .user(user)
-                    .mission(mission)
-                    .status(MissionStatus.NOT_YET)
-                    .build();
-
+            UserMission um;
+            //맨처음 단군 미션만 READY로 바꿈
+            if (i == 1) {
+                um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.READY)
+                        .build();
+            } else {
+                um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.NOT_YET)
+                        .build();
+            }
             userMissionRepository.save(um);
         }
 
@@ -299,6 +310,13 @@ public class UserServiceImpl implements UserService{
     public void savePosition(UserPositionDto positionDto) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
         user.savePosition(positionDto);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void changeNowMission(Long missionId) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+        user.changeNowMissionId(missionId);
         userRepository.save(user);
     }
 }
