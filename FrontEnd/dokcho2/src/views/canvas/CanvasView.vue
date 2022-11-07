@@ -1,22 +1,25 @@
 <template>
   <div class="wholeCanvas">
-    <NavBar />
+    <NavBar @changeNavbar="changeNavbar" />
     <WorldCanvas
       v-show="this.nowPage === 0"
       @changeCanvas="changeCanvas"
       @changeBattle="changeBattle"
       @talkStart="talkStart"
       :nowPage="this.nowPage"
+      :nowNavbar="this.nowNavbar"
     />
     <HouseCanvas
       v-show="this.nowPage === 1"
       @changeCanvas="changeCanvas"
       :nowPage="this.nowPage"
+      :nowNavbar="this.nowNavbar"
     />
     <BattleCanvas
       v-show="this.nowPage === 3"
       @changeBattle="changeBattle"
       :nowPage="this.nowPage"
+      :nowNavbar="this.nowNavbar"
     />
   </div>
 </template>
@@ -31,7 +34,8 @@ import BattleCanvas from '../../components/battle/BattleCanvas.vue'
 export default {
   data() {
     return {
-      nowPage: 0
+      nowPage: 0,
+      nowNavbar: false
     }
   },
   components: {
@@ -55,6 +59,14 @@ export default {
         this.nowPage = 3
       } else {
         this.nowPage = 0
+      }
+    },
+
+    changeNavbar() {
+      if (this.nowNavbar === true) {
+        this.nowNavbar = false
+      } else {
+        this.nowNavbar = true
       }
     }
   }
