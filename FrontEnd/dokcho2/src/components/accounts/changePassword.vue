@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="changePw_container">
     <div class="changePw__inputs">
       <input
         v-model="oldPassword"
@@ -96,7 +96,7 @@ export default {
             },
             {
               headers: {
-                'Content-type': 'application/json',
+                'Content-Type': 'application/json',
                 AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
               }
             }
@@ -109,6 +109,7 @@ export default {
               buttons: false,
               timer: 1500
             })
+            this.$parent.closePassword()
           })
           .catch((err) => {
             console.log(err)
@@ -134,4 +135,11 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.changePw_container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+</style>

@@ -1,19 +1,35 @@
 <template>
+  <div class="myPage_container"></div>
   <div class="myPage">
-    <h1>{{ this.userInfo.nickname }}님!</h1>
-    <br />
-    <p>대표 독초몬 : {{ this.monsterDetail.name }}</p>
-    <p>이메일 : {{ this.userInfo.email }}</p>
-    <p>가입일 : {{ this.userInfo.createDate }}</p>
-    <br />
-    <div>
-      <button @click="openPassword()">비밀번호변경</button>
-      <button @click="deleteUser()">회원 탈퇴</button>
+    <div class="myPage_header">
+      <p>{{ this.userInfo.nickname }}님!</p>
     </div>
-
-    <changePassword v-if="password"></changePassword>
     <br />
-    <button @click="$emit('mypageClose')">닫기</button>
+    <div class="myPage_body">
+      <div class="myPage_body_content">
+      <img :src="'/images/pgbs/' + this.monsterDetail.monsterId + '.png'"
+       style="width: 200px; height: 150px;">
+      <div v-if="!password">
+        <p>대표 독초몬 : {{ this.monsterDetail.name }}</p>
+        <p>이메일 : {{ this.userInfo.email }}</p>
+        <p>가입일 : {{ this.userInfo.createDate }}</p>
+        <br />
+        <div class="buttons">
+          <button @click="openPassword()">비밀번호 변경</button>
+          <button @click="deleteUser()">회원 탈퇴</button>
+        </div>
+      </div>
+      
+      <changePassword v-if="password"></changePassword>
+      <br />
+      </div>
+    </div>
+    <img
+      class="exit__btn"
+      @click="$emit('mypageClose')"
+      src="@/assets/navbar/ExitButton.png"
+      alt=""
+    />
   </div>
 </template>
 
@@ -194,18 +210,79 @@ export default {
 </script>
 
 <style scoped>
+.myPage_container{
+  width: 100%;
+  height: 100%;
+  /* backdrop-filter: blur(4px); */
+  z-index: 30;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+}
+
 .myPage {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: fixed;
-  z-index: 30;
-  top: 25%;
+  z-index: 40;
+  top: 10%;
   left: 25%;
   width: 50%;
-  height: 70%;
-  background: rgba(255, 255, 255, 0.9);
+  height: 80%;
+  background: rgba(169, 170, 150, 0.714);
+  /* background-image: url('@/assets/Paper.png'); */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
   backdrop-filter: blur(4px);
+  border-radius: 20px;
+  overflow: visible;
 }
+
+.myPage_header{
+  font-weight: bolder;
+  font-size: 2rem;
+  /* margin-bottom: 5vh; */
+  margin-bottom: 3vh;
+  margin-top: 0;
+}
+
+.myPage_body{
+  /* margin: 2vh; */
+  border: 1px solid white;
+  background-color: #ffffff;
+  width: 80%;
+  height: 60%;
+  top: 30%;
+  padding: 1vh;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px 1px gray;
+}
+
+.exit__btn {
+  width: 4vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 4vh;
+  right: 4vw;
+  cursor: pointer;
+}
+
+.myPage_body_content{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  width: 80%;
+  height: 60%;
+}
+
+
+
 </style>
