@@ -13,4 +13,6 @@ public interface UserItemRepository extends JpaRepository<UserItem, Long> {
     List<UserItem> findAllByUser(User user);
 
     Optional<UserItem> findByUserAndItem(User user, Item item);
+
+    void deleteAllByUser(User user);
 }

@@ -167,4 +167,11 @@ public class UserController {
         userService.changeNowMission(missionId);
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
+
+    @DeleteMapping("/reset")
+    @ApiOperation(value = "초기 상태로 되돌리기")
+    public ResponseEntity<String> userReset(){
+        userService.reset();
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
 }

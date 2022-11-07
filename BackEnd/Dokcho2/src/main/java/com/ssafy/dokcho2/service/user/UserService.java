@@ -33,4 +33,6 @@ public interface UserService {
     void savePosition(UserPositionDto positionDto);
 
     void changeNowMission(Long missionId);
+
+    void reset();
 }
