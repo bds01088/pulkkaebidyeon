@@ -30,8 +30,8 @@ public class MonsterDto {
                 .name(userMonster.getMonster().getName())
                 .line(userMonster.getMonster().getLine())
                 .skill(userMonster.getMonster().getSkill())
-                .hp(userMonster.getLevel()*500)
-                .attack(userMonster.getLevel()*80)
+                .hp(userMonster.getMonster().getHp() + userMonster.getLevel()*500)
+                .attack(userMonster.getMonster().getAttack() + userMonster.getLevel()*80)
                 .level(userMonster.getLevel())
                 .exp(userMonster.getExp())
                 .build();
