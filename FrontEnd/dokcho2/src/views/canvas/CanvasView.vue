@@ -1,6 +1,7 @@
 <template>
   <div class="wholeCanvas">
-    <NavBar />
+    <SocketCanvas v-show="this.nowPage === 0" :nowPage="this.nowPage" />
+    <!-- <NavBar />
     <WorldCanvas
       v-show="this.nowPage === 0"
       @changeCanvas="changeCanvas"
@@ -16,16 +17,17 @@
       v-show="this.nowPage === 3"
       @changeBattle="changeBattle"
       :nowPage="this.nowPage"
-    />
+    /> -->
   </div>
 </template>
 
 <script>
-import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
-import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
-import NavBar from '../../components/main/NavBar.vue'
+// import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
+// import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
+// import NavBar from '../../components/main/NavBar.vue'
 
-import BattleCanvas from '../../components/battle/BattleCanvas.vue'
+// import BattleCanvas from '../../components/battle/BattleCanvas.vue'
+import SocketCanvas from '../../components/canvas/SocketCanvas.vue'
 
 export default {
   data() {
@@ -34,10 +36,11 @@ export default {
     }
   },
   components: {
-    WorldCanvas: WorldCanvas,
-    HouseCanvas: HouseCanvas,
-    NavBar: NavBar,
-    BattleCanvas: BattleCanvas
+    SocketCanvas: SocketCanvas
+    // WorldCanvas: WorldCanvas,
+    // HouseCanvas: HouseCanvas,
+    // NavBar: NavBar,
+    // BattleCanvas: BattleCanvas
   },
   methods: {
     changeCanvas() {

@@ -1,6 +1,6 @@
 import { Body, Box, Vec3 } from 'cannon-es'
 
-export class Player {
+export class Person {
   constructor(info) {
     this.moving = false
     this.scene = info.scene
@@ -10,9 +10,9 @@ export class Player {
     this.width = info.width || 0.8
     this.height = info.height || 0.5
     this.depth = info.depth || 1
-    this.x = 0
-    this.y = 0
-    this.z = 0
+
+    this.value = info.value
+    this.objList = info.objList
 
     info.gltfLoader.load(info.modelSrc, (glb) => {
       glb.scene.traverse((child) => {
@@ -25,9 +25,19 @@ export class Player {
       this.modelMesh.scale.x = 0.3
       this.modelMesh.scale.y = 0.3
       this.modelMesh.scale.z = 0.3
-      this.modelMesh.position.set(this.x, this.y, this.z)
+      this.modelMesh.position.set(
+        this.value.object.x,
+        this.value.object.y,
+        this.value.object.z
+      )
       this.modelMesh.name = 'ilbuni'
+      this.objList.push(this.modelMesh)
+      for (let i = 0; i < this.objList.length; i++) {
+        this.scene.remove(this.objList[i])
+      }
+      this.objList = []
       this.scene.add(this.modelMesh)
+
       this.setCannonBody()
     })
   }
