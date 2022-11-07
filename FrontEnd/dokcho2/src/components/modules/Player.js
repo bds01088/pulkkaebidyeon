@@ -28,7 +28,7 @@ export class Player {
       this.modelMesh.scale.z = 0.3
 
       this.modelMesh.position.set(this.x, this.y, this.z)
-      this.modelMesh.name = 'ilbuni'
+      this.modelMesh.name = 'player'
       this.scene.add(this.modelMesh)
 
       this.setCannonBody()

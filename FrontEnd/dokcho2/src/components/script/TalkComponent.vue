@@ -1,0 +1,111 @@
+<template>
+  <div class="talk">
+    <div class="talk__box">
+      <div class="box" v-if="this.isTalk.content.line">
+        <div class="name">{{ this.isTalk.name }}</div>
+        <div class="content">
+          {{ this.isTalk.content.line[nowPage.nowPage] }}
+        </div>
+        <button
+          @click="nextTalk()"
+          v-if="this.isTalk.content.line.length !== nowPage.nowPage + 1"
+        >
+          다음
+        </button>
+        <button @click="endTalk()" v-else>나가기</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+import { BASE_URL } from '@/constant/BASE_URL'
+import { ref } from 'vue'
+
+export default {
+  props: {
+    isTalk: Object
+  },
+  setup(props, { emit }) {
+    let nowPage = ref({ nowPage: 0 })
+
+    function endTalk() {
+      const content = props.isTalk.content
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+      if (content.status === 'STARTED') {
+        emit('quizStart')
+      } else {
+        if (userInfo.nowMissionId === content.missionId) {
+          axios({
+            url:
+              BASE_URL +
+              '/api/v1/mission/' +
+              userInfo.nowMissionId +
+              '?nowStatus=' +
+              content.status,
+            method: 'PUT',
+            headers: {
+              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+            }
+          }).then(() => {
+            if (content.status === 'BATTLE_WIN') {
+              let nextMissionId = userInfo.nowMissionId + 1
+              axios({
+                url: BASE_URL + '/api/v1/user/nowMission/' + nextMissionId,
+                method: 'PUT',
+                headers: {
+                  AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+                }
+              }).then(() => {
+                userInfo.nowMissionId += 1
+                localStorage.setItem('userInfo', JSON.stringify(userInfo))
+              })
+            }
+            emit('talkClose')
+          })
+        } else {
+          emit('talkClose')
+        }
+      }
+    }
+
+    function nextTalk() {
+      nowPage.value.nowPage += 1
+    }
+
+    return {
+      nowPage,
+      endTalk,
+      nextTalk
+    }
+  }
+}
+</script>
+
+<style scoped>
+.talk {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.talk__box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50%;
+}
+.box {
+  width: 80%;
+  height: 70%;
+  background-color: rgb(167, 105, 105);
+}
+</style>

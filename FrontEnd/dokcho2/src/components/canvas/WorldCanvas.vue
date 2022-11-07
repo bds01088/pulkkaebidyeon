@@ -1,25 +1,47 @@
 <template>
-  <canvas id="canvas"> </canvas>
+  <div>
+    <canvas id="WorldCanvas"> </canvas>
+    <TalkComponent
+      v-if="isTalk.talk"
+      @talkClose="talkClose"
+      @quizStart="quizStart"
+      :isTalk="isTalk"
+    />
+    <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
+  </div>
 </template>
 
 <script>
 import * as THREE from 'three'
+import axios from 'axios'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
 import { House } from '../modules/House'
-import gsap from 'gsap'
+import { Character } from '../modules/Character'
 import { KeyController } from '../modules/CharacterControl'
+import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
+import TalkComponent from '../script/TalkComponent.vue'
+import QuizComponent from '../script/QuizComponent.vue'
+import { ref } from 'vue'
+
+import { BASE_URL } from '@/constant/BASE_URL'
 
 export default {
   name: 'WorldCanvas',
   props: {
-    nowPage: Number
+    nowPage: Number,
+    nowNavbar: Boolean
+  },
+  components: {
+    TalkComponent: TalkComponent,
+    QuizComponent: QuizComponent
   },
   setup(props, { emit }) {
+    let isTalk = ref({ talk: false, name: '', content: {} })
+    let isQuiz = ref({ quiz: false })
     setTimeout(() => {
       // Texture
-
       const textureLoader = new THREE.TextureLoader()
       const floorTexture = textureLoader.load('/images/grid.png')
       floorTexture.wrapS = THREE.RepeatWrapping
@@ -28,7 +50,7 @@ export default {
       floorTexture.repeat.y = 1
 
       // Renderer
-      let canvas = document.querySelector('#canvas')
+      let canvas = document.querySelector('#WorldCanvas')
       console.log(canvas)
       const renderer = new THREE.WebGLRenderer({
         canvas,
@@ -99,8 +121,8 @@ export default {
 
       const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
       const boxBody = new CANNON.Body({
-        mass: 1,
-        position: new CANNON.Vec3(0, 10, 0),
+        mass: 0,
+        position: new CANNON.Vec3(0, 0, 0),
         shape: boxShape
       })
       cannonWorld.addBody(boxBody)
@@ -164,7 +186,7 @@ export default {
         gltfLoader,
         modelSrc: '/models/bbb.glb'
       })
-      console.log(player)
+
       const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
       const boxMaterial = new THREE.MeshStandardMaterial({
         color: 'seagreen'
@@ -174,6 +196,38 @@ export default {
       boxMesh.name = 'box'
       scene.add(boxMesh)
       meshes.push(boxMesh)
+
+      const Greats = [
+        ['단군', { x: 1, y: 0, z: 1 }],
+        ['장수왕', { x: 9, y: 0, z: 9 }]
+      ]
+      Greats.forEach((element) => {
+        new Character({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Great/${element[0]}.glb`,
+          position: element[1],
+          name: element[0]
+        })
+      })
+
+      const Villain = [
+        ['지현몬', { x: 2, y: 0, z: 2 }],
+        ['효근몬', { x: 10, y: 0, z: 10 }]
+      ]
+      Villain.forEach((element) => {
+        new Character({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Villain/${element[0]}.glb`,
+          position: element[1],
+          name: element[0]
+        })
+      })
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -204,7 +258,12 @@ export default {
         if (player.modelMesh) {
           camera.lookAt(player.modelMesh.position)
         }
-        if (player.modelMesh && props.nowPage === 0) {
+        if (
+          player.modelMesh &&
+          props.nowPage === 0 &&
+          !props.nowNavbar &&
+          !isTalk.value.talk
+        ) {
           if (isPressed) {
             raycasting()
           }
@@ -230,7 +289,6 @@ export default {
               Math.abs(destinationPoint.z - player.modelMesh.position.z) < 0.02
             ) {
               player.moving = false
-              console.log('멈춤')
             }
 
             if (
@@ -283,21 +341,43 @@ export default {
         const intersects = raycaster.intersectObjects(meshes)
         console.log(intersects)
         for (const item of intersects) {
-          if (item.object.name === 'floor') {
-            destinationPoint.x = item.point.x
-            destinationPoint.z = item.point.z
-            player.modelMesh.lookAt(destinationPoint)
+          // if (item.object.name === 'floor') {
+          //   destinationPoint.x = item.point.x
+          //   destinationPoint.z = item.point.z
+          //   player.modelMesh.lookAt(destinationPoint)
 
-            // console.log(item.point)
+          //   // console.log(item.point)
 
-            player.moving = true
+          //   player.moving = true
 
-            pointerMesh.position.x = destinationPoint.x
-            pointerMesh.position.z = destinationPoint.z
-          }
+          //   pointerMesh.position.x = destinationPoint.x
+          //   pointerMesh.position.z = destinationPoint.z
+          // }
           if (item.object.name === 'box') {
             onClick()
             isPressed = false
+          }
+          if (item.object.name.slice(0, 1) === '위') {
+            talkStart(item.object.name.slice(1, 2))
+            isTalk.value.name = item.object.name.slice(2, -2)
+            isPressed = false
+            const status = ['NOT_YET', 'READY', 'BATTLE_WIN', 'FINISHED']
+            setTimeout(() => {
+              if (status.includes(isTalk.value.content.status)) {
+                isTalk.value.talk = true
+              }
+            }, 100)
+          }
+          if (item.object.name.slice(0, 1) === '빌') {
+            talkStart(item.object.name.slice(1, 2))
+            isTalk.value.name = item.object.name.slice(2, -2)
+            isPressed = false
+            const status = ['STARTED', 'QUIZ_PASSED']
+            setTimeout(() => {
+              if (status.includes(isTalk.value.content.status)) {
+                isTalk.value.talk = true
+              }
+            }, 100)
           }
           break
         }
@@ -400,8 +480,47 @@ export default {
 
       function onClick() {
         alert('aa')
+        emit('changeCanvas')
       }
     }, 100)
+
+    // 대화를 시작하는 함수(미리 받아야 status를 알고 위인과 빌런을 구분할 수 있음)
+    function talkStart(missionId) {
+      axios({
+        url: BASE_URL + '/api/v1/mission/' + missionId,
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          console.log(res.data)
+          isTalk.value.content = res.data
+          isTalk.value.content.line = res.data.line.split('\\t')
+        })
+        .catch((err) => console.log(err))
+    }
+
+    function talkClose() {
+      isTalk.value.talk = false
+    }
+
+    function quizStart() {
+      isTalk.value.talk = false
+      isQuiz.value.quiz = true
+    }
+
+    function quizClose() {
+      isQuiz.value.quiz = false
+    }
+
+    return {
+      isTalk,
+      isQuiz,
+      talkClose,
+      quizStart,
+      quizClose
+    }
   }
 }
 </script>
