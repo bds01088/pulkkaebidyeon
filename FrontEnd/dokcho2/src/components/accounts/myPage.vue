@@ -7,21 +7,24 @@
     <br />
     <div class="myPage_body">
       <div class="myPage_body_content">
-      <img :src="'/images/pgbs/' + this.monsterDetail.monsterId + '.png'"
-       style="width: 200px; height: 150px;">
-      <div v-if="!password">
-        <p>대표 독초몬 : {{ this.monsterDetail.name }}</p>
-        <p>이메일 : {{ this.userInfo.email }}</p>
-        <p>가입일 : {{ this.userInfo.createDate }}</p>
-        <br />
-        <div class="buttons">
-          <button @click="openPassword()">비밀번호 변경</button>
-          <button @click="deleteUser()">회원 탈퇴</button>
+        <img
+          :src="'/images/pgbs/' + this.monsterDetail.monsterId + '.png'"
+          style="width: 200px; height: 150px"
+        />
+        <div v-if="!password">
+          <p>대표 독초몬 : {{ this.monsterDetail.name }}</p>
+          <p>이메일 : {{ this.userInfo.email }}</p>
+          <p>가입일 : {{ this.userInfo.createDate }}</p>
+          <br />
+          <div class="buttons">
+            <button @click="openPassword()">비밀번호 변경</button>
+            <button @click="deleteUser()">회원 탈퇴</button>
+            <button @click="goReset()">진행도 초기화</button>
+          </div>
         </div>
-      </div>
-      
-      <changePassword v-if="password"></changePassword>
-      <br />
+
+        <changePassword v-if="password"></changePassword>
+        <br />
       </div>
     </div>
     <img
@@ -40,6 +43,7 @@ import Swal from 'sweetalert2'
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import changePassword from '../accounts/changePassword.vue'
+import { mapActions } from 'vuex'
 
 const swalWithBootstrapButtons = Swal.mixin({
   customClass: {
@@ -69,6 +73,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['fetchnowUserInfo']),
     openPassword() {
       this.password = true
     },
@@ -199,6 +204,48 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    goReset() {
+      // swal 띄워서 진짜 지울건지 확인
+      swalWithBootstrapButtons
+        .fire({
+          title: '진행도를 초기화하시겠어요?',
+          text: `${this.userInfo.nickname}님의 미션과 아이템이 모두 사라져요😥`,
+          icon: 'danger',
+          showCancelButton: true,
+          confirmButtonText: '예',
+          cancelButtonText: '아니오',
+          reverseButtons: true
+        })
+        .then((res) => {
+          if (res.value) {
+            this.fetchReset()
+          }
+        })
+    },
+
+    fetchReset() {
+      // 확인되면 axios 요청
+      axios({
+        url: BASE_URL + '/api/v1/user/reset',
+        method: 'DELETE',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then(() => {
+          this.fetchnowUserInfo()
+          swal({
+            title: '진행도 초기화가 완료되었어요!',
+            icon: 'success',
+            text: '악당 호랑이를 물리치는 여정을 새롭게 시작하세요!',
+            buttons: false,
+            timer: 1500
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
   created() {
@@ -210,7 +257,7 @@ export default {
 </script>
 
 <style scoped>
-.myPage_container{
+.myPage_container {
   width: 100%;
   height: 100%;
   /* backdrop-filter: blur(4px); */
@@ -242,7 +289,7 @@ export default {
   overflow: visible;
 }
 
-.myPage_header{
+.myPage_header {
   font-weight: bolder;
   font-size: 2rem;
   /* margin-bottom: 5vh; */
@@ -250,7 +297,7 @@ export default {
   margin-top: 0;
 }
 
-.myPage_body{
+.myPage_body {
   /* margin: 2vh; */
   border: 1px solid white;
   background-color: #ffffff;
@@ -273,7 +320,7 @@ export default {
   cursor: pointer;
 }
 
-.myPage_body_content{
+.myPage_body_content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -282,7 +329,4 @@ export default {
   width: 80%;
   height: 60%;
 }
-
-
-
 </style>
