@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface UserMonsterRepository extends JpaRepository<UserMonster, Long> {
     List<UserMonster> findAllByUser(User user);
     Optional<UserMonster> findByUserAndMonster(User user, Monster monster);
+
+    void deleteAllByUser(User user);
 }

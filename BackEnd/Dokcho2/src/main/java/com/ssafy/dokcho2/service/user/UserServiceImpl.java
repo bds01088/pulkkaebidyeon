@@ -10,6 +10,7 @@ import com.ssafy.dokcho2.domain.monster.Monster;
 import com.ssafy.dokcho2.domain.monster.MonsterRepository;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
+import com.ssafy.dokcho2.domain.userItem.UserItemRepository;
 import com.ssafy.dokcho2.domain.userMonster.UserMonster;
 import com.ssafy.dokcho2.domain.userMonster.UserMonsterRepository;
 import com.ssafy.dokcho2.dto.exception.mission.MissionNotFoundException;
@@ -27,6 +28,7 @@ import com.ssafy.dokcho2.dto.user.UserResponseDto;
 import com.ssafy.dokcho2.jwt.TokenProvider;
 import com.ssafy.dokcho2.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -40,6 +42,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserServiceImpl implements UserService{
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -49,6 +52,8 @@ public class UserServiceImpl implements UserService{
     private final MonsterRepository monsterRepository;
     private final UserMonsterRepository userMonsterRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final UserItemRepository userItemRepository;
 
     @Override
     public boolean checkEmail(String email) {
@@ -318,5 +323,49 @@ public class UserServiceImpl implements UserService{
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
         user.changeNowMissionId(missionId);
         userRepository.save(user);
+    }
+
+    @Override
+    public void reset() {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+        userMissionRepository.deleteAllByUser(user);
+        userMonsterRepository.deleteAllByUser(user);
+        userItemRepository.deleteAllByUser(user);
+
+        // 유저-미션 테이블에 8개 넣는 코드
+        for(int i=1; i<=8; i++){
+            Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
+            UserMission um;
+            //맨처음 단군 미션만 READY로 바꿈
+            if (i == 1) {
+                um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.READY)
+                        .build();
+            } else {
+                um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.NOT_YET)
+                        .build();
+            }
+            userMissionRepository.save(um);
+        }
+
+        // 기본 풀깨비 지급
+        for(int i=1; i<=3; i++){
+            Monster monster = monsterRepository.findById((long)i).orElseThrow(MonsterNotFoundException::new);
+            UserMonster um = UserMonster.builder()
+                    .user(user)
+                    .monster(monster)
+                    .build();
+
+            userMonsterRepository.save(um);
+        }
+        log.info("유저 초기화 중..");
+        log.info("미션 초기화 & 풀깨비 초기화 완료");
+        user.changeRepresentMonster(monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new));
+        log.info("대표 풀깨비 1번으로 지정 완료");
     }
 }

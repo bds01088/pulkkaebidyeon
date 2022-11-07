@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface UserMissionRepository extends JpaRepository<UserMission, Long> {
     Optional<UserMission> findUserMissionByUserAndMission(User user, Mission mission);
+
+    void deleteAllByUser(User user);
 }
