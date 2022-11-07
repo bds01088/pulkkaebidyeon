@@ -1,5 +1,6 @@
 package com.ssafy.dokcho2.dto.monster;
 
+import com.ssafy.dokcho2.domain.monster.Monster;
 import com.ssafy.dokcho2.domain.userMonster.UserMonster;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
@@ -16,20 +17,22 @@ public class MonsterDto {
     private Long userId;
     private Long monsterId;
     private String name;
-    private String skill;
     private Integer hp;
     private Integer attack;
+    private Integer defence;
     private Integer level;
     private Integer exp;
 
     public static MonsterDto from(UserMonster userMonster){
+        Monster monster = userMonster.getMonster();
+
         return MonsterDto.builder()
                 .userId(userMonster.getUser().getUserId())
-                .monsterId(userMonster.getMonster().getMonsterId())
-                .name(userMonster.getMonster().getName())
-                .skill(userMonster.getMonster().getSkill())
-                .hp(userMonster.getMonster().getHp() + userMonster.getLevel()*500)
-                .attack(userMonster.getMonster().getAttack() + userMonster.getLevel()*80)
+                .monsterId(monster.getMonsterId())
+                .name(monster.getName())
+                .hp(monster.getHp() + userMonster.getLevel()* monster.getGrowthHp())
+                .attack(monster.getAttack() + userMonster.getLevel()* monster.getGrowthAttack())
+                .defence(monster.getDefence() + userMonster.getLevel()* monster.getGrowthDefence())
                 .level(userMonster.getLevel())
                 .exp(userMonster.getExp())
                 .build();

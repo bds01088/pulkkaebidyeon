@@ -32,8 +32,6 @@ public class Quiz {
     private String img;
     @Column(name = "right_answer")
     private String rightAnswer;
-    @Column(name = "img")
-    private String img;
     @ManyToOne
     @JoinColumn(name = "mission_id")
     private Mission mission;
