@@ -168,6 +168,7 @@ export default {
 img {
   width: 40%;
   margin-bottom: 1.5vh;
+  cursor: pointer;
 }
 
 p {
