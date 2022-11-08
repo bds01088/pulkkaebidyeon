@@ -13,7 +13,7 @@ export class CreateText {
       const geometry = new TextGeometry(this.content, {
         font: font,
         size: 0.3,
-        height: 0.1
+        height: 0.05
       })
 
       const material = new THREE.MeshStandardMaterial({
@@ -24,11 +24,9 @@ export class CreateText {
 
       const text = new THREE.Mesh(geometry, material)
 
-      text.position.set(
-        this.model.modelMesh.position.x,
-        this.model.modelMesh.position.y + 1,
-        this.model.modelMesh.position.z
-      )
+      text.position.set(info.x, info.y - 10, info.z)
+
+      this.modelMesh = text
 
       info.scene.add(text)
     })
