@@ -172,15 +172,13 @@ public class UserServiceImpl implements UserService{
         }
 
         // 기본 풀깨비 지급
-        for(int i=1; i<=3; i++){
-            Monster monster = monsterRepository.findById((long)i).orElseThrow(MonsterNotFoundException::new);
-            UserMonster um = UserMonster.builder()
-                    .user(user)
-                    .monster(monster)
-                    .build();
+        Monster monster = monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new);
+        UserMonster um = UserMonster.builder()
+                .user(user)
+                .monster(monster)
+                .build();
 
-            userMonsterRepository.save(um);
-        }
+        userMonsterRepository.save(um);
 
         return UserResponseDto.from(user);
     }
@@ -354,15 +352,13 @@ public class UserServiceImpl implements UserService{
         }
 
         // 기본 풀깨비 지급
-        for(int i=1; i<=3; i++){
-            Monster monster = monsterRepository.findById((long)i).orElseThrow(MonsterNotFoundException::new);
-            UserMonster um = UserMonster.builder()
-                    .user(user)
-                    .monster(monster)
-                    .build();
+        Monster monster = monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new);
+        UserMonster um = UserMonster.builder()
+                .user(user)
+                .monster(monster)
+                .build();
 
-            userMonsterRepository.save(um);
-        }
+        userMonsterRepository.save(um);
         log.info("유저 초기화 중..");
         log.info("미션 초기화 & 풀깨비 초기화 완료");
         user.changeRepresentMonster(monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new));
