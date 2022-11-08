@@ -39,15 +39,14 @@
         >
           <div class="tooltip">
             <!-- 지금 이미지, count 안넣어서 주석처리해둠 -->
-            <!-- <img
+            <img
               :src="require('@/assets/item/' + item.itemId + '.png')"
               alt=""
               class="item__image"
-            /> -->
+            />
             <span class="tooltiptext"> {{ item.description }}</span>
             <div class="battle__item">
-              <p>{{ item.itemName }}</p>
-              <p>1</p>
+              <p>{{ item.itemName }} <br /></p>
               <!-- <p>{{ item.count }}</p> -->
             </div>
           </div>
@@ -166,7 +165,7 @@ export default {
   border: 1px solid white;
   background-color: #ffffff;
   width: 80%;
-  height: 60%;
+  height: 65%;
   top: 30%;
   padding: 1vh;
   border-radius: 10px;
@@ -176,7 +175,12 @@ export default {
 h3 {
   margin: 2vh;
 }
-.item__body1,
+.item__body1 {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-left: 2vh;
+}
+
 .item__body2 {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -185,12 +189,9 @@ h3 {
 
 .item__item {
   width: 60px;
-  height: 60px;
-  /* border: 1px solid black; */
-  background-color: #ffffff;
-  /* padding: 1vh; */
+  height: 68px;
+  /* background-color: #ffffff; */
   border-radius: 10px;
-  /* box-shadow: 1px 1px 5px 1px gray; */
   margin-bottom: 2vh;
   cursor: pointer;
 }
@@ -206,12 +207,15 @@ h3 {
 .battle__item {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   text-align: center;
+  width: 60px;
 }
 
 .battle__item p {
-  margin-left: 10%;
+  /* margin-left: 10%; */
+  font-size: 0.3rem;
+  text-align: center;
 }
 .item__count {
   border: 1px solid white;
@@ -245,7 +249,6 @@ h3 {
 .tooltip {
   position: relative;
   display: inline-block;
-  /* border-bottom: 1px dotted black; */
 }
 
 .tooltip .tooltiptext {
