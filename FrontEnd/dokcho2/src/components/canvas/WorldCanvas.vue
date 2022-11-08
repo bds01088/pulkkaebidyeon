@@ -8,6 +8,7 @@
       :isTalk="isTalk"
     />
     <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
+    <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
   </div>
 </template>
 
@@ -30,6 +31,8 @@ import { ref } from 'vue'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 
+import miniGame1 from '@/components/minigame/miniGame1'
+
 export default {
   name: 'WorldCanvas',
   props: {
@@ -38,11 +41,13 @@ export default {
   },
   components: {
     TalkComponent: TalkComponent,
-    QuizComponent: QuizComponent
+    QuizComponent: QuizComponent,
+    miniGame1: miniGame1
   },
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
+    const miniGame1 = ref({ miniGame1: false })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
@@ -429,6 +434,20 @@ export default {
               }
             }, 100)
           }
+          if (item.object.name.slice(0, 1) === '건') {
+            isPressed = false
+            miniGame1.value.miniGame1 = true
+            console.log('미니게임 시작')
+            // 건1, 건2, 건3
+
+            // 숫자 따라서 다른 함수 실행 -> 컴포넌트 true값으로 변경
+            // myPage.value.myPage = true
+            // if (item.object.name[1]) {
+            //   miniGame1.value.miniGame1 = true
+            // }
+
+            // 바깥에 컴포넌트 false값으로 바꾸는 함수 따로 만들어서 컴포넌트에 달기
+          }
           break
         }
       }
@@ -564,12 +583,18 @@ export default {
       isQuiz.value.quiz = false
     }
 
+    function miniGame1Close() {
+      miniGame1.value.miniGame1 = false
+    }
+
     return {
       isTalk,
       isQuiz,
+      miniGame1,
       talkClose,
       quizStart,
-      quizClose
+      quizClose,
+      miniGame1Close
     }
   }
 }

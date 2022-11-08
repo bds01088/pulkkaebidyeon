@@ -19,6 +19,7 @@
     "cannon-es": "^0.20.0",
     "core-js": "^3.8.3",
     "gsap": "^3.11.3",
+    "scss-loader": "^0.0.1",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.6.5",
     "three": "^0.145.0",
