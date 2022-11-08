@@ -18,6 +18,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
 import { House } from '../modules/House'
 import { Character } from '../modules/Character'
+import { Building } from '../modules/Building'
+import { Environment } from '../modules/Environment'
+import { Environments } from '../modules/Environments'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
@@ -43,7 +46,7 @@ export default {
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
-      const floorTexture = textureLoader.load('/images/grid.png')
+      const floorTexture = textureLoader.load('/images/map17.png')
       floorTexture.wrapS = THREE.RepeatWrapping
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
@@ -74,7 +77,7 @@ export default {
         1000
       )
 
-      const cameraPosition = new THREE.Vector3(1, 5, 5)
+      const cameraPosition = new THREE.Vector3(-15, 35, -10)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
       camera.zoom = 0.2
       camera.updateProjectionMatrix()
@@ -130,7 +133,7 @@ export default {
       // Mesh
       const meshes = []
       const floorMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(50, 50),
+        new THREE.PlaneGeometry(150, 150),
         new THREE.MeshStandardMaterial({
           map: floorTexture
         })
@@ -198,8 +201,13 @@ export default {
       meshes.push(boxMesh)
 
       const Greats = [
-        ['단군', { x: 1, y: 0, z: 1 }],
-        ['장수왕', { x: 9, y: 0, z: 9 }]
+        ['단군', { x: -34, y: 0, z: -50 }],
+        ['장수왕', { x: -56, y: 0, z: -20 }],
+        ['선덕여왕', { x: -5, y: 0, z: -13 }],
+        ['공민왕', { x: 35, y: 0, z: 0 }],
+        ['세종대왕', { x: -44, y: 0, z: 20 }],
+        ['이순신', { x: -15, y: 0, z: 55 }],
+        ['유관순', { x: 50, y: 0, z: 42 }]
       ]
       Greats.forEach((element) => {
         new Character({
@@ -214,8 +222,13 @@ export default {
       })
 
       const Villain = [
-        ['지현몬', { x: 2, y: 0, z: 2 }],
-        ['효근몬', { x: 10, y: 0, z: 10 }]
+        ['지현몬', { x: -38, y: 0, z: -45 }],
+        ['효근몬', { x: -58, y: 0, z: -17 }],
+        ['재준몬', { x: 0, y: 0, z: -10 }],
+        ['근희몬', { x: 32, y: 0, z: 5 }],
+        ['상균몬', { x: -41, y: 0, z: 17 }],
+        ['지원몬', { x: -18, y: 0, z: 52 }],
+        ['하민몬', { x: 45, y: 0, z: 40 }]
       ]
       Villain.forEach((element) => {
         new Character({
@@ -228,6 +241,41 @@ export default {
           name: element[0]
         })
       })
+
+      const Buildings = [
+        ['첨성대', { x: 5, y: 0, z: -30 }],
+        ['덕수궁', { x: 45, y: 0, z: -10 }],
+        ['광화문', { x: -40, y: 0, z: 45 }]
+      ]
+      Buildings.forEach((element) => {
+        new Building({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Building/${element[0]}.glb`,
+          position: element[1],
+          name: element[0]
+        })
+      })
+
+      Environments.forEach((element) => {
+        new Environment({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Environment/${element[0]}.glb`,
+          width: element[2] || {},
+          position: element[1],
+          name: element[0]
+        })
+      })
+      // new Environment({
+      //   scene,
+      //   cannonWorld,
+      //   gltfLoader
+      // })
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -280,8 +328,10 @@ export default {
             player.cannonBody.position.x += Math.cos(angle) * 0.02
             player.cannonBody.position.z += Math.sin(angle) * 0.02
 
-            camera.position.x = cameraPosition.x + player.modelMesh.position.x
-            camera.position.z = cameraPosition.z + player.modelMesh.position.z
+            camera.position.x =
+              cameraPosition.x + player.modelMesh.position.x + 25
+            camera.position.z =
+              cameraPosition.z + player.modelMesh.position.z + 55
 
             if (
               Math.abs(destinationPoint.x - player.modelMesh.position.x) <
