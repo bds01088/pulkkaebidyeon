@@ -8,7 +8,12 @@
       :isTalk="isTalk"
     />
     <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
-    <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
+    <miniGame1
+      v-if="miniGame1.miniGame1"
+      @miniGame1Close="miniGame1Close"
+      @miniGameClear="miniGameClear"
+    />
+    <miniGame3 v-if="miniGame1.miniGame3" @miniGame3Close="miniGame3Close" />
   </div>
 </template>
 
@@ -33,6 +38,7 @@ import { ref } from 'vue'
 import { BASE_URL } from '@/constant/BASE_URL'
 
 import miniGame1 from '@/components/minigame/miniGame1'
+import miniGame3 from '@/components/minigame/miniGame3'
 
 export default {
   name: 'WorldCanvas',
@@ -43,12 +49,13 @@ export default {
   components: {
     TalkComponent: TalkComponent,
     QuizComponent: QuizComponent,
-    miniGame1: miniGame1
+    miniGame1: miniGame1,
+    miniGame3: miniGame3
   },
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
-    const miniGame1 = ref({ miniGame1: false })
+    const miniGame1 = ref({ miniGame1: false, miniGame3: false })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
@@ -85,7 +92,7 @@ export default {
 
       const cameraPosition = new THREE.Vector3(-15, 35, -10)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.2
+      camera.zoom = 0.01
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -453,8 +460,11 @@ export default {
           }
           if (item.object.name.slice(0, 1) === '건') {
             isPressed = false
-            miniGame1.value.miniGame1 = true
-            console.log('미니게임 시작')
+            if (item.object.name.slice(1, 2) === '1') {
+              miniGame1.value.miniGame1 = true
+            } else if (item.object.name.slice(1, 2) === '3') {
+              miniGame1.value.miniGame3 = true
+            }
             // 건1, 건2, 건3
 
             // 숫자 따라서 다른 함수 실행 -> 컴포넌트 true값으로 변경
@@ -604,6 +614,10 @@ export default {
       miniGame1.value.miniGame1 = false
     }
 
+    function miniGame3Close() {
+      miniGame1.value.miniGame3 = false
+    }
+
     return {
       isTalk,
       isQuiz,
@@ -611,7 +625,8 @@ export default {
       talkClose,
       quizStart,
       quizClose,
-      miniGame1Close
+      miniGame1Close,
+      miniGame3Close
     }
   }
 }
