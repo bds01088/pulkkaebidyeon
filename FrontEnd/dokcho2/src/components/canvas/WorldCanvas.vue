@@ -20,6 +20,7 @@ import { Player } from '../modules/Player'
 import { House } from '../modules/House'
 import { Character } from '../modules/Character'
 import { Building } from '../modules/Building'
+import { FBXLoad } from '../modules/FBXLoader'
 import { Environment } from '../modules/Environment'
 import { Environments } from '../modules/Environments'
 import { KeyController } from '../modules/CharacterControl'
@@ -248,7 +249,7 @@ export default {
       })
 
       const Buildings = [
-        ['첨성대', { x: 5, y: 0, z: -30 }],
+        ['첨성대', { x: 5, y: 0, z: -27 }],
         ['덕수궁', { x: 45, y: 0, z: -10 }],
         ['광화문', { x: -40, y: 0, z: 45 }]
       ]
@@ -276,11 +277,27 @@ export default {
           name: element[0]
         })
       })
-      // new Environment({
-      //   scene,
-      //   cannonWorld,
-      //   gltfLoader
-      // })
+
+      const houses = [
+        ['house1', { x: -63, y: 0, z: 59 }],
+        ['house2', { x: -63, y: 0, z: 60 }],
+        ['house3', { x: -59, y: 0, z: 62 }],
+        ['house4', { x: -59, y: 0, z: 64 }],
+        ['house5', { x: -59, y: 0, z: 66 }],
+        ['house6', { x: -59, y: 0, z: 68 }]
+      ]
+
+      houses.forEach((element) => {
+        new FBXLoad({
+          scene,
+          meshes,
+          gltfLoader,
+          modelSrc: `/models/Environment/${element[0]}.fbx`,
+          width: element[2] || {},
+          position: element[1],
+          name: element[0]
+        })
+      })
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()

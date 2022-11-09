@@ -21,16 +21,13 @@ export class Environment {
       })
 
       this.modelMesh = glb.scene
-      this.modelMesh.scale.x = 0.7
-      this.modelMesh.scale.y = 0.7
-      this.modelMesh.scale.z = 0.7
+      this.modelMesh.scale.x = 0.8
+      this.modelMesh.scale.y = 0.8
+      this.modelMesh.scale.z = 0.8
       this.modelMesh.position.set(this.x, this.y, this.z)
       this.modelMesh.name = info.name
       this.scene.add(this.modelMesh)
-      this.meshes.push(this.modelMesh)
       this.setCannonBody()
-      console.log(this.modelMesh)
-      console.log(this.meshes)
     })
   }
   setCannonBody() {
