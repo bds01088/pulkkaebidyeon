@@ -14,7 +14,9 @@
       </div>
       <!-- 게임 내용 >.<  -->
 
-      <div v-else class="game__play"></div>
+      <div v-else class="game__play">
+        <CardMatch />
+      </div>
 
       <img
         class="exit__btn"
@@ -28,14 +30,16 @@
 
 <script>
 import { ref } from 'vue'
+import CardMatch from './CardMatch.vue'
 
 export default {
-  components: {},
+  components: { CardMatch: CardMatch },
   setup() {
     const game = ref({ game: false })
 
     function changeGame() {
       game.value.game = true
+      // console.log('바꿈')
     }
 
     return {

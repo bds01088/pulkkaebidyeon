@@ -84,7 +84,7 @@ export default {
 
       const cameraPosition = new THREE.Vector3(-15, 35, -10)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.2
+      camera.zoom = 0.01
       camera.updateProjectionMatrix()
       scene.add(camera)
 
