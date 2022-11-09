@@ -31,8 +31,15 @@
 
       <div v-else class="game__play">
         <div>{{ chosung.time }}</div>
-        <div>{{ chosung.quiz[chosung.nowPage][0] }}</div>
-        <input type="text" v-model="chosung.input" />
+        <div v-if="chosung.time <= 10">
+          {{ chosung.quiz[chosung.nowPage][2] }}
+        </div>
+        <div v-else>{{ chosung.quiz[chosung.nowPage][0] }}</div>
+        <input
+          type="text"
+          v-model="chosung.input"
+          @keyup.enter="submitInput()"
+        />
         <div @click="submitInput()">제출</div>
       </div>
 
@@ -59,7 +66,7 @@ export default {
   components: {},
   setup(props, { emit }) {
     const game = ref({ game: false })
-    let chosung = ref({ quiz: [], nowPage: 0, time: 10, input: '' })
+    let chosung = ref({ quiz: [], nowPage: 0, time: 20, input: '' })
     let reward = ref({ exp: 15, item: 0 })
 
     // 퀴즈 데이터 받아와서 셔플하기
@@ -75,7 +82,7 @@ export default {
       let gameTimer = setInterval(() => {
         chosung.value.time -= 1
         if (chosung.value.time === -1) {
-          alert('끝')
+          alert(chosung.value.quiz[chosung.value.nowPage][1])
           clearInterval(gameTimer)
           emit('miniGame3Close')
         }
@@ -90,7 +97,7 @@ export default {
       if (
         chosung.value.input === chosung.value.quiz[chosung.value.nowPage][1]
       ) {
-        chosung.value.time = 10
+        chosung.value.time = 20
         chosung.value.input = ''
         chosung.value.nowPage += 1
       } else {
