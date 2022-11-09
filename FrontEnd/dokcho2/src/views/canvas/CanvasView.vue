@@ -1,6 +1,6 @@
 <template>
   <div class="wholeCanvas">
-    <LightSocketCanvas v-show="this.nowPage === 0" :nowPage="this.nowPage" />
+    <FinalSocketCanvas v-show="this.nowPage === 0" :nowPage="this.nowPage" />
     <!-- <NavBar />
     <WorldCanvas
       v-show="this.nowPage === 0"
@@ -27,8 +27,8 @@
 // import NavBar from '../../components/main/NavBar.vue'
 
 // import BattleCanvas from '../../components/battle/BattleCanvas.vue'
-// import SocketCanvas from '../../components/canvas/SocketCanvas.vue'
-import LightSocketCanvas from '../../components/canvas/LightSocketCanvas.vue'
+import FinalSocketCanvas from '../../components/canvas/FinalSocketCanvas.vue'
+// import LightSocketCanvas from '../../components/canvas/LightSocketCanvas.vue'
 
 export default {
   data() {
@@ -37,8 +37,8 @@ export default {
     }
   },
   components: {
-    LightSocketCanvas: LightSocketCanvas
-    // SocketCanvas: SocketCanvas
+    // LightSocketCanvas: LightSocketCanvas
+    FinalSocketCanvas: FinalSocketCanvas
     // WorldCanvas: WorldCanvas,
     // HouseCanvas: HouseCanvas,
     // NavBar: NavBar,

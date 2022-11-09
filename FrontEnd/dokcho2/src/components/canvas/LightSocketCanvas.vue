@@ -7,7 +7,7 @@
 import * as THREE from 'three'
 import { io } from 'socket.io-client'
 import * as CANNON from 'cannon-es'
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 // import CannonDebugger from 'cannon-es-debugger'
 
 export default {
@@ -27,8 +27,8 @@ export default {
     // var shift = false;
     const clock = new THREE.Clock()
 
-    // var playerObj = ''
-    // var temp = ''
+    var playerObj = ''
+    var temp = ''
 
     document.addEventListener('keydown', (event) => {
       if (!keys.includes(event.key)) {
@@ -54,7 +54,7 @@ export default {
     // var userlist = {};
 
     var objList = []
-    var objBodyList = []
+    // var objBodyList = []
 
     // Setup WebGL //
     var renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -114,19 +114,19 @@ export default {
 
     floor.position.y = -20
 
-    const floorShape = new CANNON.Box(new CANNON.Vec3(150, 2.5, 150))
-    const floorBody = new CANNON.Body({
-      mass: 0,
-      shape: floorShape
-    })
-    floorBody.position.x = floor.position.x
-    floorBody.position.y = floor.position.y
-    floorBody.position.z = floor.position.z
+    // const floorShape = new CANNON.Box(new CANNON.Vec3(150, 2.5, 150))
+    // const floorBody = new CANNON.Body({
+    //   mass: 0,
+    //   shape: floorShape
+    // })
+    // floorBody.position.x = floor.position.x
+    // floorBody.position.y = floor.position.y
+    // floorBody.position.z = floor.position.z
     // floorBody.quaternion.setFromAxisAngle(
     //   new CANNON.Vec3(-1, 0, 0),
     //   Math.PI / 2
     // )
-    cannonWorld.addBody(floorBody)
+    // cannonWorld.addBody(floorBody)
 
     var Ofloor = new THREE.Mesh(
       new THREE.BoxGeometry(50, 5, 50),
@@ -148,34 +148,34 @@ export default {
     scene.add(Xfloor)
 
     // Create player //
-    var playermesh = new THREE.BoxGeometry(8, 18, 8)
-    var playermat = new THREE.MeshLambertMaterial({ color: 0x7499ab })
-    var playerObj = new THREE.Mesh(playermesh, playermat)
+    // var playermesh = new THREE.BoxGeometry(8, 18, 8)
+    // var playermat = new THREE.MeshLambertMaterial({ color: 0x7499ab })
+    // var playerObj = new THREE.Mesh(playermesh, playermat)
     // playerObj.position.y = 20
-    scene.add(playerObj)
+    // scene.add(playerObj)
 
-    const playerShape = new CANNON.Box(new CANNON.Vec3(4, 9, 4))
-    const playerBody = new CANNON.Body({
-      mass: 1,
-      shape: playerShape
-    })
+    // const playerShape = new CANNON.Box(new CANNON.Vec3(4, 9, 4))
+    // const playerBody = new CANNON.Body({
+    //   mass: 1,
+    //   shape: playerShape
+    // })
     // playerBody.position.x = playerObj.position.x
     // playerBody.position.y = playerObj.position.y
     // playerBody.position.z = playerObj.position.z
-    cannonWorld.addBody(playerBody)
+    // cannonWorld.addBody(playerBody)
 
-    // const gltfLoader = new GLTFLoader()
+    const gltfLoader = new GLTFLoader()
 
-    // gltfLoader.load('/models/bbb.glb', (gltf) => {
-    //   playerObj = gltf.scene
-    //   scene.add(playerObj)
+    gltfLoader.load('/models/bbb.glb', (gltf) => {
+      playerObj = gltf.scene
+      scene.add(playerObj)
 
-    //   playerObj.traverse((child) => {
-    //     if (child instanceof THREE.Mesh) {
-    //       child.castShadow = true
-    //     }
-    //   })
-    // })
+      playerObj.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true
+        }
+      })
+    })
 
     // Create dummy //
     // var enemy = new THREE.Mesh(playermesh, playermat)
@@ -205,24 +205,24 @@ export default {
       }
       camera.position.x = cameraPosition.x + playerObj.position.x
       camera.position.z = cameraPosition.z + playerObj.position.z
-      // let shiftboost = 0 //shift === true ? 1 : 0;
+      let shiftboost = 0 //shift === true ? 1 : 0;
 
       if (keys.includes('a')) {
-        // playerObj.translateX(-1 - shiftboost)
-        playerBody.position.x -= 1
+        playerObj.translateX(-1 - shiftboost)
+        // playerBody.position.x -= 1
       }
       if (keys.includes('d')) {
-        // playerObj.translateX(1 + shiftboost)
-        playerBody.position.x += 1
+        playerObj.translateX(1 + shiftboost)
+        // playerBody.position.x += 1
       }
 
       if (keys.includes('w')) {
-        // playerObj.translateZ(-1 - shiftboost)
-        playerBody.position.z -= 1
+        playerObj.translateZ(-1 - shiftboost)
+        // playerBody.position.z -= 1
       }
       if (keys.includes('s')) {
-        // playerObj.translateZ(1)
-        playerBody.position.z += 1
+        playerObj.translateZ(1)
+        // playerBody.position.z += 1
       }
 
       // camera.position.x = playerObj.position.x
@@ -251,12 +251,12 @@ export default {
       // boxMesh.position.copy(boxBody.position) // 위치
       // boxMesh.quaternion.copy(boxBody.quaternion) // 회전
       if (playerObj) {
-        playerObj.position.copy(playerBody.position)
+        playerObj.position.copy(playerObj.position)
         // playerObj.quaternion.copy(playerObj.quaternion)
       }
-      if (floor) {
-        floor.position.copy(floorBody.position)
-      }
+      // if (floor) {
+      //   floor.position.copy(floorBody.position)
+      // }
 
       requestAnimationFrame(loop)
       renderer.render(scene, camera)
@@ -292,55 +292,55 @@ export default {
       }
 
       objList = []
-      objBodyList = []
+      // objBodyList = []
 
-      // for (const [key, value] of Object.entries(data)) {
-      //   if (key !== socket.id) {
-      //     gltfLoader.load('/models/bbb.glb', (gltf) => {
-      //       temp = gltf.scene
-      //       temp.traverse((child) => {
-      //         if (child instanceof THREE.Mesh) {
-      //           child.castShadow = true
-      //         }
-      //       })
-      //       console.log(temp.position)
-      //       temp.position.x = value.object.x
-      //       temp.position.y = value.object.y
-      //       temp.position.z = value.object.z
-
-      //       objList.push(temp)
-      //       scene.add(objList[objList.length - 1])
-      //     })
-      //     // let temp = new THREE.Mesh(playermesh, playermat)
-      //     socket.emit('senddata', playerObj.position)
-      //   }
-      // }
       for (const [key, value] of Object.entries(data)) {
         if (key !== socket.id) {
-          let temp = new THREE.Mesh(playermesh, playermat)
-          temp.position.x = value.object.x
-          temp.position.y = value.object.y
-          temp.position.z = value.object.z
+          gltfLoader.load('/models/bbb.glb', (gltf) => {
+            temp = gltf.scene
+            temp.traverse((child) => {
+              if (child instanceof THREE.Mesh) {
+                child.castShadow = true
+              }
+            })
+            console.log(temp.position)
+            temp.position.x = value.object.x
+            temp.position.y = value.object.y
+            temp.position.z = value.object.z
 
-          const tempShape = new CANNON.Box(new CANNON.Vec3(4, 9, 4))
-          const tempBody = new CANNON.Body({
-            mass: 1,
-            shape: tempShape
+            objList.push(temp)
+            scene.add(objList[objList.length - 1])
           })
-          tempBody.position.x = value.object.x
-          tempBody.position.y = value.object.y
-          tempBody.position.z = value.object.z
-          // cannonWorld.addBody(tempBody)
-
-          objList.push(temp)
-          scene.add(objList[objList.length - 1])
-
-          objBodyList.push(tempBody)
-          cannonWorld.addBody(objBodyList[objBodyList.length - 1])
+          // let temp = new THREE.Mesh(playermesh, playermat)
+          socket.emit('senddata', playerObj.position)
         }
-
-        socket.emit('senddata', playerObj.position)
       }
+      // for (const [key, value] of Object.entries(data)) {
+      //   if (key !== socket.id) {
+      //     let temp = new THREE.Mesh(playermesh, playermat)
+      //     temp.position.x = value.object.x
+      //     temp.position.y = value.object.y
+      //     temp.position.z = value.object.z
+
+      //     const tempShape = new CANNON.Box(new CANNON.Vec3(4, 9, 4))
+      //     const tempBody = new CANNON.Body({
+      //       mass: 1,
+      //       shape: tempShape
+      //     })
+      //     tempBody.position.x = value.object.x
+      //     tempBody.position.y = value.object.y
+      //     tempBody.position.z = value.object.z
+      //     // cannonWorld.addBody(tempBody)
+
+      //     objList.push(temp)
+      //     scene.add(objList[objList.length - 1])
+
+      //     objBodyList.push(tempBody)
+      //     cannonWorld.addBody(objBodyList[objBodyList.length - 1])
+      //   }
+
+      //   socket.emit('senddata', playerObj.position)
+      // }
     })
   }
 }
