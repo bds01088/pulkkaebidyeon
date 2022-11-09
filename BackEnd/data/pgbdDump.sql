@@ -188,8 +188,9 @@ CREATE TABLE `users` (
   PRIMARY KEY (`users_id`),
   KEY `FK20l270v6g1uqdsh9de6n6qu9d` (`monster_id`),
   CONSTRAINT `FK20l270v6g1uqdsh9de6n6qu9d` FOREIGN KEY (`monster_id`) REFERENCES `monster` (`monster_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `users_item`
@@ -237,7 +238,7 @@ CREATE TABLE `users_mission` (
   KEY `FKa6jp9gto6l4tyg6914r0fwp35` (`users_id`),
   CONSTRAINT `FKa6jp9gto6l4tyg6914r0fwp35` FOREIGN KEY (`users_id`) REFERENCES `users` (`users_id`),
   CONSTRAINT `FKeijndh3a2852xodx6f4a6obcj` FOREIGN KEY (`mission_id`) REFERENCES `mission` (`mission_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=273 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=289 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -259,9 +260,39 @@ CREATE TABLE `users_monster` (
   KEY `FKj5kw1sq1pmv040lbj31pembld` (`users_id`),
   CONSTRAINT `FKj5kw1sq1pmv040lbj31pembld` FOREIGN KEY (`users_id`) REFERENCES `users` (`users_id`),
   CONSTRAINT `FKjwlvqluvc72wm8fov4vyvdlh5` FOREIGN KEY (`monster_id`) REFERENCES `monster` (`monster_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+--
+-- Table structure for table `words`
+--
+
+DROP TABLE IF EXISTS `words`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `words` (
+  `words_id` bigint NOT NULL AUTO_INCREMENT,
+  `answer1` varchar(255) DEFAULT NULL,
+  `answer2` varchar(255) DEFAULT NULL,
+  `answer3` varchar(255) DEFAULT NULL,
+  `answer4` varchar(255) DEFAULT NULL,
+  `question` varchar(255) DEFAULT NULL,
+  `right_answer` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`words_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `words`
+--
+
+LOCK TABLES `words` WRITE;
+/*!40000 ALTER TABLE `words` DISABLE KEYS */;
+INSERT INTO `words` VALUES (1,'모사','항설','자득','삼일','가담','항설','길거리나 마을에 떠도는 이야기로서 근거 없이 나도는 말들'),(2,'하장','이사','주구','지란','가렴','주구','관리가 세금 따위를 가혹하게 받고 빼앗아 백성을 못살게 구는 가혹한 정치'),(3,'박명','양명','단심','만파','미인','박명','여자의 용모가 빼어나고 재주가 많으면 운명이 기구함'),(4,'월장','난망','일파','일확','각골','난망','깊이 새기어 두고 은혜를 잊지 않음'),(5,'생심','요연','일도','타진','언감','생심','감히 그런 마음을 먹을 수도 없음'),(6,'안석','우돌','야독','이설','감언','이설','남의 비위를 맞추는 달콤한 말과 이로운 조건만 들어 상대방이 듣기 좋게 하는 말'),(7,'죽마','덕지','간산','연분','감지','덕지','대단히 고맙게 여김'),(8,'갑박','을박','정박','병박','갑론','을박','여러 사람이 서로 자기의 의견을 내세워 남의 의견을 반박함으로써 서로 논박함'),(9,'백선','천선','만석','억선','개과','천선','허물을 고쳐 착하게 됨'),(10,'절미','절진','절선','절두','거두','절미','군더더기 말은 빼고 요점만 말함'),(11,'견심','사심','생심','물심','견물','생심','어떤 물건을 보았을 때 갖고 싶은 욕심이 생기는 것으로, 소유욕을 경계하라는 뜻이 내포되어 있다'),(12,'낙엽','보은','추풍','보답','결초','보은','풀을 엮어서 은혜를 갚는다는 뜻으로, 죽어서도 은혜를 갚음'),(13,'감언','분석','공론','망동','경거','망동','경솔하고 분수없이 행동하는 것'),(14,'지세','난명','대청','파란','고장','난명','한쪽 손바닥으로는 소리를 내기가 어렵듯이, 혼자만의 힘으로는 일을 하기가 어려움'),(15,'감래','감가','고래','고가','고진','감래','고생을 다하면 낙이 온다'),(16,'망신','만장','망상','미문','과대','망상','자기의 현재 상태를 실제보다 턱없이 크게 평가하여 사실인 것처럼 믿게 하는 것'),(17,'일심','불급','이조','가급','과유','불급','지나침은 모자람과 같다는 말로, 지나침과 부족함은 낫고 못함을 따질 것이 없이 둘 다 잘못이라는 것'),(18,'일선','이선','익선','인선','다다','익선','많을수록 좋다'),(19,'서주','동주','남주','북주','동분','서주','이리저리 바쁘게 돌아다닌다는 것'),(20,'남풍','동풍','북풍','서풍','마이','동풍','남의 말을 전혀 귀담아 듣지 아니함을 비유한 말'),(21,'중식','소식','대식','다식','박학','다식','학식이 넓고 아는 것이 많음'),(22,'초단','초가','초몽','초발','사면','초가','사방에서 초나라의 노래 소리가 들린다는 뜻으로, 주위에 온통 적들만 있고 도와주는 이는 없는 경우에 쓰는 말'),(23,'지단','지란','지명','지소','선견','지명','사건이 일어나기 전에 미리 아는 밝은 지혜나 안목'),(24,'양득','택일','양일','이조','양자','택일','둘 중에서 하나를 택하는 것'),(25,'불망','생심','도단','불변','오매','불망',' 누군가를 그리워하여 자나 깨나 잊지 못함'),(26,'지일','지곡','지문','지신','온고','지신','옛 것을 익히고 그것을 미루어서 새 것을 앎'),(27,'등수','등목','등월','등화','풍전','등화','바람 앞의 등불처럼 아주 위태로운 지경'),(28,'양지','양호','양난','양퇴','진퇴','양난','나아갈 수도 뒤로 물러날 수도 없이 궁지에 빠짐'),(29,'미찬','성찬','구식','단식','진수','성찬','맛이 좋고 잘 차린 음식'),(30,'안석','누각','난적','삼적','좌불','안석','불안하거나 걱정스러워 한군데 오래 앉아 있지 못한다는 뜻');
+/*!40000 ALTER TABLE `words` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -272,4 +303,4 @@ CREATE TABLE `users_monster` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-08 15:59:19
+-- Dump completed on 2022-11-09 12:00:47
