@@ -23,24 +23,20 @@ public class Monster {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "line")
-    private String line;
-
-    @Column(name = "skill")
-    private String skill;
-
     @Column(name = "hp")
     private Integer hp;
-
+    @Column(name = "growth_hp")
+    private Integer growthHp;
     @Column(name = "attack")
     private Integer attack;
+    @Column(name = "growth_attack")
+    private Integer growthAttack;
+    @Column(name = "defence")
+    private Integer defence;
+    @Column(name = "growth_defence")
+    private Integer growthDefence;
 
     @OneToMany(mappedBy = "monster", cascade = CascadeType.ALL)
     private List<UserMonster> userMonsterList = new ArrayList<>();
 
-    @PrePersist
-    public void prePersist(){
-        this.hp = 500;
-        this.attack = 100;
-    }
 }

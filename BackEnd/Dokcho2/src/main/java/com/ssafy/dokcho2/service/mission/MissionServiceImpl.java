@@ -41,9 +41,9 @@ public class MissionServiceImpl implements MissionService{
     private final BossRepository bossRepository;
 
     @Override
-    public MissionDto getMissionInfo(String characters) {
+    public MissionDto getMissionInfo(Long missionId) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
-        Mission mission = missionRepository.findMissionByCharacters(characters).orElseThrow(MissionNotFoundException::new);
+        Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
         UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
         return MissionDto.from(mission, userMission.getStatus());
     }
@@ -82,6 +82,8 @@ public class MissionServiceImpl implements MissionService{
         }else if(nowStatus == MissionStatus.STARTED){
             newStatus = MissionStatus.QUIZ_PASSED;
         }else if(nowStatus == MissionStatus.QUIZ_PASSED){
+            newStatus = MissionStatus.BATTLE_WIN;
+        }else if(nowStatus == MissionStatus.BATTLE_WIN){
             newStatus = MissionStatus.FINISHED;
         }else{
             newStatus = nowStatus;
@@ -101,12 +103,16 @@ public class MissionServiceImpl implements MissionService{
 
     public void updateExp(User user, Monster monster, Integer rewardExp){
         UserMonster um = userMonsterRepository.findByUserAndMonster(user, monster).orElseThrow(MonsterNotFoundException::new);
-        if (um.getLevel()*100 <= (um.getExp()+rewardExp)) {
-            um.setExp((um.getExp()+rewardExp)-um.getLevel()*100);
-            um.setLevel(um.getLevel()+1);
-        } else {
-            um.setExp(um.getExp() + rewardExp);
+        Integer newLevel = um.getLevel();
+        Integer newExp = um.getExp()+rewardExp;
+        while (newLevel*100 <= newExp) {
+            newExp -= newLevel*100;
+            newLevel += 1;
         }
+
+        um.setExp(newExp);
+        um.setLevel(newLevel);
+
         userMonsterRepository.save(um);
     }
 

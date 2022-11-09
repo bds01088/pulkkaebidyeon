@@ -11,6 +11,7 @@
           style="background-color: green; height: 30px; width: 100%"
         ></div>
       </div>
+      <p>{{ enemyHp }} / {{ enemyMaxHp }}</p>
     </div>
     <div id="myStatus">
       <p>내 이름</p>
@@ -23,6 +24,7 @@
           style="background-color: green; height: 30px; width: 100%"
         ></div>
       </div>
+      <p>{{ myHp }} / {{ myMaxHp }}</p>
     </div>
   </div>
 </template>
@@ -38,23 +40,37 @@ export default {
     }
   },
 
-  props: { myHpBar: String, enemyHpBar: String, begin: Number },
+  props: {
+    myHpBar: String,
+    enemyHpBar: String,
+    begin: Number,
+    poison: Boolean,
+    myMaxHp: Number,
+    myHp: Number,
+    enemyMaxHp: Number,
+    enemyHp: Number
+  },
 
   created() {
     setInterval(() => {
       this.time += 1
-    }, 100)
+    }, 30)
   },
 
   watch: {
     time() {
       if (this.enemyHpBar < this.getEnemyHpBar) {
-        this.getEnemyHpBar -= 5
+        this.getEnemyHpBar -= 1
+      } else if (this.enemyHpBar > this.getEnemyHpBar) {
+        this.getEnemyHpBar += 1
       }
       var enemyHpBarPer = this.getEnemyHpBar.toString() + '%'
       document.querySelector('#enemyHp').style.width = enemyHpBarPer
+
       if (this.myHpBar < this.getmyHpBar) {
-        this.getmyHpBar -= 5
+        this.getmyHpBar -= 1
+      } else if (this.myHpBar > this.getmyHpBar) {
+        this.getmyHpBar += 1
       }
       var myHpBarPer = this.getmyHpBar.toString() + '%'
       document.querySelector('#myHp').style.width = myHpBarPer
@@ -66,6 +82,14 @@ export default {
 
       document.querySelector('#enemyHp').style.width = this.getEnemyHpBar
       document.querySelector('#myHp').style.width = this.getmyHpBar
+    },
+
+    poison() {
+      if (this.poison == true) {
+        document.querySelector('#enemyHp').style.backgroundColor = 'purple'
+      } else {
+        document.querySelector('#enemyHp').style.backgroundColor = 'green'
+      }
     }
   },
 

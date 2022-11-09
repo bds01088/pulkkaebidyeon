@@ -26,6 +26,10 @@ public class Quiz {
     private String answer2;
     @Column(name = "answer3")
     private String answer3;
+    @Column(name = "answer4")
+    private String answer4;
+    @Column(name = "img")
+    private String img;
     @Column(name = "right_answer")
     private String rightAnswer;
     @ManyToOne

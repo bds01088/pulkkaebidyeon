@@ -24,6 +24,8 @@ public class UserResponseDto {
     private Role role;
     private String createDate;
     private UserPositionDto position;
+    //현재 진행중인 미션 번호를 알기 위해 미션 번호 담아주기
+    private Long nowMissionId;
 
 
     public static UserResponseDto from(User entity){
@@ -34,10 +36,11 @@ public class UserResponseDto {
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
-                //.representMonster(entity.getRepresentMonster().getMonsterId())
+                .representMonster(entity.getRepresentMonster().getMonsterId())
                 .position(UserPositionDto.from(entity))
                 .role(entity.getRole())
                 .createDate(createDate)
+                .nowMissionId(entity.getNowMissionId())
                 .build();
     }
 }

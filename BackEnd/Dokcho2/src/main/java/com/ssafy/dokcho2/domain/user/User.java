@@ -47,6 +47,9 @@ public class User extends BaseTime {
     @Column(name = "token")
     private String token;
 
+    @Column(name = "now_mission_id")
+    private Long nowMissionId;
+
     @ManyToOne
     @JoinColumn(name = "monster_id")
     private Monster representMonster;
@@ -73,6 +76,8 @@ public class User extends BaseTime {
         this.y = dto.getY();
         this.z = dto.getZ();
     }
+
+    public void changeNowMissionId(Long missionId) {this.nowMissionId = missionId;}
     @PrePersist
     public void prePersist(){
         this.role = this.role == null ? Role.ROLE_USER : this.role;
