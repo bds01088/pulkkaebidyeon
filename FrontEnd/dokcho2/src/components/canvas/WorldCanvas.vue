@@ -8,11 +8,7 @@
       :isTalk="isTalk"
     />
     <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
-    <miniGame1
-      v-if="miniGame1.miniGame1"
-      @miniGame1Close="miniGame1Close"
-      @miniGameClear="miniGameClear"
-    />
+    <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
     <miniGame3 v-if="miniGame1.miniGame3" @miniGame3Close="miniGame3Close" />
   </div>
 </template>
