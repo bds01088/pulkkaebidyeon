@@ -1,6 +1,8 @@
-package com.ssafy.dokcho2.dto.mission;
+package com.ssafy.dokcho2.dto.minigame;
 
+import com.ssafy.dokcho2.domain.minigame.Words;
 import com.ssafy.dokcho2.domain.mission.Quiz;
+import com.ssafy.dokcho2.dto.mission.QuizDto;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,25 +13,25 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value = "QuizDto", description = "퀴즈 정보 응답 Dto")
-public class QuizDto {
+@ApiModel(value = "WordsDto", description = "사자성어 정보 응답 Dto")
+public class WordsDto {
     private String question;
     private String answer1;
     private String answer2;
     private String answer3;
     private String answer4;
-    private String img;
     private String right_answer;
+    private String description;
 
-    public static QuizDto from(Quiz entity){
-        return QuizDto.builder()
+    public static WordsDto from(Words entity){
+        return WordsDto.builder()
                 .question(entity.getQuestion())
                 .answer1(entity.getAnswer1())
                 .answer2(entity.getAnswer2())
                 .answer3(entity.getAnswer3())
                 .answer4(entity.getAnswer4())
-                .img(entity.getImg())
                 .right_answer(entity.getRightAnswer())
+                .description(entity.getDescription())
                 .build();
     }
 }
