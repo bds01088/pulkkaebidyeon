@@ -78,13 +78,13 @@ export default {
     function nextQuiz(answer) {
       if (answer === quiz.value.content[quiz.value.nowPage].right_answer) {
         alert('정답')
+        quiz.value.nowPage += 1
+        if (quiz.value.nowPage === quiz.value.content.length) {
+          endQuiz()
+        }
       } else {
         alert('더 공부하셈')
         emit('quizClose')
-      }
-      quiz.value.nowPage += 1
-      if (quiz.value.nowPage === quiz.value.content.length) {
-        endQuiz()
       }
     }
 
