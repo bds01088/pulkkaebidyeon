@@ -86,7 +86,7 @@ export default {
   mounted() {
     // window.addEventListener('keyup', this.move)
     this.context = this.$refs.game.getContext('2d')
-    this.socket.on('position', (position) => {
+    this.socket.on('playerdata', (data) => {
       this.position = position
       this.context.clearRect(
         0,
