@@ -18,8 +18,10 @@
     <BattleCanvas
       v-show="this.nowPage === 3"
       @changeBattle="changeBattle"
+      @startBattle="startBattle"
       :nowPage="this.nowPage"
       :nowNavbar="this.nowNavbar"
+      :startSignal="this.startSignal"
     />
   </div>
 </template>
@@ -35,7 +37,8 @@ export default {
   data() {
     return {
       nowPage: 0,
-      nowNavbar: false
+      nowNavbar: false,
+      startSignal: 0
     }
   },
   components: {
@@ -57,9 +60,14 @@ export default {
     changeBattle() {
       if (this.nowPage === 0) {
         this.nowPage = 3
+        this.startBattle()
       } else {
         this.nowPage = 0
       }
+    },
+
+    startBattle() {
+      this.startSignal += 1
     },
 
     changeNavbar() {

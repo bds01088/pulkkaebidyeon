@@ -17,7 +17,7 @@ export class CreateText {
       })
 
       const material = new THREE.MeshStandardMaterial({
-        color: '#adb5bd',
+        color: info.color,
         roughness: 0.1,
         metalness: 0.1
       })
