@@ -13,13 +13,13 @@ export class CreateText {
       const geometry = new TextGeometry(this.content, {
         font: font,
         size: 0.3,
-        height: 0.05
+        height: 0.01
       })
 
       const material = new THREE.MeshStandardMaterial({
-        color: '#689F38',
-        roughness: 0.3,
-        metalness: 0.7
+        color: '#adb5bd',
+        roughness: 0.1,
+        metalness: 0.1
       })
 
       const text = new THREE.Mesh(geometry, material)
@@ -28,7 +28,7 @@ export class CreateText {
 
       this.modelMesh = text
 
-      info.scene.add(text)
+      // info.scene.add(text)
     })
   }
 }
