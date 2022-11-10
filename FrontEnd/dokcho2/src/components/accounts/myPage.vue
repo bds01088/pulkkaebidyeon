@@ -31,16 +31,16 @@
         </div>
         <div class="myPage__body">
           <div class="myPage__mission">
-            <p>1번</p>
-            <p>{{ this.userInfo.nowMissionId }}</p>
+            <!-- <p>1번</p> -->
+            <p>{{ this.userInfo.nowMissionId }}번</p>
           </div>
           <div class="myPage__monster">
-            <p>3마리</p>
-            <p>{{ this.userInfo.nowMissionId }}</p>
+            <!-- <p>3마리</p> -->
+            <p>{{ this.userInfo.nowMissionId }}마리</p>
           </div>
           <div class="myPage__item">
-            <p>15개</p>
-            <p>{{ this.userInfo.nowMissionId }}</p>
+            <!-- <p>15개</p> -->
+            <p>{{ this.userInfo.nowMissionId }}개</p>
           </div>
         </div>
         <div class="myPage__footer">
