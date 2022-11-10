@@ -38,7 +38,7 @@ export class Character {
       new Vec3(this.width / 2, this.height / 2, this.depth / 2)
     )
     this.cannonBody = new Body({
-      mass: 1,
+      mass: 0,
       position: new Vec3(this.x, this.y, this.z),
       shape
     })

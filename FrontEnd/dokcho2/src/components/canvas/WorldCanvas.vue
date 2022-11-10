@@ -8,6 +8,9 @@
       :isTalk="isTalk"
     />
     <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
+    <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
+    <miniGame2 v-if="miniGame1.miniGame2" @miniGame2Close="miniGame2Close" />
+    <miniGame3 v-if="miniGame1.miniGame3" @miniGame3Close="miniGame3Close" />
   </div>
 </template>
 
@@ -18,6 +21,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
 import { House } from '../modules/House'
 import { Character } from '../modules/Character'
+import { Building } from '../modules/Building'
+import { Environment } from '../modules/Environment'
+import { Environments } from '../modules/Environments'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
@@ -27,6 +33,10 @@ import { ref } from 'vue'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 
+import miniGame1 from '@/components/minigame/miniGame1'
+import miniGame2 from '@/components/minigame/miniGame2'
+import miniGame3 from '@/components/minigame/miniGame3'
+
 export default {
   name: 'WorldCanvas',
   props: {
@@ -35,15 +45,23 @@ export default {
   },
   components: {
     TalkComponent: TalkComponent,
-    QuizComponent: QuizComponent
+    QuizComponent: QuizComponent,
+    miniGame1: miniGame1,
+    miniGame2: miniGame2,
+    miniGame3: miniGame3
   },
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
+    const miniGame1 = ref({
+      miniGame1: false,
+      miniGame2: false,
+      miniGame3: false
+    })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
-      const floorTexture = textureLoader.load('/images/grid.png')
+      const floorTexture = textureLoader.load('/images/map17.png')
       floorTexture.wrapS = THREE.RepeatWrapping
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
@@ -74,9 +92,9 @@ export default {
         1000
       )
 
-      const cameraPosition = new THREE.Vector3(1, 5, 5)
+      const cameraPosition = new THREE.Vector3(0, 35, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.2
+      camera.zoom = 0.01
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -130,7 +148,7 @@ export default {
       // Mesh
       const meshes = []
       const floorMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(50, 50),
+        new THREE.PlaneGeometry(150, 150),
         new THREE.MeshStandardMaterial({
           map: floorTexture
         })
@@ -198,8 +216,13 @@ export default {
       meshes.push(boxMesh)
 
       const Greats = [
-        ['단군', { x: 1, y: 0, z: 1 }],
-        ['장수왕', { x: 9, y: 0, z: 9 }]
+        ['단군', { x: -34, y: 0, z: -50 }],
+        ['장수왕', { x: -56, y: 0, z: -20 }],
+        ['선덕여왕', { x: -5, y: 0, z: -13 }],
+        ['공민왕', { x: 35, y: 0, z: 0 }],
+        ['세종대왕', { x: -44, y: 0, z: 20 }],
+        ['이순신', { x: -15, y: 0, z: 55 }],
+        ['유관순', { x: 50, y: 0, z: 42 }]
       ]
       Greats.forEach((element) => {
         new Character({
@@ -214,8 +237,13 @@ export default {
       })
 
       const Villain = [
-        ['지현몬', { x: 2, y: 0, z: 2 }],
-        ['효근몬', { x: 10, y: 0, z: 10 }]
+        ['지현몬', { x: -38, y: 0, z: -45 }],
+        ['효근몬', { x: -58, y: 0, z: -17 }],
+        ['재준몬', { x: 0, y: 0, z: -10 }],
+        ['근희몬', { x: 32, y: 0, z: 5 }],
+        ['상균몬', { x: -41, y: 0, z: 17 }],
+        ['지원몬', { x: -18, y: 0, z: 52 }],
+        ['하민몬', { x: 45, y: 0, z: 40 }]
       ]
       Villain.forEach((element) => {
         new Character({
@@ -228,6 +256,41 @@ export default {
           name: element[0]
         })
       })
+
+      const Buildings = [
+        ['첨성대', { x: 5, y: 0, z: -30 }],
+        ['덕수궁', { x: 45, y: 0, z: -10 }],
+        ['광화문', { x: -40, y: 0, z: 45 }]
+      ]
+      Buildings.forEach((element) => {
+        new Building({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Building/${element[0]}.glb`,
+          position: element[1],
+          name: element[0]
+        })
+      })
+
+      Environments.forEach((element) => {
+        new Environment({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Environment/${element[0]}.glb`,
+          width: element[2] || {},
+          position: element[1],
+          name: element[0]
+        })
+      })
+      // new Environment({
+      //   scene,
+      //   cannonWorld,
+      //   gltfLoader
+      // })
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -280,8 +343,10 @@ export default {
             player.cannonBody.position.x += Math.cos(angle) * 0.02
             player.cannonBody.position.z += Math.sin(angle) * 0.02
 
-            camera.position.x = cameraPosition.x + player.modelMesh.position.x
-            camera.position.z = cameraPosition.z + player.modelMesh.position.z
+            camera.position.x =
+              cameraPosition.x + player.modelMesh.position.x + 25
+            camera.position.z =
+              cameraPosition.z + player.modelMesh.position.z + 55
 
             if (
               Math.abs(destinationPoint.x - player.modelMesh.position.x) <
@@ -379,6 +444,25 @@ export default {
               }
             }, 100)
           }
+          if (item.object.name.slice(0, 1) === '건') {
+            isPressed = false
+            if (item.object.name.slice(1, 2) === '1') {
+              miniGame1.value.miniGame1 = true
+            } else if (item.object.name.slice(1, 2) === '2') {
+              miniGame1.value.miniGame2 = true
+            } else if (item.object.name.slice(1, 2) === '3') {
+              miniGame1.value.miniGame3 = true
+            }
+            // 건1, 건2, 건3
+
+            // 숫자 따라서 다른 함수 실행 -> 컴포넌트 true값으로 변경
+            // myPage.value.myPage = true
+            // if (item.object.name[1]) {
+            //   miniGame1.value.miniGame1 = true
+            // }
+
+            // 바깥에 컴포넌트 false값으로 바꾸는 함수 따로 만들어서 컴포넌트에 달기
+          }
           break
         }
       }
@@ -475,12 +559,20 @@ export default {
         if (keys === {}) {
           player.moving = false
         }
+        localStorage.setItem(
+          'position',
+          JSON.stringify({
+            x: player.modelMesh.position.x,
+            z: player.modelMesh.position.z
+          })
+        )
       })
       draw()
 
       function onClick() {
         alert('aa')
-        emit('changeCanvas')
+        // emit('changeCanvas')
+        emit('changeBattle')
       }
     }, 100)
 
@@ -514,12 +606,28 @@ export default {
       isQuiz.value.quiz = false
     }
 
+    function miniGame1Close() {
+      miniGame1.value.miniGame1 = false
+    }
+
+    function miniGame2Close() {
+      miniGame1.value.miniGame2 = false
+    }
+
+    function miniGame3Close() {
+      miniGame1.value.miniGame3 = false
+    }
+
     return {
       isTalk,
       isQuiz,
+      miniGame1,
       talkClose,
       quizStart,
-      quizClose
+      quizClose,
+      miniGame1Close,
+      miniGame2Close,
+      miniGame3Close
     }
   }
 }
