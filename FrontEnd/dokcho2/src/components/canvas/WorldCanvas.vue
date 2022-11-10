@@ -86,7 +86,7 @@ export default {
         1000
       )
 
-      const cameraPosition = new THREE.Vector3(-15, 35, -10)
+      const cameraPosition = new THREE.Vector3(0, 35, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
       camera.zoom = 0.01
       camera.updateProjectionMatrix()
@@ -567,6 +567,13 @@ export default {
         if (keys === {}) {
           player.moving = false
         }
+        localStorage.setItem(
+          'position',
+          JSON.stringify({
+            x: player.modelMesh.position.x,
+            z: player.modelMesh.position.z
+          })
+        )
       })
       draw()
 
