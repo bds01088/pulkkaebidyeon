@@ -3,15 +3,20 @@
     <div class="on__game">
       <div class="game__header" v-if="!lastStage.lastStage">
         <!-- 힌트 / 횟수 -->
-        <p>⭐스테이지 {{ stage.stage + 1 }}</p>
-        <div class="game__hint" v-if="quizs.quizs.length > 0">
-          <p @click="useHintChance()">👁‍🗨힌트 {{ hint.hint }}회</p>
-          <p v-if="useHint.useHint">
-            {{ quizs.quizs[stage.stage].description }}
+        <div class="game__point">
+          <p>
+            현재까지 획득한 포인트 : <b>{{ point.point }}</b>
           </p>
         </div>
-        <div class="game__point">
-          <p>현재까지 획득한 포인트 : {{ point.point }}</p>
+        <h3>⭐스테이지 {{ stage.stage + 1 }}</h3>
+        <br />
+        <div class="game__hint" v-if="quizs.quizs.length > 0">
+          <p @click="useHintChance()">
+            🔍 힌트 ({{ hint.hint }}회)
+            <span v-if="useHint.useHint">
+              : "{{ quizs.quizs[stage.stage].description }}"</span
+            >
+          </p>
         </div>
       </div>
       <div
@@ -20,31 +25,69 @@
       >
         <!-- 퀴즈 -->
         <div class="question">
-          <p>{{ quizs.quizs[stage.stage].question }}</p>
+          <br />
+          <h2>{{ quizs.quizs[stage.stage].question }}□□</h2>
         </div>
         <div class="answer">
-          <p @click="selectAnswer(quizs.quizs[stage.stage].answer1)">
+          <button
+            class="ans"
+            @click="selectAnswer(quizs.quizs[stage.stage].answer1)"
+          >
             1. {{ quizs.quizs[stage.stage].answer1 }}
-          </p>
-          <p @click="selectAnswer(quizs.quizs[stage.stage].answer2)">
+          </button>
+          <button
+            class="ans"
+            @click="selectAnswer(quizs.quizs[stage.stage].answer2)"
+          >
             2. {{ quizs.quizs[stage.stage].answer2 }}
-          </p>
-          <p @click="selectAnswer(quizs.quizs[stage.stage].answer3)">
+          </button>
+          <button
+            class="ans"
+            @click="selectAnswer(quizs.quizs[stage.stage].answer3)"
+          >
             3. {{ quizs.quizs[stage.stage].answer3 }}
-          </p>
-          <p @click="selectAnswer(quizs.quizs[stage.stage].answer4)">
+          </button>
+          <button
+            class="ans"
+            @click="selectAnswer(quizs.quizs[stage.stage].answer4)"
+          >
             4. {{ quizs.quizs[stage.stage].answer4 }}
-          </p>
+          </button>
         </div>
       </div>
-      <div v-if="lastStage.lastStage && point.point > 0">
-        <p>총 {{ point.point }}점 획득!</p>
-        <p>{{ item.item.itemName }}</p>
-        <button>닫기</button>
+      <div class="game__result" v-if="lastStage.lastStage && point.point > 0">
+        <img class="success__img" src="@/assets/minigame/success.png" alt="" />
+        <div class="game__get">
+          <div class="result__point">
+            <p>
+              총 경험치 <b>{{ point.point }}</b> 포인트 획득🌿
+            </p>
+          </div>
+          <h3>🎁 성공 보수 아이템 🎁</h3>
+          <div class="tooltip">
+            <span class="tooltiptext"> {{ item.item.description }}</span>
+            <img
+              :src="require('@/assets/item/' + item.item.itemId + '.png')"
+              alt=""
+              class="item__image"
+            />
+
+            <div class="battle__item">
+              <p>{{ item.item.itemName }} <br /></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- <button>닫기</button> -->
       </div>
-      <div v-if="lastStage.lastStage && point.point <= 0">
-        <p>총 점수가 0점 이하라 아무것도.. 얻지 못했어요</p>
-        <button>닫기</button>
+      <div class="game__result" v-if="lastStage.lastStage && point.point <= 0">
+        <img class="success__img" src="@/assets/minigame/fail.png" alt="" />
+        <div class="game__dontget">
+          <h3>총 점수가 {{ point.point }}점이라 아무것도.. 얻지 못했어요</h3>
+          <p>다시 한 번 도전해보세요!</p>
+        </div>
+
+        <!-- <button>닫기</button> -->
       </div>
     </div>
   </div>
@@ -80,11 +123,11 @@ export default {
     // 퀴즈 가져오기
     function fetchQuiz() {
       axios({
-        url: BASE_URL + '/api/v1/game/words/5',
-        method: 'GET',
-        headers: {
-          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-        }
+        url: BASE_URL + '/api/v1/game/words/auth/5',
+        method: 'GET'
+        // headers: {
+        //   AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        // }
       })
         .then((res) => {
           // console.log(res.data)
@@ -96,7 +139,7 @@ export default {
 
     // 힌트사용
     function useHintChance() {
-      if (hint.value.hint > 0) {
+      if (hint.value.hint > 0 && !useHint.value.useHint) {
         hint.value.hint -= 1
         useHint.value.useHint = true
       }
@@ -118,6 +161,7 @@ export default {
           title: '정답입니다!',
           icon: 'success',
           text: `+3점 :D 
+
           ${quizs.value.quizs[stage.value.stage].question}${
             quizs.value.quizs[stage.value.stage].right_answer
           } : ${quizs.value.quizs[stage.value.stage].description}`,
@@ -134,6 +178,7 @@ export default {
           title: '정답입니다!',
           icon: 'success',
           text: `힌트 사용! +2점 :)
+
           ${quizs.value.quizs[stage.value.stage].question}${
             quizs.value.quizs[stage.value.stage].right_answer
           } : ${quizs.value.quizs[stage.value.stage].description}`,
@@ -146,6 +191,7 @@ export default {
           title: '아쉽게도 오답이에요..!',
           icon: 'error',
           text: `-1점 :(
+
           ${quizs.value.quizs[stage.value.stage].question}${
             quizs.value.quizs[stage.value.stage].right_answer
           } : ${quizs.value.quizs[stage.value.stage].description}`,
@@ -165,12 +211,14 @@ export default {
         stage.value.stage += 1
       } else if (now === 4) {
         checkAnswer()
+
         // 포인트 보내고 아이템 받기
         if (point.value.point > 0) {
           sendPoint()
         }
-
-        lastStage.value.lastStage = true
+        setTimeout(() => {
+          lastStage.value.lastStage = true
+        }, 500)
       }
     }
 
@@ -214,5 +262,149 @@ export default {
   width: 100%;
   height: 100%;
   /* background-color: rgb(212, 212, 212, 0.5); */
+}
+
+.on__game {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 80%;
+  /* margin-top: 10vh; */
+  margin: 15% auto;
+}
+
+.game__header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 5%;
+}
+
+.game__hint {
+  cursor: pointer;
+}
+
+.game__hint:hover {
+  color: #59d075;
+  font-weight: bold;
+}
+.game__point {
+  align-self: end;
+}
+
+.question {
+  background-color: white;
+  border-radius: 10px;
+  text-align: center;
+  height: 10vh;
+  letter-spacing: 0.5em;
+}
+
+.answer {
+  margin: 5vh auto;
+  text-align: center;
+}
+.ans {
+  height: 6vh;
+  border-radius: 50px;
+  border: none;
+  width: 10vw;
+  cursor: pointer;
+  font-size: 1.2rem;
+  background-color: #d5d5d5;
+  /* font-weight: bold; */
+}
+
+.ans:hover {
+  background-color: #6bfa8d;
+  font-weight: bold;
+}
+
+.game__result {
+  width: 100%;
+  height: 50vh;
+  /* background-color: white; */
+  border-radius: 20px;
+  text-align: center;
+}
+
+.success__img {
+  width: 60%;
+  margin: auto;
+}
+
+.game__get {
+  width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 3vh;
+  background-color: white;
+  border-radius: 20px;
+}
+
+.game__dontget {
+  width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10vh;
+  background-color: white;
+  border-radius: 20px;
+  padding: 3vh;
+}
+
+.game__dontget h3 {
+  margin: 2vh;
+}
+.result__point {
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.result__point p {
+  margin-bottom: 2vh;
+}
+
+.item__image {
+  width: 4vw;
+  cursor: pointer;
+}
+
+.item__item p {
+  font-size: 0.5rem;
+}
+
+.game__get h3 {
+  margin: 2vh;
+}
+.tooltip {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+  margin-bottom: 2vh;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 0.8rem;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 </style>
