@@ -3,14 +3,28 @@
     <div class="miniGame">
       <!-- 해당 게임에 대한 설명 -->
       <div v-if="!game.game" class="game__description">
-        <h1>게임 설명</h1>
-        <p>첨성대에 방문하셨네요~ 게임설명</p>
-        <div class="game__item">
-          <p>✨보상</p>
-          <p>경험치 : 내맘대로</p>
-          <p>아이템 : 랜덤</p>
+        <img class="game__img" src="@/assets/minigame/1.png" alt="" />
+        <div class="game__text">
+          <p>
+            주어지는 문제를 보고 알맞은 정답을 클릭해주세요! <br />
+            사자성어 중 앞 부분 두 개의 낱말이 주어지고, 뒷 부분 두 개의 낱말이
+            4개의 보기로 주어져요. <br />
+            혹시 맞추기 어려우신가요? 그렇다면 ‘힌트’를 클릭하면 사자성어에 대한
+            뜻 풀이를 확인할 수 있어요! <br />문제 풀기가 조금 더 쉬워지겠죠?
+            시작하러 가볼까요?
+          </p>
         </div>
-        <button @click="changeGame()">게 임 시 작</button>
+
+        <div class="game__item">
+          <h3 class="reward__header">✨보상✨</h3>
+          <div class="game__reward">
+            <p class="reward__text"><b>🌞 경험치</b> : 최대 15 포인트</p>
+            <p class="reward__text">
+              <b>🎁 아이템</b> : 배틀 아이템 중 1개 랜덤
+            </p>
+          </div>
+        </div>
+        <button class="start__btn" @click="changeGame()">게 임 시 작</button>
       </div>
       <!-- 게임 내용 >.<  -->
 
@@ -66,7 +80,7 @@ export default {
 
 .miniGame {
   top: 25%;
-  width: 80%;
+  width: 60%;
   height: 80%;
   background-color: rgb(255, 244, 231);
   z-index: 40;
@@ -75,8 +89,59 @@ export default {
 
 .game__description {
   margin: 5vh;
+  text-align: center;
 }
 
+.game__img {
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+  width: 50%;
+}
+
+.game__text {
+  line-height: 1.5;
+}
+
+.game__item {
+  margin: 3vh;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin-left: 5.5vw;
+}
+
+.reward__header {
+  margin-top: 3vh;
+  margin-bottom: 3vh;
+}
+
+.game__reward {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 3vh;
+}
+
+.reward__text {
+  margin-left: 2vh;
+  margin-right: 2vh;
+}
+
+.start__btn {
+  height: 6vh;
+  border-radius: 50px;
+  border: none;
+  width: 10vw;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.start__btn:hover {
+  background-color: #6bfa8d;
+}
 .game__play {
   margin: 5vh;
 }
@@ -88,7 +153,7 @@ export default {
   align-items: center;
   position: absolute;
   top: 15vh;
-  right: 15vw;
+  right: 25vw;
   cursor: pointer;
 }
 </style>
