@@ -9,6 +9,7 @@
     />
     <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
     <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
+    <miniGame2 v-if="miniGame1.miniGame2" @miniGame2Close="miniGame2Close" />
     <miniGame3 v-if="miniGame1.miniGame3" @miniGame3Close="miniGame3Close" />
   </div>
 </template>
@@ -21,7 +22,6 @@ import { Player } from '../modules/Player'
 import { House } from '../modules/House'
 import { Character } from '../modules/Character'
 import { Building } from '../modules/Building'
-import { FBXLoad } from '../modules/FBXLoader'
 import { Environment } from '../modules/Environment'
 import { Environments } from '../modules/Environments'
 import { KeyController } from '../modules/CharacterControl'
@@ -34,6 +34,7 @@ import { ref } from 'vue'
 import { BASE_URL } from '@/constant/BASE_URL'
 
 import miniGame1 from '@/components/minigame/miniGame1'
+import miniGame2 from '@/components/minigame/miniGame2'
 import miniGame3 from '@/components/minigame/miniGame3'
 
 export default {
@@ -46,12 +47,17 @@ export default {
     TalkComponent: TalkComponent,
     QuizComponent: QuizComponent,
     miniGame1: miniGame1,
+    miniGame2: miniGame2,
     miniGame3: miniGame3
   },
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
-    const miniGame1 = ref({ miniGame1: false, miniGame3: false })
+    const miniGame1 = ref({
+      miniGame1: false,
+      miniGame2: false,
+      miniGame3: false
+    })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
@@ -252,7 +258,7 @@ export default {
       })
 
       const Buildings = [
-        ['첨성대', { x: 5, y: 0, z: -27 }],
+        ['첨성대', { x: 5, y: 0, z: -30 }],
         ['덕수궁', { x: 45, y: 0, z: -10 }],
         ['광화문', { x: -40, y: 0, z: 45 }]
       ]
@@ -280,27 +286,11 @@ export default {
           name: element[0]
         })
       })
-
-      const houses = [
-        ['house1', { x: -63, y: 0, z: 59 }],
-        ['house2', { x: -63, y: 0, z: 60 }],
-        ['house3', { x: -59, y: 0, z: 62 }],
-        ['house4', { x: -59, y: 0, z: 64 }],
-        ['house5', { x: -59, y: 0, z: 66 }],
-        ['house6', { x: -59, y: 0, z: 68 }]
-      ]
-
-      houses.forEach((element) => {
-        new FBXLoad({
-          scene,
-          meshes,
-          gltfLoader,
-          modelSrc: `/models/Environment/${element[0]}.fbx`,
-          width: element[2] || {},
-          position: element[1],
-          name: element[0]
-        })
-      })
+      // new Environment({
+      //   scene,
+      //   cannonWorld,
+      //   gltfLoader
+      // })
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -458,6 +448,8 @@ export default {
             isPressed = false
             if (item.object.name.slice(1, 2) === '1') {
               miniGame1.value.miniGame1 = true
+            } else if (item.object.name.slice(1, 2) === '2') {
+              miniGame1.value.miniGame2 = true
             } else if (item.object.name.slice(1, 2) === '3') {
               miniGame1.value.miniGame3 = true
             }
@@ -579,7 +571,8 @@ export default {
 
       function onClick() {
         alert('aa')
-        emit('changeCanvas')
+        // emit('changeCanvas')
+        emit('changeBattle')
       }
     }, 100)
 
@@ -617,6 +610,10 @@ export default {
       miniGame1.value.miniGame1 = false
     }
 
+    function miniGame2Close() {
+      miniGame1.value.miniGame2 = false
+    }
+
     function miniGame3Close() {
       miniGame1.value.miniGame3 = false
     }
@@ -629,6 +626,7 @@ export default {
       quizStart,
       quizClose,
       miniGame1Close,
+      miniGame2Close,
       miniGame3Close
     }
   }
