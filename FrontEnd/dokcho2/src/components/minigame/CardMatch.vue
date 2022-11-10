@@ -26,7 +26,7 @@
         <!-- 퀴즈 -->
         <div class="question">
           <br />
-          <h2>{{ quizs.quizs[stage.stage].question }} □ □</h2>
+          <h2>{{ quizs.quizs[stage.stage].question }}□□</h2>
         </div>
         <div class="answer">
           <button
@@ -282,6 +282,11 @@ export default {
 .game__hint {
   cursor: pointer;
 }
+
+.game__hint:hover {
+  color: #59d075;
+  font-weight: bold;
+}
 .game__point {
   align-self: end;
 }
@@ -291,6 +296,7 @@ export default {
   border-radius: 10px;
   text-align: center;
   height: 10vh;
+  letter-spacing: 0.5em;
 }
 
 .answer {
