@@ -1,18 +1,25 @@
 <template>
   <div class="wholeCanvas">
-    <FinalSocketCanvas v-show="this.nowPage === 0" :nowPage="this.nowPage" />
+    <button @click="changeCanvas">소켓디스커넥트제발</button>
+
+    <QuizCanvas
+      v-if="this.nowPage === 0"
+      @changeCanvas="changeCanvas"
+      :nowPage="this.nowPage"
+    />
     <!-- <NavBar />
     <WorldCanvas
       v-show="this.nowPage === 0"
       @changeCanvas="changeCanvas"
       @changeBattle="changeBattle"
       :nowPage="this.nowPage"
-    />
+    /> -->
     <HouseCanvas
       v-show="this.nowPage === 1"
       @changeCanvas="changeCanvas"
       :nowPage="this.nowPage"
     />
+    <!--
     <BattleCanvas
       v-show="this.nowPage === 3"
       @changeBattle="changeBattle"
@@ -23,11 +30,11 @@
 
 <script>
 // import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
-// import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
+import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
 // import NavBar from '../../components/main/NavBar.vue'
 
 // import BattleCanvas from '../../components/battle/BattleCanvas.vue'
-import FinalSocketCanvas from '../../components/canvas/FinalSocketCanvas.vue'
+import QuizCanvas from '../../components/canvas/QuizCanvas.vue'
 // import LightSocketCanvas from '../../components/canvas/LightSocketCanvas.vue'
 
 export default {
@@ -38,9 +45,9 @@ export default {
   },
   components: {
     // LightSocketCanvas: LightSocketCanvas
-    FinalSocketCanvas: FinalSocketCanvas
+    QuizCanvas: QuizCanvas,
     // WorldCanvas: WorldCanvas,
-    // HouseCanvas: HouseCanvas,
+    HouseCanvas: HouseCanvas
     // NavBar: NavBar,
     // BattleCanvas: BattleCanvas
   },

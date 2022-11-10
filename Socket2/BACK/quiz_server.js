@@ -1,0 +1,99 @@
+const express = require("express");
+const http = require("http");
+const cors = require("cors");
+const axios = require("axios");
+
+const app = express();
+const server = http.createServer(app);
+const BASE_URL = "https://k7e203.p.ssafy.io";
+
+app.use(cors());
+
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+let quizs = [];
+
+server.listen(3000, () => {
+  console.log("Listening at port 3000...");
+});
+
+axios({
+  url: BASE_URL + "/api/v1/game/words/auth/10",
+  method: "GET",
+})
+  .then((res) => {
+    quizs = res.data;
+    // console.log(res.data);
+    // console.log(quizs);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+let players = {};
+let roomNum = 0;
+let rooms = [];
+
+io.on("connection", (socket) => {
+  console.log(`User ${socket.id} connected`);
+  players[socket.id] = { id: socket.id, object: {} };
+
+  socket.on("disconnect", (reason) => {
+    console.log(`User ${socket.id} disconnected`);
+    delete players[socket.id];
+  });
+
+  socket.on("senddata", (data) => {
+    players[socket.id].object = data;
+    console.log(socket.id, data.nickname);
+  });
+
+  socket.on("createRoom", (data) => {
+    console.log("서버 방생성 요청");
+    socket.join(`${roomNum}`);
+    rooms.push({ roomId: roomNum, roomName: data, currentUser: [] });
+    let roomInfo = rooms.find((room) => room.roomId == roomNum);
+    roomInfo.currentUser.push(socket.id);
+    socket.emit("createRoomOK", roomInfo);
+    console.log(roomInfo);
+
+    roomNum += 1;
+  });
+
+  socket.on("enterRoom", (data) => {
+    socket.join(data);
+    let roomInfo = rooms.find((room) => room.roomId == data);
+    roomInfo.currentUser.push(socket.id);
+    socket.to(`${data}`).emit("entermsg", "someone enter the room");
+    socket.emit("joinRoomOK", roomInfo);
+    console.log(roomInfo);
+  });
+
+  socket.on("leaveRoom", (data) => {
+    socket.leave(`${data}`);
+    let roomInfo = rooms.find((room) => room.roomId == data);
+    let i = roomInfo.currentUser.indexOf(socket.id);
+    roomInfo.currentUser.splice(i, 1);
+    if (roomInfo.currentUser.length > 0) {
+      console.log(`${data}에 사람있어요`);
+      socket.to(data).emit("left", roomInfo);
+    } else {
+      //   let i = rooms.indexOf(
+      //     rooms.find((room) => {
+      //       room.roomId == data;
+      //     })
+      //   );
+      //   rooms.splice(i, 1);
+
+      rooms = rooms.filter((room) => room.roomId !== roomInfo.roomId);
+    }
+    console.log(`${data}에서 나갔지롱`);
+    console.log(roomInfo);
+    console.log(rooms);
+  });
+});
