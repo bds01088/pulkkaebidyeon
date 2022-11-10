@@ -153,19 +153,29 @@ export default {
         chosung.value.input = ''
       }
       if (chosung.value.nowPage === 3) {
-        alert('굿')
-        axios({
-          url: BASE_URL + '/api/v1/mission/mini?rewardExp=' + reward.value.exp,
-          method: 'PUT',
-          headers: {
-            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-          }
+        swal({
+          title: '축하합니다🎊',
+          icon: 'success',
+          text: '모든 문제를 맞췄어요!',
+          buttons: false,
+          timer: 1000
         })
-          .then((res) => {
-            console.log(res.data)
-            reward.value.item = res.data
+
+        setTimeout(() => {
+          axios({
+            url:
+              BASE_URL + '/api/v1/mission/mini?rewardExp=' + reward.value.exp,
+            method: 'PUT',
+            headers: {
+              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+            }
           })
-          .catch((err) => console.log(err))
+            .then((res) => {
+              console.log(res.data)
+              reward.value.item = res.data
+            })
+            .catch((err) => console.log(err))
+        }, 1000)
       }
     }
     return {

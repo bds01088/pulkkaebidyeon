@@ -94,7 +94,7 @@ export default {
 
       const cameraPosition = new THREE.Vector3(0, 35, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.01
+      camera.zoom = 0.3
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -376,7 +376,7 @@ export default {
                 })
                 setTimeout(() => {
                   alert('집에 들어감')
-                  emit('now')
+                  emit('changeCanvas')
                 }, 1000)
               }
             } else if (house.visible) {
