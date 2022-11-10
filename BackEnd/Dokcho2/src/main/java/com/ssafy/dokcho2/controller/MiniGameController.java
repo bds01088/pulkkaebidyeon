@@ -1,7 +1,8 @@
 package com.ssafy.dokcho2.controller;
 
+import com.ssafy.dokcho2.dto.minigame.ConsonantDto;
 import com.ssafy.dokcho2.dto.minigame.WordsDto;
-import com.ssafy.dokcho2.service.minigame.WordsService;
+import com.ssafy.dokcho2.service.minigame.MiniGameService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,17 @@ import java.util.List;
 @RequestMapping("/api/v1/game")
 public class MiniGameController {
 
-    private final WordsService wordsService;
+    private final MiniGameService miniGameService;
 
     @GetMapping("/words/{count}")
     @ApiOperation(value = "사자성어 문제 리스트 받기")
-    public ResponseEntity<List<WordsDto>> getProblem(@PathVariable Integer count){
-        return new ResponseEntity<>(wordsService.getProblem(count), HttpStatus.OK);
+    public ResponseEntity<List<WordsDto>> getWordsProblem(@PathVariable Integer count){
+        return new ResponseEntity<>(miniGameService.getWordsProblem(count), HttpStatus.OK);
+    }
+
+    @GetMapping("/consonant/{count}")
+    @ApiOperation(value = "초성 퀴즈 문제 리스트 받기")
+    public ResponseEntity<List<ConsonantDto>> getConsonantProblem(@PathVariable Integer count){
+        return new ResponseEntity<>(miniGameService.getConsonantProblem(count), HttpStatus.OK);
     }
 }
