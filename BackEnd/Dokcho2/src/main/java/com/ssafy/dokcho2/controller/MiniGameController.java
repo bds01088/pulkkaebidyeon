@@ -1,5 +1,6 @@
 package com.ssafy.dokcho2.controller;
 
+import com.ssafy.dokcho2.dto.minigame.CharacterQuizDto;
 import com.ssafy.dokcho2.dto.minigame.ConsonantDto;
 import com.ssafy.dokcho2.dto.minigame.WordsDto;
 import com.ssafy.dokcho2.service.minigame.MiniGameService;
@@ -31,5 +32,11 @@ public class MiniGameController {
     @ApiOperation(value = "초성 퀴즈 문제 리스트 받기")
     public ResponseEntity<List<ConsonantDto>> getConsonantProblem(@PathVariable Integer count){
         return new ResponseEntity<>(miniGameService.getConsonantProblem(count), HttpStatus.OK);
+    }
+
+    @GetMapping("/characterquiz/{count}")
+    @ApiOperation(value = "인물 퀴즈 문제 리스트 받기")
+    public ResponseEntity<List<CharacterQuizDto>> getCharacterQuizProblem(@PathVariable Integer count){
+        return new ResponseEntity<>(miniGameService.getCharacterQuizProblem(count), HttpStatus.OK);
     }
 }
