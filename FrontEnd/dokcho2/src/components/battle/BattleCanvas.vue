@@ -15,18 +15,30 @@
     <div id="battleDiv"><div id="battle"></div></div>
 
     <div id="consoleDiv">
-      <div id="console" @click="changePhase()" v-show="phase === 'start'">
+      <div
+        id="console"
+        @click="changePhase()"
+        v-show="phase === 'start'"
+        style="cursor: pointer"
+      >
         <p>{{ msg }}</p>
       </div>
 
-      <div id="console" @click="changePhase()" v-show="phase === 'ready'">
+      <div
+        id="console"
+        @click="changePhase()"
+        v-show="phase === 'ready'"
+        style="cursor: pointer"
+      >
         <p>{{ msg }}</p>
       </div>
 
       <div id="console" v-show="phase === 'selectAct'">
         <p>
           <span v-for="(act, idx) in actList" :key="idx">
-            <button @click="doSelectAct(act)">{{ act }}</button>
+            <button @click="doSelectAct(act)" style="cursor: pointer">
+              {{ act }}
+            </button>
           </span>
         </p>
       </div>
@@ -55,15 +67,24 @@
         <p>{{ phase }}</p>
       </div>
 
-      <div id="console" v-show="phase === 'selectItem'">
-        <p>
-          <span v-for="(item, idx) in itemList" :key="idx">
-            <button @click="doSelectItem(item)">{{ item }}</button>
-          </span>
-        </p>
+      <div id="console" v-show="phase === 'selectItem'" style="cursor: pointer">
+        <span v-for="(item, idx) in itemList" :key="idx">
+          <button @click="doSelectItem(item)">
+            {{ item.itemName }} x {{ item.count }}
+          </button>
+        </span>
+        <br />
+        <div style="float: right; cursor: pointer">
+          <button @click="itemToSelect()">뒤로</button>
+        </div>
       </div>
 
-      <div id="console" v-show="phase === 'itemResult'" @click="changePhase()">
+      <div
+        id="console"
+        v-show="phase === 'itemResult'"
+        @click="changePhase()"
+        style="cursor: pointer"
+      >
         <p>{{ msg }}</p>
       </div>
 
@@ -82,7 +103,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
-import { Character } from '../modules/Character'
+import { Boss } from '../modules/Boss'
 
 // import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
@@ -91,6 +112,9 @@ import BattleStatus from './BattleStatus.vue'
 import { ref, watch } from 'vue'
 
 import { CreateText } from '../modules/CreateText'
+
+import { BASE_URL } from '@/constant/BASE_URL'
+import axios from 'axios'
 
 export default {
   name: 'BattleCanvas',
@@ -110,11 +134,13 @@ export default {
     const phase = ref('start')
     const msg = ref('적을 만남!!!!')
 
+    const myName = ref('')
     const myMaxHp = ref(100)
     const myHp = ref(100)
     const myAttack = ref(20)
     const myDefense = ref(10)
 
+    const enemyName = ref('')
     const enemyMaxHp = ref(10)
     const enemyHp = ref(10)
     const enemyAttack = ref(100)
@@ -130,21 +156,22 @@ export default {
     const myDamage = ref(0)
     const enemyDamage = ref(0)
 
-    const itemList = ref([
-      '회복 물약(소)',
-      '회복 물약(중)',
-      '회복 물약(대)',
-      '공격 무효화',
-      '더블 어택',
-      '공격력 증가',
-      '방어력 증가',
-      '희생',
-      '생존',
-      '기절',
-      '흡혈',
-      '독극물',
-      '무력화'
-    ])
+    // const itemList = ref([
+    //   '회복 물약(소)',
+    //   '회복 물약(중)',
+    //   '회복 물약(대)',
+    //   '공격 무효화',
+    //   '더블 어택',
+    //   '공격력 증가',
+    //   '방어력 증가',
+    //   '희생',
+    //   '생존',
+    //   '기절',
+    //   '흡혈',
+    //   '독극물',
+    //   '무력화'
+    // ])
+    const itemList = ref([])
 
     const useItem = ref('')
 
@@ -158,16 +185,31 @@ export default {
     const poisonCnt = ref(0)
     const incapacitate = ref(false)
 
+    const defensePlayerText = new CreateText({
+      content: '방어',
+      x: -0.5,
+      y: -10,
+      z: 3
+    })
+
+    const defenseEnemyText = new CreateText({
+      content: '방어',
+      x: -0.125,
+      y: -10,
+      z: -0.75
+    })
+
     watch(
       () => props.nowPage,
       () => {
         setTimeout(() => {
           begin.value += 1
           initValue()
+          getItemList()
 
           // Texture
           const textureLoader = new THREE.TextureLoader()
-          const floorTexture = textureLoader.load('/images/grid.png')
+          const floorTexture = textureLoader.load('/images/map13.png')
           floorTexture.wrapS = THREE.RepeatWrapping
           floorTexture.wrapT = THREE.RepeatWrapping
           floorTexture.repeat.x = 1
@@ -272,36 +314,55 @@ export default {
             z: 3
           })
 
-          const defensePlayerText = new CreateText({
-            content: '방어',
-            scene: scene,
-            x: -0.5,
-            y: -10,
-            z: 3
-          })
+          // const defensePlayerText = new CreateText({
+          //   content: '방어',
+          //   scene: scene,
+          //   x: -0.5,
+          //   y: -10,
+          //   z: 3
+          // })
 
           const villain = [
-            ['지현몬', { x: -0.125, y: 2, z: -0.75 }],
-            ['효근몬', { x: -0.125, y: 2, z: -0.75 }]
+            '지현몬',
+            '효근몬',
+            '재준몬',
+            '근희몬',
+            '상균몬',
+            '지원몬',
+            '하민몬'
           ]
 
-          const enemy = new Character({
+          const enemy = new Boss({
             scene,
             meshes,
             cannonWorld,
             gltfLoader,
-            modelSrc: `/models/Villain/${villain[0][0]}.glb`,
-            position: villain[0][1],
-            name: villain[0][0]
-          })
-
-          const defenseEnemyText = new CreateText({
-            content: '방어',
-            scene: scene,
+            modelSrc: `/models/Villain/${villain[5]}.glb`,
             x: -0.125,
-            y: -10,
+            y: 2,
             z: -0.75
           })
+
+          // const enemy = new Character({
+          //   scene,
+          //   meshes,
+          //   cannonWorld,
+          //   gltfLoader,
+          //   modelSrc: `/models/Villain/${villain[0][0]}.glb`,
+          //   position: villain[0][1],
+          //   name: villain[0][0]
+          // })
+
+          // const defenseEnemyText = new CreateText({
+          //   content: '방어',
+          //   scene: scene,
+          //   x: -0.125,
+          //   y: -10,
+          //   z: -0.75
+          // })
+
+          scene.add(defensePlayerText.modelMesh)
+          scene.add(defenseEnemyText.modelMesh)
 
           // 그리기
           const clock = new THREE.Clock()
@@ -333,15 +394,19 @@ export default {
 
               if (status.value == '방어') {
                 // console.log(defenseText.modelMesh.position)
-                defensePlayerText.modelMesh.position.y = 1
+                defensePlayerText.modelMesh.position.y =
+                  player.modelMesh.position.y + 1
                 status.value = '대기'
               }
 
               if (defensePlayerText.modelMesh) {
                 if (defensePlayerText.modelMesh.position.y >= 1) {
                   defensePlayerText.modelMesh.position.y += 0.0005
-                  if (defensePlayerText.modelMesh.position.y >= 1.05) {
-                    defensePlayerText.modelMesh.position.y -= 10
+                  if (
+                    defensePlayerText.modelMesh.position.y >=
+                    player.modelMesh.position.y + 1.05
+                  ) {
+                    defensePlayerText.modelMesh.position.y = -10
                   }
                 }
               }
@@ -384,20 +449,25 @@ export default {
 
               if (enemyStatus.value == '방어') {
                 // console.log(defenseEnemyText.modelMesh.position)
-                defenseEnemyText.modelMesh.position.y = 1.22
+                defenseEnemyText.modelMesh.position.y =
+                  enemy.modelMesh.position.y + 1.48
                 enemyStatus.value = '대기'
               }
 
               if (defenseEnemyText.modelMesh) {
-                if (defenseEnemyText.modelMesh.position.y >= 1.22) {
+                if (defenseEnemyText.modelMesh.position.y >= 1) {
                   defenseEnemyText.modelMesh.position.y += 0.0005
-                  if (defenseEnemyText.modelMesh.position.y >= 1.27) {
+                  if (
+                    defenseEnemyText.modelMesh.position.y >=
+                    enemy.modelMesh.position.y + 1.53
+                  ) {
                     defenseEnemyText.modelMesh.position.y -= 10
                   }
                 }
               }
 
               if (status.value == 'win') {
+                scene.remove(defensePlayerText.modelMesh)
                 // gsap.to(enemy.cannonBody.position, {
                 //   duration: 5,
                 //   x: 20,
@@ -572,7 +642,7 @@ export default {
       const num = Math.random(0, 1)
 
       if (num <= 0.7) {
-        enemyAct.value = '공격'
+        enemyAct.value = '방어'
       } else if (num <= 0.9) {
         enemyAct.value = '방어'
       } else {
@@ -975,7 +1045,6 @@ export default {
       } else if (enemyAct.value == '버프') {
         const buff = Math.round(enemyAttack.value * 0.2)
         enemyAttack.value += buff
-        console.log(enemyAttack.value)
 
         msg.value = buff.toString() + '만큼 공격력 상승!!!'
         phase.value = 'enemyActResult'
@@ -1015,7 +1084,8 @@ export default {
     }
 
     function doSelectItem(item) {
-      useItem.value = item
+      useItem.value = item.itemName
+      deleteItem(item.itemId)
 
       if (useItem.value == '회복 물약(소)') {
         phase.value = 'itemResult'
@@ -1241,21 +1311,6 @@ export default {
       myDamage.value = 0
       enemyDamage.value = 0
 
-      itemList.value = [
-        '회복 물약(소)',
-        '회복 물약(중)',
-        '회복 물약(대)',
-        '공격 무효화',
-        '더블 어택',
-        '공격력 증가',
-        '방어력 증가',
-        '희생',
-        '생존',
-        '기절',
-        '흡혈',
-        '독극물',
-        '무력화'
-      ]
       useItem.value = ''
 
       absoluteDefense.value = false
@@ -1267,6 +1322,77 @@ export default {
       poison.value = false
       poisonCnt.value = 0
       incapacitate.value = false
+    }
+
+    function itemToSelect() {
+      phase.value = 'selectAct'
+    }
+
+    function getMonsterInfo(monsterId) {
+      axios
+        .get(BASE_URL + '/api/v1/monster/' + monsterId, {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then((res) => {
+          console.log(res.data)
+          myName.value = res.data.name
+          myMaxHp.value = res.data.hp
+          myHp.value = res.data.hp
+          myAttack.value = res.data.attack
+          myDefense.value = res.data.defense
+        })
+        .catch((err) => console.log(err))
+    }
+
+    getMonsterInfo(1)
+
+    function getBossInfo(missionId) {
+      axios
+        .get(BASE_URL + '/api/v1/mission/boss/' + missionId, {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then((res) => {
+          console.log(res.data)
+          enemyName.value = res.data.name
+          enemyMaxHp.value = res.data.hp
+          enemyHp.value = res.data.hp
+          enemyAttack.value = res.data.attack
+          // enemyDefense.value = res.data.defense
+        })
+        .catch((err) => console.log(err))
+    }
+
+    getBossInfo(1)
+
+    function getItemList() {
+      axios
+        .get(BASE_URL + '/api/v1/item', {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then((res) => {
+          // console.log(res.data)
+          itemList.value = res.data
+        })
+        .catch((err) => console.log(err))
+    }
+
+    function deleteItem(itemId) {
+      axios
+        .delete(BASE_URL + '/api/v1/item/' + itemId, {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then(() => {
+          getItemList()
+        })
+        .catch((err) => console.log(err))
     }
 
     return {
@@ -1285,7 +1411,10 @@ export default {
       doSelectAct,
       itemList,
       doSelectItem,
-      poison
+      poison,
+      itemToSelect,
+      myName,
+      enemyName
     }
   }
 }
@@ -1298,14 +1427,32 @@ canvas {
   height: 100vh;
 }
 
+#consoleDiv {
+  position: absolute;
+  top: 71%;
+  left: 10%;
+
+  width: 80%;
+  height: 20%;
+  background-color: #55e1b0;
+  z-index: 1;
+
+  border: 2px solid black;
+  border-radius: 10px;
+}
+
 #console {
   position: absolute;
-  top: 540px;
-  left: 200px;
 
-  width: 1200px;
-  height: 100px;
+  top: 6%;
+  left: 7%;
+  padding: 1%;
+
   background-color: white;
-  z-index: 1;
+  width: 83%;
+  height: 70%;
+  z-index: 2;
+
+  border-radius: 10px;
 }
 </style>
