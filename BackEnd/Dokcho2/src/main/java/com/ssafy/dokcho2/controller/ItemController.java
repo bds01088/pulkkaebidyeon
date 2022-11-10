@@ -39,9 +39,9 @@ public class ItemController {
         return new ResponseEntity<>(itemDtoList, HttpStatus.OK);
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/{itemId}")
     @ApiOperation(value = "아이템 사용 후 갱신된 아이템 리스트 반환")
-    public ResponseEntity<List<ItemDto>> useItem(@RequestBody Long itemId){
+    public ResponseEntity<List<ItemDto>> useItem(@PathVariable Long itemId){
 
         List<ItemDto> itemDtoList = itemService.useItem(itemId);
 
