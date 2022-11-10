@@ -29,4 +29,6 @@ public class Boss {
     private Integer hp;
     @Column(name = "attack")
     private Integer attack;
+    @Column(name = "defence")
+    private Integer defence;
 }

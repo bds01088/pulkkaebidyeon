@@ -16,12 +16,14 @@ public class BossDto {
     private String name;
     private Integer hp;
     private Integer attack;
+    private Integer defence;
 
     public static BossDto from(Boss entity){
         return BossDto.builder()
                 .name(entity.getName())
                 .hp(entity.getHp())
                 .attack(entity.getAttack())
+                .defence(entity.getDefence())
                 .build();
     }
 }
