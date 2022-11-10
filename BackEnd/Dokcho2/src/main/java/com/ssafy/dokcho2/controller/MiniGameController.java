@@ -22,19 +22,19 @@ public class MiniGameController {
 
     private final MiniGameService miniGameService;
 
-    @GetMapping("/words/{count}")
+    @GetMapping("/words/auth/{count}")
     @ApiOperation(value = "사자성어 문제 리스트 받기")
     public ResponseEntity<List<WordsDto>> getWordsProblem(@PathVariable Integer count){
         return new ResponseEntity<>(miniGameService.getWordsProblem(count), HttpStatus.OK);
     }
 
-    @GetMapping("/consonant/{count}")
+    @GetMapping("/consonant/auth/{count}")
     @ApiOperation(value = "초성 퀴즈 문제 리스트 받기")
     public ResponseEntity<List<ConsonantDto>> getConsonantProblem(@PathVariable Integer count){
         return new ResponseEntity<>(miniGameService.getConsonantProblem(count), HttpStatus.OK);
     }
 
-    @GetMapping("/characterquiz/{count}")
+    @GetMapping("/characterquiz/auth/{count}")
     @ApiOperation(value = "인물 퀴즈 문제 리스트 받기")
     public ResponseEntity<List<CharacterQuizDto>> getCharacterQuizProblem(@PathVariable Integer count){
         return new ResponseEntity<>(miniGameService.getCharacterQuizProblem(count), HttpStatus.OK);
