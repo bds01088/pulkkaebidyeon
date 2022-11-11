@@ -24,6 +24,7 @@ import { Character } from '../modules/Character'
 import { Building } from '../modules/Building'
 import { Environment } from '../modules/Environment'
 import { Environments } from '../modules/Environments'
+import { myMon } from '../modules/MyMon'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
@@ -94,7 +95,7 @@ export default {
 
       const cameraPosition = new THREE.Vector3(0, 35, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.01
+      camera.zoom = 0.3
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -202,7 +203,7 @@ export default {
         meshes,
         cannonWorld,
         gltfLoader,
-        modelSrc: '/models/bbb.glb'
+        modelSrc: '/models/character.glb'
       })
 
       const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
@@ -214,6 +215,8 @@ export default {
       boxMesh.name = 'box'
       scene.add(boxMesh)
       meshes.push(boxMesh)
+
+      // 위인들
 
       const Greats = [
         ['단군', { x: -34, y: 0, z: -50 }],
@@ -236,6 +239,8 @@ export default {
         })
       })
 
+      // 빌런들
+
       const Villain = [
         ['지현몬', { x: -38, y: 0, z: -45 }],
         ['효근몬', { x: -58, y: 0, z: -17 }],
@@ -257,6 +262,8 @@ export default {
         })
       })
 
+      // 빌딩들
+
       const Buildings = [
         ['첨성대', { x: 5, y: 0, z: -30 }],
         ['덕수궁', { x: 45, y: 0, z: -10 }],
@@ -273,6 +280,8 @@ export default {
           name: element[0]
         })
       })
+
+      // 나무나 그런거들
 
       Environments.forEach((element) => {
         new Environment({
@@ -291,6 +300,17 @@ export default {
       //   cannonWorld,
       //   gltfLoader
       // })
+
+      // 내 풀깨비
+      let myMonsterId = JSON.parse(
+        localStorage.getItem('userInfo')
+      ).representMonster
+      let myMoster = new myMon({
+        scene,
+        meshes,
+        gltfLoader,
+        modelSrc: `/models/Monsters/${myMonsterId}.glb`
+      })
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -338,20 +358,25 @@ export default {
               destinationPoint.z - player.modelMesh.position.z,
               destinationPoint.x - player.modelMesh.position.x
             )
-            player.modelMesh.position.x += Math.cos(angle) * 0.02
-            player.modelMesh.position.z += Math.sin(angle) * 0.02
-            player.cannonBody.position.x += Math.cos(angle) * 0.02
-            player.cannonBody.position.z += Math.sin(angle) * 0.02
+            player.modelMesh.position.x += Math.cos(angle) * 0.04
+            player.modelMesh.position.z += Math.sin(angle) * 0.04
+            player.cannonBody.position.x += Math.cos(angle) * 0.04
+            player.cannonBody.position.z += Math.sin(angle) * 0.04
 
             camera.position.x =
               cameraPosition.x + player.modelMesh.position.x + 25
             camera.position.z =
               cameraPosition.z + player.modelMesh.position.z + 55
 
+            player.actions[0].stop()
+            player.actions[2].stop()
+            player.actions[3].stop()
+            player.actions[1].play()
+
             if (
               Math.abs(destinationPoint.x - player.modelMesh.position.x) <
-                0.02 &&
-              Math.abs(destinationPoint.z - player.modelMesh.position.z) < 0.02
+                0.03 &&
+              Math.abs(destinationPoint.z - player.modelMesh.position.z) < 0.03
             ) {
               player.moving = false
             }
@@ -394,6 +419,53 @@ export default {
             }
           } else {
             // 서 있는 상태
+            if (player.rumba) {
+              player.actions[1].stop()
+              player.actions[3].stop()
+              player.actions[2].play()
+            } else if (player.hiphop) {
+              player.actions[1].stop()
+              player.actions[2].stop()
+              player.actions[3].play()
+            } else {
+              player.actions[1].stop()
+              player.actions[0].play()
+            }
+          }
+          if (myMoster.modelMesh) {
+            if (
+              Math.abs(
+                player.modelMesh.position.x - myMoster.modelMesh.position.x
+              ) > 3 ||
+              Math.abs(
+                player.modelMesh.position.z - myMoster.modelMesh.position.z
+              ) > 3
+            ) {
+              myMoster.moving = true
+            }
+          }
+
+          // 대표풀깨비 따라오기
+          if (myMoster.moving) {
+            angle = Math.atan2(
+              player.modelMesh.position.z - myMoster.modelMesh.position.z,
+              player.modelMesh.position.x - myMoster.modelMesh.position.x
+            )
+            myMoster.modelMesh.position.x += Math.cos(angle) * 0.06
+            myMoster.modelMesh.position.z += Math.sin(angle) * 0.06
+
+            myMoster.modelMesh.lookAt(player.modelMesh.position)
+
+            if (
+              Math.abs(
+                player.modelMesh.position.x - myMoster.modelMesh.position.x
+              ) < 1 &&
+              Math.abs(
+                player.modelMesh.position.z - myMoster.modelMesh.position.z
+              ) < 1
+            ) {
+              myMoster.moving = false
+            }
           }
         }
 
@@ -524,6 +596,7 @@ export default {
       const keyController = new KeyController()
 
       function walk() {
+        destinationPoint.y = 0.25
         if (keyController.keys['KeyW'] || keyController.keys['ArrowUp']) {
           destinationPoint.z = player.modelMesh.position.z - 1
         }
@@ -536,28 +609,52 @@ export default {
         if (keyController.keys['KeyA'] || keyController.keys['ArrowLeft']) {
           destinationPoint.x = player.modelMesh.position.x - 1
         }
-        if (player.modelMesh.position.z) {
-          console.log(destinationPoint.z, player.modelMesh.position.z)
-        }
         player.modelMesh.lookAt(destinationPoint)
       }
       window.addEventListener('keydown', (e) => {
-        if (!keys[e.key]) {
-          keys[e.key] = 1
+        console.log(e.key)
+        if (
+          e.key === 'a' ||
+          e.key === 's' ||
+          e.key === 'd' ||
+          e.key === 'w' ||
+          e.key === 'A' ||
+          e.key === 'S' ||
+          e.key === 'D' ||
+          e.key === 'W' ||
+          e.key === 'ArrowDown' ||
+          e.key === 'ArrowUp' ||
+          e.key === 'ArrowLeft' ||
+          e.key === 'ArrowRight'
+        ) {
+          if (!keys[e.key]) {
+            keys[e.key] = 1
+          }
+          player.moving = true
+          player.rumba = false
+          player.hiphop = false
+        } else if (e.key === 'p') {
+          player.moving = false
+          player.rumba = true
+          player.hiphop = false
+        } else if (e.key === 'o') {
+          player.moving = false
+          player.rumba = false
+          player.hiphop = true
         }
-        console.log(keys)
-        player.moving = true
       })
       window.addEventListener('keyup', (e) => {
         delete keys[e.key]
+        if (!Object.keys(keys).length) {
+          player.moving = false
+          player.rumba = false
+          player.hiphop = false
+        }
         if (e.key === 'a' || e.key === 'd') {
           destinationPoint.x = player.modelMesh.position.x
         }
         if (e.key === 'w' || e.key === 's') {
           destinationPoint.z = player.modelMesh.position.z
-        }
-        if (keys === {}) {
-          player.moving = false
         }
         localStorage.setItem(
           'position',
@@ -571,8 +668,8 @@ export default {
 
       function onClick() {
         alert('aa')
-        // emit('changeCanvas')
-        emit('changeBattle')
+        emit('changeCanvas')
+        // emit('changeBattle')
       }
     }, 100)
 
