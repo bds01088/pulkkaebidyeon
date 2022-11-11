@@ -2,31 +2,37 @@
   <div class="quiz">
     <div class="quiz__box">
       <div class="box" v-if="quiz.content[quiz.nowPage]">
-        <div class="question">{{ quiz.content[quiz.nowPage].question }}</div>
-        <img :src="quiz.content[quiz.nowPage].img" alt="quiz-image" />
-        <div
-          class="answer1"
-          @click="nextQuiz(quiz.content[quiz.nowPage].answer1)"
-        >
-          {{ quiz.content[quiz.nowPage].answer1 }}
+        <div class="question">
+          {{ quiz.nowPage + 1 }}. {{ quiz.content[quiz.nowPage].question }}
         </div>
-        <div
-          class="answer2"
-          @click="nextQuiz(quiz.content[quiz.nowPage].answer2)"
-        >
-          {{ quiz.content[quiz.nowPage].answer2 }}
-        </div>
-        <div
-          class="answer3"
-          @click="nextQuiz(quiz.content[quiz.nowPage].answer3)"
-        >
-          {{ quiz.content[quiz.nowPage].answer3 }}
-        </div>
-        <div
-          class="answer4"
-          @click="nextQuiz(quiz.content[quiz.nowPage].answer4)"
-        >
-          {{ quiz.content[quiz.nowPage].answer4 }}
+        <div class="content">
+          <img :src="quiz.content[quiz.nowPage].img" alt="quiz-image" />
+          <div class="answers">
+            <div
+              class="answer1"
+              @click="nextQuiz(quiz.content[quiz.nowPage].answer1)"
+            >
+              (1) {{ quiz.content[quiz.nowPage].answer1 }}
+            </div>
+            <div
+              class="answer2"
+              @click="nextQuiz(quiz.content[quiz.nowPage].answer2)"
+            >
+              (2) {{ quiz.content[quiz.nowPage].answer2 }}
+            </div>
+            <div
+              class="answer3"
+              @click="nextQuiz(quiz.content[quiz.nowPage].answer3)"
+            >
+              (3) {{ quiz.content[quiz.nowPage].answer3 }}
+            </div>
+            <div
+              class="answer4"
+              @click="nextQuiz(quiz.content[quiz.nowPage].answer4)"
+            >
+              (4) {{ quiz.content[quiz.nowPage].answer4 }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -120,8 +126,42 @@ export default {
   height: 100%;
 }
 .box {
-  width: 80%;
-  height: 70%;
-  background-color: rgb(167, 105, 105);
+  border-radius: 8vw;
+  padding: 5vw;
+  width: 70%;
+  height: 60%;
+  background-color: rgb(231, 227, 186);
+  display: flex;
+  flex-direction: column;
+}
+.question {
+  font-size: 1.5vw;
+  width: 100%;
+  height: 10%;
+}
+.content {
+  width: 100%;
+  height: 90%;
+  display: flex;
+}
+.content > img {
+  max-width: 50vw;
+  max-height: 50vh;
+}
+.answers {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 2vw;
+}
+.answers > div {
+  display: flex;
+  align-items: center;
+  margin: 1vw;
+  padding: 0 1vw;
+  width: 20vw;
+  height: 6vh;
+  border-radius: 3vh;
+  background-color: rgb(242, 241, 235);
 }
 </style>
