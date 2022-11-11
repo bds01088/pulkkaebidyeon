@@ -48,40 +48,58 @@ io.on("connection", (socket) => {
     delete players[socket.id];
   });
 
-  socket.on("senddata", (data) => {
-    players[socket.id].object = data;
-    console.log(socket.id, data.nickname);
+  socket.on("sendNickname", (userInfo) => {
+    players[socket.id].object = userInfo;
+    console.log(
+      `${socket.id}, ${
+        players[socket.id].object.nickname
+      }님이 퀴즈에 입장했습니다`
+    );
   });
 
   socket.on("createRoom", (data) => {
-    console.log("서버 방생성 요청");
+    // console.log("서버 방생성 요청");
     socket.join(`${roomNum}`);
     rooms.push({ roomId: roomNum, roomName: data, currentUser: [] });
     let roomInfo = rooms.find((room) => room.roomId == roomNum);
-    roomInfo.currentUser.push(socket.id);
-    socket.emit("createRoomOK", roomInfo);
-    console.log(roomInfo);
+    roomInfo.currentUser.push({
+      socketID: socket.id,
+      nickname: players[socket.id].object.nickname,
+    });
+    let payload = [roomInfo, players[socket.id].object];
+    socket.emit("createRoomOK", payload);
+    // console.log(roomInfo);
 
     roomNum += 1;
   });
 
   socket.on("enterRoom", (data) => {
     socket.join(data);
+    console.log(data);
     let roomInfo = rooms.find((room) => room.roomId == data);
-    roomInfo.currentUser.push(socket.id);
-    socket.to(`${data}`).emit("entermsg", "someone enter the room");
-    socket.emit("joinRoomOK", roomInfo);
-    console.log(roomInfo);
+    roomInfo.currentUser.push({
+      socketID: socket.id,
+      nickname: players[socket.id].object.nickname,
+    });
+    let payload = [roomInfo, players[socket.id].object];
+    io.to(`${data}`).emit("enterRoomOK", payload);
+    console.log(payload);
   });
 
-  socket.on("leaveRoom", (data) => {
-    socket.leave(`${data}`);
-    let roomInfo = rooms.find((room) => room.roomId == data);
-    let i = roomInfo.currentUser.indexOf(socket.id);
-    roomInfo.currentUser.splice(i, 1);
+  socket.on("leaveRoom", (nowRoom) => {
+    socket.leave(`${nowRoom}`);
+
+    let roomInfo = rooms.find((room) => room.roomId == nowRoom);
+    // let i = roomInfo.currentUser.indexOf(socket.id);
+    // roomInfo.currentUser.splice(i, 1);
+    currentUser = currentUser.filter(
+      (user) => user.socketID !== players[socket.id]
+    );
+    let payload = [roomInfo, players[socket.id].object];
+
     if (roomInfo.currentUser.length > 0) {
-      console.log(`${data}에 사람있어요`);
-      socket.to(data).emit("left", roomInfo);
+      console.log(`${nowRoom}에 사람있어요`);
+      io.to(`${nowRoom}`).emit("leaveRoomOK", payload);
     } else {
       //   let i = rooms.indexOf(
       //     rooms.find((room) => {
@@ -92,7 +110,8 @@ io.on("connection", (socket) => {
 
       rooms = rooms.filter((room) => room.roomId !== roomInfo.roomId);
     }
-    console.log(`${data}에서 나갔지롱`);
+
+    console.log(`${nowRoom}에서 나갔지롱`);
     console.log(roomInfo);
     console.log(rooms);
   });
