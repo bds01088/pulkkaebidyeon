@@ -436,10 +436,10 @@ export default {
             if (
               Math.abs(
                 player.modelMesh.position.x - myMoster.modelMesh.position.x
-              ) > 3 ||
+              ) > 2 ||
               Math.abs(
                 player.modelMesh.position.z - myMoster.modelMesh.position.z
-              ) > 3
+              ) > 2
             ) {
               myMoster.moving = true
             }
@@ -451,8 +451,8 @@ export default {
               player.modelMesh.position.z - myMoster.modelMesh.position.z,
               player.modelMesh.position.x - myMoster.modelMesh.position.x
             )
-            myMoster.modelMesh.position.x += Math.cos(angle) * 0.06
-            myMoster.modelMesh.position.z += Math.sin(angle) * 0.06
+            myMoster.modelMesh.position.x += Math.cos(angle) * 0.04
+            myMoster.modelMesh.position.z += Math.sin(angle) * 0.04
 
             myMoster.modelMesh.lookAt(player.modelMesh.position)
 
