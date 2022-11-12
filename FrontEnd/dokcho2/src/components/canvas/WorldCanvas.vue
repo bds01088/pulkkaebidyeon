@@ -24,6 +24,7 @@ import { Character } from '../modules/Character'
 import { Building } from '../modules/Building'
 import { Environment } from '../modules/Environment'
 import { Environments } from '../modules/Environments'
+import { FBXLoad } from '../modules/FBXLoader'
 import { myMon } from '../modules/MyMon'
 import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
@@ -316,6 +317,26 @@ export default {
       //   cannonWorld,
       //   gltfLoader
       // })
+
+      // 마을
+      const village = [
+        ['house1', { x: -67, y: 0, z: 66 }],
+        ['house2', { x: -62, y: 0, z: 61 }],
+        ['house3', { x: -61, y: 0, z: 63 }],
+        ['house4', { x: -58, y: 0, z: 64 }],
+        ['house5', { x: -59, y: 0, z: 61 }],
+        ['house6', { x: -60, y: 0, z: 68 }]
+      ]
+      village.forEach((element) => {
+        new FBXLoad({
+          scene,
+          meshes,
+          cannonWorld,
+          modelSrc: `/models/Environment/${element[0]}.fbx`,
+          position: element[1],
+          name: element[0]
+        })
+      })
 
       // 내 풀깨비
       let myMonsterId = JSON.parse(
