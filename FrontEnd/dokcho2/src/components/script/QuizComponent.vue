@@ -135,6 +135,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  cursor: auto;
 }
 .quiz__box {
   display: flex;
