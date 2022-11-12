@@ -98,15 +98,15 @@ button {
   border: none;
   width: 15vw;
   margin: 10px;
-  background-color: #f5e4c3;
+  background-color: #bfbfbf;
 }
 .findpassword__button:hover {
-  background-color: #dba437;
+  background-color: #467302;
   color: white;
 }
 
 .login__button:hover {
-  background-color: #dba437;
+  background-color: #467302;
   color: white;
 }
 
@@ -136,13 +136,14 @@ button {
   align-items: center;
   height: 60%;
   width: 60vw;
-  /* background-color: white; */
-  background-image: url('@/assets/Paper.png');
+  background-color: rgba(255, 255, 255, 0.8);
+  /* background-image: url('@/assets/Paper.png'); */
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
   display: flex;
   padding: 5%;
+  border-radius: 40px;
 }
 
 input {
@@ -157,12 +158,12 @@ input {
 }
 
 input::placeholder {
-  color: #ff9604;
+  color: #467302;
 }
 
 input:focus {
   outline: none;
-  border: #ff9604 solid 2px;
+  border: #467302 solid 2px;
 }
 
 .findpasswordpage__text {

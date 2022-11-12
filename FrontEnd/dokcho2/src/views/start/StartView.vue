@@ -215,8 +215,12 @@ input:focus {
 }
 
 .findpassword__a {
-  color: white;
+  color: gray;
   text-decoration: none;
-  font-size: 1.5vh;
+  font-size: 2vh;
+}
+
+a:hover {
+  color: #6bfa8d;
 }
 </style>
