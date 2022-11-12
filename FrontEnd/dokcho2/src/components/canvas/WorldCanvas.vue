@@ -158,7 +158,6 @@ export default {
       floorMesh.rotation.x = -Math.PI / 2
       floorMesh.receiveShadow = true
       scene.add(floorMesh)
-      meshes.push(floorMesh)
 
       const pointerMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(0.5, 0.5),
@@ -565,6 +564,20 @@ export default {
         checkIntersects()
       }
 
+      function onPointerMove(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+        mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObjects(meshes)
+
+        if (intersects && intersects.length > 0) {
+          document.body.style.cursor = 'pointer'
+        } else {
+          document.body.style.cursor = 'default'
+        }
+      }
+
       // 마우스 이벤트
       canvas.addEventListener('mousedown', (e) => {
         isPressed = true
@@ -576,6 +589,9 @@ export default {
       canvas.addEventListener('mousemove', (e) => {
         if (isPressed) {
           calculateMousePosition(e)
+        }
+        if (props.nowPage === 0) {
+          onPointerMove(e)
         }
       })
 

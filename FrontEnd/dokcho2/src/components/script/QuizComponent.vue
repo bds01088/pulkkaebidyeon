@@ -163,5 +163,12 @@ export default {
   height: 6vh;
   border-radius: 3vh;
   background-color: rgb(242, 241, 235);
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+.answers > div:hover {
+  scale: 1.05;
+  background-color: rgb(171, 174, 240);
 }
 </style>
