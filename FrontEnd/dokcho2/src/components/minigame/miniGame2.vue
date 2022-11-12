@@ -9,9 +9,11 @@
             9회 안에 세자리의 숫자를 맞춰야 합니다.<br />
             각 숫자는 1~9까지로 이루어져 있으며, 중복되지 않습니다. 숫자를
             입력하면 다음과 같은 결과가 나타납니다. <br />
-            스트라이크 : 숫자와 위치가 전부 맞았을 때. <br />
-            볼 : 숫자는 맞지만 위치가 틀렸을 때. <br />
-            아웃 : 숫자와 위치가 전부 틀렸을 때.
+            <b
+              >스트라이크 : 숫자와 위치가 전부 맞았을 때. <br />
+              볼 : 숫자는 맞지만 위치가 틀렸을 때. <br />
+              아웃 : 숫자와 위치가 전부 틀렸을 때.
+            </b>
           </p>
         </div>
 
@@ -77,6 +79,7 @@
             v-model="inputAnswer[2]"
             maxlength="1"
             class="number__box"
+            @keyup.enter="showResult()"
           />
           <button @click="showResult()" class="do__input">입력</button>
         </div>
@@ -86,7 +89,7 @@
         <div class="show__result">
           <table class="show__table">
             <tr>
-              <th colspan="3"><h3>Score Board</h3></th>
+              <th class="table__title" colspan="3"><h3>Score Board</h3></th>
             </tr>
             <tr>
               <td class="inning">1회</td>
@@ -94,42 +97,42 @@
               <td class="score">{{ scoreBoard[0].result }}</td>
             </tr>
             <tr>
-              <td>2회</td>
+              <td class="inning">2회</td>
               <td>{{ scoreBoard[1].input }}</td>
               <td>{{ scoreBoard[1].result }}</td>
             </tr>
             <tr>
-              <td>3회</td>
+              <td class="inning">3회</td>
               <td>{{ scoreBoard[2].input }}</td>
               <td>{{ scoreBoard[2].result }}</td>
             </tr>
             <tr>
-              <td>4회</td>
+              <td class="inning">4회</td>
               <td>{{ scoreBoard[3].input }}</td>
               <td>{{ scoreBoard[3].result }}</td>
             </tr>
             <tr>
-              <td>5회</td>
+              <td class="inning">5회</td>
               <td>{{ scoreBoard[4].input }}</td>
               <td>{{ scoreBoard[4].result }}</td>
             </tr>
             <tr>
-              <td>6회</td>
+              <td class="inning">6회</td>
               <td>{{ scoreBoard[5].input }}</td>
               <td>{{ scoreBoard[5].result }}</td>
             </tr>
             <tr>
-              <td>7회</td>
+              <td class="inning">7회</td>
               <td>{{ scoreBoard[6].input }}</td>
               <td>{{ scoreBoard[6].result }}</td>
             </tr>
             <tr>
-              <td>8회</td>
+              <td class="inning">8회</td>
               <td>{{ scoreBoard[7].input }}</td>
               <td>{{ scoreBoard[7].result }}</td>
             </tr>
             <tr>
-              <td>9회</td>
+              <td class="inning">9회</td>
               <td>{{ scoreBoard[8].input }}</td>
               <td>{{ scoreBoard[8].result }}</td>
             </tr>
@@ -415,6 +418,7 @@ export default {
 }
 .input__answer {
   margin-top: 12vh;
+  margin-left: 4vw;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -448,21 +452,27 @@ export default {
   background-color: #6bfa8d;
 }
 
-.show__table {
-  margin-left: auto;
-  margin-right: auto;
+.show__result {
+  margin-top: 3vh;
+  border-radius: 30px;
 }
 
 th,
 td {
-  border: 1px solid #bcbcbc;
+  border: 1px solid #d1d1d1;
+  border-collapse: separate !important;
+  /* border-radius: 0px; */
 }
 
 table {
+  margin-left: auto;
+  margin-right: auto;
   width: 50%;
-
   text-align: center;
   font-size: 18px;
+  border-collapse: separate !important;
+  border-radius: 30px;
+  border-style: hidden;
 }
 
 .inning {
@@ -479,6 +489,7 @@ table {
 
 tr {
   height: 32px;
+  border-radius: 30px;
 }
 
 .game__result {
@@ -587,5 +598,15 @@ tr {
 .game__dontget h3 {
   margin-top: 7vh;
   margin-bottom: 2vh;
+}
+
+.table__title {
+  background-color: white;
+  height: 6vh;
+  text-align: center;
+}
+
+.inning {
+  background-color: white;
 }
 </style>
