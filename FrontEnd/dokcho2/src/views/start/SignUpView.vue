@@ -4,7 +4,7 @@
       <div class="signuppage__left">
         <div class="termsofservice">
           <div class="termsofservice__text">
-            제 1 장 총 칙<br />제 1 조 (목적)<br />이 약관은 {독초도감}(이하
+            제 1 장 총 칙<br />제 1 조 (목적)<br />이 약관은 {풀깨비뎐}(이하
             "사이트"라 합니다)에서 제공하는 인터넷서비스(이하 "서비스"라
             합니다)의 이용 조건 및 절차에 관한 기본적인 사항을 규정함을 목적으로
             합니다.<br />제 2조 (약관의 효력 및 변경)<br />① 이 약관은 서비스
@@ -14,7 +14,22 @@
             발생합니다.<br />제 3 조 (용어의 정의) 이 약관에서 사용하는 용어의
             정의는 다음과 같습니다.<br />① 회원 : 사이트와 서비스 이용계약을
             체결하거나 이용자 아이디(ID)를 부여받은 개인 또는 단체를
-            말합니다.<br />
+            말합니다.<br />② 신청자 : 회원가입을 신청하는 개인 또는 단체를
+            말합니다.<br />③ 아이디(ID) : 회원의 식별과 서비스 이용을 위하여
+            회원이 정하고 사이트가 승인하는 문자와 숫자의 조합을 말합니다.<br />④
+            비밀번호 : 회원이 부여 받은 아이디(ID)와 일치된 회원임을 확인하고,
+            회원 자신의 비밀을 보호하기 위하여 회원이 정한 문자와 숫자의 조합을
+            말합니다.<br />⑤ 해지 : 사이트 또는 회원이 서비스 이용계약을
+            취소하는 것을 말합니다.<br />제 2 장 서비스 이용계약<br />제 4 조
+            (이용계약의 성립)<br />① 이용약관 하단의 동의 버튼을 누르면 이
+            약관에 동의하는 것으로 간주됩니다.<br />② 이용계약은 서비스
+            이용희망자의 이용약관 동의 후 이용 신청에 대하여 사이트가
+            승낙함으로써 성립합니다.<br />제 5 조 (이용신청)<br />① 신청자가 본
+            서비스를 이용하기 위해서는 사이트 소정의 가입신청 양식에서 요구하는
+            이용자 정보를 기록하여 제출해야 합니다.<br />② 가입신청 양식에
+            기재하는 모든 이용자 정보는 모두 실제 데이터인 것으로 간주됩니다.<br />실명이나
+            실제 정보를 입력하지 않은 사용자는 법적인 보호를 받을 수 없으며,
+            서비스의 제한을 받을 수 있습니다.<br /><br />
           </div>
         </div>
         <div class="agreement">
@@ -39,10 +54,10 @@
       </div>
       <div class="signuppage__right">
         <div class="logo">
-          <!-- <img class="logo__img" src="@/assets/dokcho_logo.png" alt="" /> -->
+          <!-- <img class="logo__img" src="@/assets/logo.png" alt="" /> -->
         </div>
-        <div class="oktext">
-          <span>아이디 : 영문자나 숫자의 조합으로 5~20자리</span>
+        <div class="description">
+          <span> 💚 아이디 : 영문자나 숫자의 조합으로 5~20자리</span>
         </div>
         <div class="username__input">
           <div class="usr__ipt">
@@ -124,8 +139,8 @@
         </div>
         <br />
         <div>
-          <div class="oktext">
-            <span>비밀번호 : 영문자+숫자+특수문자 조합으로 8~25자리</span>
+          <div class="description">
+            <span> 💚 비밀번호 : 영문자+숫자+특수문자 조합으로 8~25자리</span>
           </div>
           <input
             @keyup="checkPassword()"
@@ -244,7 +259,7 @@ export default {
             this.usernameDuplicate = false
             swal({
               title: '사용 가능한 아이디입니다',
-              text: '',
+              text: '         ',
               icon: 'success',
               buttons: false,
               timer: 1500
@@ -253,7 +268,7 @@ export default {
             this.usernameDuplicate = true
             swal({
               title: '이미 존재하는 아이디입니다😥',
-              text: '',
+              text: '        ',
               icon: 'warning',
               buttons: false,
               timer: 1500
@@ -268,7 +283,7 @@ export default {
       if (!emailCheck.test(this.email)) {
         swal({
           title: '정확한 이메일 주소인지 확인해주세요!',
-          text: '',
+          text: '           ',
           icon: 'warning',
           buttons: false,
           timer: 1500
@@ -283,7 +298,7 @@ export default {
               this.emailDuplicate = false
               swal({
                 title: '사용 가능한 이메일입니다',
-                text: '',
+                text: '             ',
                 icon: 'success',
                 buttons: false,
                 timer: 1500
@@ -292,7 +307,7 @@ export default {
               this.emailDuplicate = true
               swal({
                 title: '이미 존재하는 이메일입니다😥',
-                text: '',
+                text: '              ',
                 icon: 'warning',
                 buttons: false,
                 timer: 1500
@@ -368,7 +383,7 @@ export default {
         swal({
           title:
             '비밀번호는 영문자+숫자+특수문자 조합으로 8~25자리를 사용해야 해요',
-          text: '',
+          text: '      ',
           icon: 'warning',
           buttons: false,
           timer: 1500
@@ -376,7 +391,7 @@ export default {
       } else if (!usernameCheck.test(this.username)) {
         swal({
           title: '아이디는 영문자나 숫자의 조합으로 5~20자리를 사용해야 해요',
-          text: '',
+          text: '     ',
           icon: 'warning',
           buttons: false,
           timer: 1500
@@ -401,7 +416,7 @@ export default {
           .then(() => {
             swal({
               title: '회원가입을 축하드립니다!',
-              text: '   ',
+              text: '       ',
               icon: 'success',
               buttons: false,
               timer: 1500
@@ -414,7 +429,7 @@ export default {
       } else {
         return swal({
           title: '비밀번호가 일치하지 않아요😥',
-          text: '',
+          text: '          ',
           icon: 'warning',
           buttons: false,
           timer: 1500
@@ -450,7 +465,8 @@ button {
   height: 100vh;
   overflow: hidden;
   margin: 0;
-  /* background-image: url('@/assets/game_background.png'); */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('../../assets/startimg.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -464,8 +480,9 @@ button {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 90%;
   background-color: white;
+  border-radius: 20px;
 }
 .signuppage__left {
   margin-left: 20px;
@@ -484,13 +501,14 @@ button {
   align-items: center;
 }
 .logo__img {
-  width: 15vw;
+  width: 20vw;
 }
 .signup {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  margin-top: 4vh;
 }
 .signup__btn {
   background-color: #a7c957;
@@ -555,7 +573,7 @@ input {
   border-radius: 20px;
 }
 .termsofservice {
-  width: 50vw;
+  width: 40vw;
   height: 30vw;
   margin: 20px;
   overflow: auto;
@@ -569,10 +587,15 @@ input {
   border-radius: 50px;
 }
 .termsofservice__text {
-  margin: 4vh;
+  margin-left: 4vh;
+  margin-right: 4vh;
   height: 40vh;
   flex-direction: column;
   justify-content: center;
+  line-height: 1.5rem;
+  /* padding: 1.5vh; */
+  margin-bottom: 4vh;
+  font-size: 0.9rem;
 }
 
 .checkbox {
@@ -609,6 +632,14 @@ input {
 }
 .warningtext {
   color: #be0000;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.description {
+  font-size: 0.95rem;
 }
 
 @media screen and (max-width: 850px) {
@@ -652,7 +683,7 @@ input {
   .termsofservice__text {
     overflow: auto;
     height: 35vh;
-    margin: 5vw;
+    /* margin: 5vw; */
     flex-direction: column;
     justify-content: center;
     text-align: center;
