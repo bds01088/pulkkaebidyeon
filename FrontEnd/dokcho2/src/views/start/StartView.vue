@@ -45,6 +45,7 @@
         alt=""
       />
     </div>
+    <howToGame v-if="howToGame" @howtoGame="howtoGame" />
   </div>
 </template>
 
@@ -53,6 +54,7 @@ import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { mapActions, mapGetters } from 'vuex'
 import swal from 'sweetalert'
+import howToGame from '../../components/start/howToGame.vue'
 
 export default {
   name: 'StartView',
@@ -60,8 +62,12 @@ export default {
     return {
       username: '',
       password: '',
-      kakaoLoginURL: BASE_URL + '/oauth2/authorization/kakao'
+      kakaoLoginURL: BASE_URL + '/oauth2/authorization/kakao',
+      howToGame: false
     }
+  },
+  components: {
+    howToGame: howToGame
   },
   methods: {
     ...mapActions(['doRefreshToken', 'fetchUserInfo', 'fetchUserDeck']),
@@ -75,7 +81,13 @@ export default {
     signUp() {
       this.$router.push({ name: 'signup' })
     },
-    howtoGame() {},
+    howtoGame() {
+      if (this.howToGame === false) {
+        this.howToGame = true
+      } else {
+        this.howToGame = false
+      }
+    },
     async login() {
       console.log(this.username)
 
