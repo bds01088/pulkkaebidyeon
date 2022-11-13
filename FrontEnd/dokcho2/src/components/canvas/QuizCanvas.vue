@@ -1,41 +1,58 @@
 <template>
-  <div>소켓임 해위</div>
-  <button @click="disconnect()">디스커넥트</button>
-  <button @click="createRoom()">방생성</button>
-  <input
-    type="text"
-    v-model="inputText.inputText"
-    placeholder="방 번호 나중에는선택하게할거임"
-  />
-  <input
-    type="text"
-    v-model="inputRoomName.inputRoomName"
-    placeholder="방 이름"
-  />
-  <button @click="enterRoom()">방참가</button>
-  <button @click="leaveRoom()">방나가기</button>
-  <p>{{ this.nowRoom.nowRoom }}번 방</p>
-  <p>유저목록{{ this.nowRoomUser.nowRoomUser }}</p>
-  <li v-for="user in this.nowRoomUser.nowRoomUser" v-bind:key="user">
-    {{ user.nickname }}
-  </li>
-  <!-- <p>유저닉네임목록{{ this.nowRoomUserNickname.nowRoomUserNickname }}</p> -->
+  <div>
+    소켓임 해위
+    <div v-if="this.QuizRoomEntered.QuizRoomEntered === false">
+      <button @click="disconnect()">디스커넥트</button>
+      <button @click="createRoom()">방생성</button>
+      <input
+        type="text"
+        v-model="inputRoomName.inputRoomName"
+        placeholder="방 이름"
+      />
+      <input
+        type="text"
+        v-model="inputText.inputText"
+        placeholder="방 번호 나중에는선택하게할거임"
+      />
+      <button @click="enterRoom()">방참가</button>
+      <button @click="leaveRoom()">방나가기</button>
+      <p>{{ this.nowRoom.nowRoom }}번 방</p>
+      <p>유저목록{{ this.nowRoomUser.nowRoomUser }}</p>
+      <li v-for="user in this.nowRoomUser.nowRoomUser" v-bind:key="user">
+        {{ user.nickname }}
+      </li>
+      <!-- <p>유저닉네임목록{{ this.nowRoomUserNickname.nowRoomUserNickname }}</p> -->
+    </div>
+    <div v-else>
+      <QuizRoomCanvas
+        :roomName="this.roomName.roomName"
+        :nowRoom="this.nowRoom.nowRoom"
+        :nowRoomUser="this.nowRoomUser.nowRoomUser"
+      ></QuizRoomCanvas>
+    </div>
+  </div>
 </template>
 
 <script>
 import { io } from 'socket.io-client'
 import { ref } from 'vue'
+import QuizRoomCanvas from './QuizRoomCanvas.vue'
+
 export default {
   name: 'QuizCanvas',
   props: {
     nowPage: Number
   },
+  components: {
+    QuizRoomCanvas
+  },
   setup() {
     let inputText = ref({ inputText: '' })
     let inputRoomName = ref({ inputRoomName: '' })
     let nowRoom = ref({ nowRoom: '' })
-    let roomName
+    let roomName = ref({ roomName: '' })
     let nowRoomUser = ref({ nowwRoomUser: '' })
+    let QuizRoomEntered = ref({ QuizRoomEntered: false })
     // let nowRoomUserNickname = ref({ nowRoomUserNickname: '' })
 
     // nowRoomUser.value.nowwRoomUser.forEach(function (value) {
@@ -55,9 +72,10 @@ export default {
     emitNickname()
 
     function createRoom() {
-      roomName = inputRoomName.value.inputRoomName
+      roomName.value.roomName = inputRoomName.value.inputRoomName
       socket.emit('createRoom', roomName)
       // console.log('방생성 버튼 누름')
+      QuizRoomEntered.value.QuizRoomEntered = true
     }
 
     socket.on('createRoomOK', (payload) => {
@@ -74,6 +92,7 @@ export default {
       nowRoom.value.nowRoom = inputText.value.inputText
       console.log(`${nowRoom.value.nowRoom}번 방에 참가합니다`)
       socket.emit('enterRoom', nowRoom.value.nowRoom)
+      QuizRoomEntered.value.QuizRoomEntered = true
     }
 
     socket.on('enterRoomOK', (payload) => {
@@ -87,12 +106,13 @@ export default {
       )
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
 
-      console.log(nowRoomUser)
+      console.log(nowRoomUser.value.nowRoomUser)
     })
 
     function leaveRoom() {
       socket.emit('leaveRoom', nowRoom.value.nowRoom)
       console.log(`${nowRoom.value.nowRoom}번 방에서 나갑니다`)
+      QuizRoomEntered.value.QuizRoomEntered = false
     }
 
     socket.on('leaveRoomOK', (payload) => {
@@ -105,8 +125,10 @@ export default {
     return {
       inputText,
       inputRoomName,
+      roomName,
       nowRoom,
       nowRoomUser,
+      QuizRoomEntered,
       // nowRoomUserNickname,
       disconnect,
       emitNickname,
