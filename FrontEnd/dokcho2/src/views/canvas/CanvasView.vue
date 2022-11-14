@@ -19,6 +19,7 @@
     <HouseCanvas
       v-show="this.nowPage === 1"
       @changeCanvas="changeCanvas"
+      @loadingEnd="loadingEnd"
       :nowPage="this.nowPage"
       :nowNavbar="this.nowNavbar"
     />
@@ -110,7 +111,7 @@ export default {
       setTimeout(() => {
         console.log('로딩끝?')
         this.isloading += 1
-        if (this.isloading === 1) {
+        if (this.isloading === 2) {
           this.$Progress.finish()
         }
       }, 1000)
