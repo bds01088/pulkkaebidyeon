@@ -7,7 +7,11 @@
       @quizStart="quizStart"
       :isTalk="isTalk"
     />
-    <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
+    <QuizComponent
+      v-if="isQuiz.quiz"
+      @quizClose="quizClose"
+      @enterBattle="enterBattle"
+    />
     <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
     <miniGame2 v-if="miniGame1.miniGame2" @miniGame2Close="miniGame2Close" />
     <miniGame3 v-if="miniGame1.miniGame3" @miniGame3Close="miniGame3Close" />
@@ -56,6 +60,7 @@ export default {
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
+
     const miniGame1 = ref({
       miniGame1: false,
       miniGame2: false,
@@ -783,6 +788,11 @@ export default {
       isQuiz.value.quiz = false
     }
 
+    function enterBattle() {
+      isQuiz.value.quiz = false
+      emit('changeBattle')
+    }
+
     function miniGame1Close() {
       miniGame1.value.miniGame1 = false
     }
@@ -804,7 +814,8 @@ export default {
       quizClose,
       miniGame1Close,
       miniGame2Close,
-      miniGame3Close
+      miniGame3Close,
+      enterBattle
     }
   }
 }
