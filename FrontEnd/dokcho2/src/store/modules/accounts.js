@@ -42,9 +42,13 @@ export const accounts = {
     async fetchUserInfo({ commit }, userInfo) {
       commit('SET_USERINFO', userInfo)
     },
-    fetchnowUserInfo({ commit }) {
+    async fetchnowUserInfo({ commit }) {
+      if (this.getters.isAccessTokenExpired) {
+        await this.dispatch('doRefreshToken')
+      }
+
       axios({
-        url: 'https://k7e203.p.ssafy.io/api/v1/user/myinfo',
+        url: BASE_URL + '/api/v1/user/myinfo',
         method: 'GET',
         headers: {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')

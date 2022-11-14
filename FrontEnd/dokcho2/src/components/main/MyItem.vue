@@ -76,14 +76,19 @@
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { ref, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   setup(props, { emit }) {
     const items = ref({ items: [] })
     const battleItems = ref({ battleItems: [] })
     const missionItems = ref({ missionItems: [] })
+    const store = useStore()
 
-    function fetchItems() {
+    async function fetchItems() {
+      if (store.getters.isAccessTokenExpired) {
+        await store.dispatch('doRefreshToken')
+      }
       axios({
         // 테스트용으로 요청 전체 아이템 받음 / 실제로는 item까지만
         url: BASE_URL + '/api/v1/item',

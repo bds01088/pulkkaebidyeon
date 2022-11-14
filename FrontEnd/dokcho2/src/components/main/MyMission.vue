@@ -107,6 +107,7 @@ import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 // import MissionDetail from './MissionDetail.vue'
 import { ref, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   // components: { MissionDetail },
@@ -115,7 +116,12 @@ export default {
     const missionDetail = ref({ missionDetail: false })
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
 
-    function fetchMissions() {
+    const store = useStore()
+
+    async function fetchMissions() {
+      if (store.getters.isAccessTokenExpired) {
+        await store.dispatch('doRefreshToken')
+      }
       axios({
         url: BASE_URL + '/api/v1/mission/',
         method: 'GET',

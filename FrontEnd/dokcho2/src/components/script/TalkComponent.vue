@@ -30,7 +30,6 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import Swal from 'sweetalert2'
 
-
 export default {
   props: {
     isTalk: Object
@@ -38,7 +37,7 @@ export default {
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
 
-    // const store = useStore()
+    const store = useStore()
     // store.dispatch('fetchnowUserInfo')
 
     function endTalk() {
@@ -50,7 +49,6 @@ export default {
         emit('quizStart')
       } else {
         if (userInfo.nowMissionId === content.missionId) {
-
           if (content.status === 'READY') {
             axios({
               url: BASE_URL + '/api/v1/mission/',
@@ -83,7 +81,7 @@ export default {
                 imageAlt: 'Custom image'
               })
               emit('talkClose')
-              
+            })
           } else {
             emit('talkClose')
           }

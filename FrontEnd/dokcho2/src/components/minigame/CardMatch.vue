@@ -99,6 +99,8 @@ import axios from 'axios'
 import swal from 'sweetalert'
 import { BASE_URL } from '@/constant/BASE_URL'
 
+import { useStore } from 'vuex'
+
 // 스테이지수 (5개)
 // 힌트수 (1회 /2회)
 // 얻은 점수 (게임 끝났을 때 그만큼 넣어준다) : 문제 맞추면 + 3 힌트 사용했으면 + 2, 틀리면 - 1
@@ -114,6 +116,8 @@ export default {
     const lastStage = ref({ lastStage: false })
     const item = ref({ item: {} })
 
+    const store = useStore()
+
     // 정답 선택
     function selectAnswer(ans) {
       selectedAnswer.value.selectedAnswer = ans
@@ -121,7 +125,10 @@ export default {
     }
 
     // 퀴즈 가져오기
-    function fetchQuiz() {
+    async function fetchQuiz() {
+      if (store.getters.isAccessTokenExpired) {
+        await store.dispatch('doRefreshToken')
+      }
       axios({
         url: BASE_URL + '/api/v1/game/words/auth/5',
         method: 'GET'

@@ -41,6 +41,8 @@ import miniGame1 from '@/components/minigame/miniGame1'
 import miniGame2 from '@/components/minigame/miniGame2'
 import miniGame3 from '@/components/minigame/miniGame3'
 
+import { useStore } from 'vuex'
+
 export default {
   name: 'WorldCanvas',
   props: {
@@ -57,6 +59,8 @@ export default {
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
+
+    const store = useStore()
 
     const miniGame1 = ref({
       miniGame1: false,
@@ -749,6 +753,7 @@ export default {
       draw()
 
       function onClick() {
+        store.dispatch('fetchnowUserInfo')
         alert('aa')
         emit('changeCanvas')
         // emit('changeBattle')
@@ -756,7 +761,10 @@ export default {
     }, 100)
 
     // 대화를 시작하는 함수(미리 받아야 status를 알고 위인과 빌런을 구분할 수 있음)
-    function talkStart(missionId) {
+    async function talkStart(missionId) {
+      if (store.getters.isAccessTokenExpired) {
+        await store.dispatch('doRefreshToken')
+      }
       axios({
         url: BASE_URL + '/api/v1/mission/' + missionId,
         method: 'GET',
