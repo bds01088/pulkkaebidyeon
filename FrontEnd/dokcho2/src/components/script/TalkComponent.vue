@@ -42,19 +42,12 @@ export default {
       } else {
         if (userInfo.nowMissionId === content.missionId) {
           axios({
-            url:
-              BASE_URL +
-              '/api/v1/mission/' +
-              userInfo.nowMissionId +
-              '?nowStatus=' +
-              content.status,
+            url: BASE_URL + '/api/v1/mission/',
             method: 'PUT',
             headers: {
               AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
             }
           }).then(() => {
-            userInfo.nowMissionId += 1
-            localStorage.setItem('userInfo', JSON.stringify(userInfo))
             emit('talkClose')
           })
         } else {
