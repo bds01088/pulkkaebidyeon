@@ -34,8 +34,18 @@
           </div>
         </div>
 
-        <div v-else class="mission__box">
+        <div v-else-if="mission.status === 'FINISHED'" class="mission__box">
           <div class="mission__text">
+            <p class="mission__id">🔑 {{ mission.missionId }}번째 미션</p>
+            <p>🔓 {{ mission.characters }}의 문제 해결 완료!</p>
+          </div>
+        </div>
+
+        <div v-else class="mission__box tooltip">
+          <div class="mission__text">
+            <span class="tooltiptext">
+              <br />✨설명 <br />{{ mission.next }}</span
+            >
             <p class="mission__id">🔑 {{ mission.missionId }}번째 미션</p>
             <p class="mission__name" v-if="mission.characters === '단군'">
               <b>{{ mission.characters }}</b> : 고조선의 보물을 찾아라!
@@ -261,5 +271,50 @@ export default {
 
 .mission__notyet {
   background-color: rgba(255, 255, 187, 0.881);
+}
+
+.tooltip {
+  position: relative;
+  cursor: pointer;
+  /* display: inline-block; */
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 150px;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.808);
+  color: black;
+  text-align: center;
+  border-radius: 30px;
+  padding: 7px 0;
+  font-size: 0.8rem;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  /* top: -200%; */
+  bottom: -100%;
+  left: -20%;
+  margin-left: -5vw;
+  transition: opacity 1s;
+  line-height: 1.5rem;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip .tooltiptext::after {
+  content: ' ';
+  position: absolute;
+
+  top: 50%;
+  left: 100%;
+  /* margin-left: -10px; */
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent transparent rgba(255, 255, 255, 0.808);
 }
 </style>
