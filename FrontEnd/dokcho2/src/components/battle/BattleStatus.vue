@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="enemyStatus">
-      <p style="margin-left: 10px">적 이름</p>
+      <p style="margin-left: 10px">{{ enemyName }}</p>
       <div
         id="enemyMaxHp"
         style="border: 5px solid black; height: 30px; width: 88%"
@@ -21,7 +21,7 @@
       </p>
     </div>
     <div id="myStatus">
-      <p style="margin-left: 10px">내 이름</p>
+      <p style="margin-left: 10px">{{ myName }}</p>
       <div
         id="myMaxHp"
         style="border: 5px solid black; height: 30px; width: 88%"
@@ -62,7 +62,9 @@ export default {
     myMaxHp: Number,
     myHp: Number,
     enemyMaxHp: Number,
-    enemyHp: Number
+    enemyHp: Number,
+    myName: String,
+    enemyName: String
   },
 
   created() {

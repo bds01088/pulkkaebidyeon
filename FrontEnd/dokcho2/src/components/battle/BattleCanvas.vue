@@ -10,6 +10,8 @@
       :myHp="myHp"
       :enemyMaxHp="enemyMaxHp"
       :enemyHp="enemyHp"
+      :myName="myName"
+      :enemyName="enemyName"
     ></battle-status>
 
     <div id="battleDiv"><div id="battle"></div></div>
@@ -22,6 +24,7 @@
         style="cursor: pointer"
       >
         <p>{{ msg }}</p>
+        <div class="triangle triangle--top"></div>
       </div>
 
       <div
@@ -31,6 +34,7 @@
         style="cursor: pointer"
       >
         <p>{{ msg }}</p>
+        <div class="triangle triangle--top"></div>
       </div>
 
       <div id="console" v-show="phase === 'selectAct'">
@@ -64,7 +68,7 @@
       </div>
 
       <div id="console" v-show="phase === 'end'">
-        <p>{{ phase }}</p>
+        <p>{{ msg }}</p>
       </div>
 
       <div id="console" v-show="phase === 'selectItem'" style="cursor: pointer">
@@ -75,7 +79,7 @@
         </span>
         <br />
         <div style="float: right; cursor: pointer">
-          <button @click="itemToSelect()">뒤로</button>
+          <button @click="itemToSelect()" style="cursor: pointer">뒤로</button>
         </div>
       </div>
 
@@ -86,6 +90,7 @@
         style="cursor: pointer"
       >
         <p>{{ msg }}</p>
+        <div class="triangle triangle--top"></div>
       </div>
 
       <div id="console" v-show="phase === 'sacrifice'">
@@ -94,6 +99,7 @@
 
       <div id="console" v-show="phase === 'poison'" @click="changePhase()">
         <p>{{ msg }}</p>
+        <div class="triangle triangle--top"></div>
       </div>
     </div>
   </div>
@@ -120,13 +126,16 @@ export default {
   name: 'BattleCanvas',
 
   props: {
-    nowPage: Number
+    nowPage: Number,
+    startSignal: Number
   },
 
   components: { BattleStatus },
 
   setup(props, { emit }) {
     // console.log(JSON.parse(localStorage.getItem('userInfo')))
+    const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
+
     const myHpBar = ref('100')
     const enemyHpBar = ref('100')
     const begin = ref(0)
@@ -141,9 +150,9 @@ export default {
     const myDefense = ref(10)
 
     const enemyName = ref('')
-    const enemyMaxHp = ref(10)
-    const enemyHp = ref(10)
-    const enemyAttack = ref(100)
+    const enemyMaxHp = ref(100)
+    const enemyHp = ref(100)
+    const enemyAttack = ref(20)
     const enemyDefense = ref(10)
 
     const actList = ref(['공격', '방어', '아이템'])
@@ -189,23 +198,35 @@ export default {
       content: '방어',
       x: -0.5,
       y: -10,
-      z: 3
+      z: 3,
+      color: '#adb5bd'
     })
 
     const defenseEnemyText = new CreateText({
       content: '방어',
       x: -0.125,
       y: -10,
-      z: -0.75
+      z: -0.75,
+      color: '#adb5bd'
+    })
+
+    const buffEnemyText = new CreateText({
+      content: '버프',
+      x: -0.125,
+      y: -20,
+      z: -0.75,
+      color: '#ffcc00'
     })
 
     watch(
-      () => props.nowPage,
+      () => props.startSignal,
       () => {
         setTimeout(() => {
           begin.value += 1
           initValue()
           getItemList()
+          getMonsterInfo(userInfo.value.representMonster)
+          getBossInfo(userInfo.value.nowMissionId)
 
           // Texture
           const textureLoader = new THREE.TextureLoader()
@@ -308,7 +329,7 @@ export default {
             meshes,
             cannonWorld,
             gltfLoader,
-            modelSrc: '/models/character.glb',
+            modelSrc: `/models/${userInfo.value.representMonster}.glb`,
             x: -0.5,
             y: 2,
             z: 3
@@ -337,7 +358,9 @@ export default {
             meshes,
             cannonWorld,
             gltfLoader,
-            modelSrc: `/models/Villain/${villain[5]}.glb`,
+            modelSrc: `/models/Villain/${
+              villain[userInfo.value.nowMissionId - 1]
+            }.glb`,
             x: -0.125,
             y: 2,
             z: -0.75
@@ -363,6 +386,7 @@ export default {
 
           scene.add(defensePlayerText.modelMesh)
           scene.add(defenseEnemyText.modelMesh)
+          scene.add(buffEnemyText.modelMesh)
 
           // 그리기
           const clock = new THREE.Clock()
@@ -412,6 +436,9 @@ export default {
               }
 
               if (status.value == 'lose') {
+                scene.remove(defensePlayerText.modelMesh)
+                scene.remove(defenseEnemyText.modelMesh)
+                scene.remove(buffEnemyText.modelMesh)
                 // gsap.to(player.cannonBody.position, {
                 //   duration: 5,
                 //   x: -20,
@@ -461,13 +488,34 @@ export default {
                     defenseEnemyText.modelMesh.position.y >=
                     enemy.modelMesh.position.y + 1.53
                   ) {
-                    defenseEnemyText.modelMesh.position.y -= 10
+                    defenseEnemyText.modelMesh.position.y = -10
+                  }
+                }
+              }
+
+              if (enemyStatus.value == '버프') {
+                console.log(buffEnemyText.modelMesh.position)
+                buffEnemyText.modelMesh.position.y =
+                  enemy.modelMesh.position.y + 1.48
+                enemyStatus.value = '대기'
+              }
+
+              if (buffEnemyText.modelMesh) {
+                if (buffEnemyText.modelMesh.position.y >= 1) {
+                  buffEnemyText.modelMesh.position.y += 0.0005
+                  if (
+                    buffEnemyText.modelMesh.position.y >=
+                    enemy.modelMesh.position.y + 1.53
+                  ) {
+                    buffEnemyText.modelMesh.position.y = -20
                   }
                 }
               }
 
               if (status.value == 'win') {
                 scene.remove(defensePlayerText.modelMesh)
+                scene.remove(defenseEnemyText.modelMesh)
+                scene.remove(buffEnemyText.modelMesh)
                 // gsap.to(enemy.cannonBody.position, {
                 //   duration: 5,
                 //   x: 20,
@@ -571,6 +619,8 @@ export default {
                       phase.value = 'end'
                       status.value = 'win'
 
+                      winBattle()
+
                       setTimeout(() => {
                         emit('changeBattle')
                       }, 2000)
@@ -623,6 +673,8 @@ export default {
                   if (enemyHp.value <= 0) {
                     phase.value = 'end'
                     status.value = 'win'
+
+                    winBattle()
                   }
                 }
               } else {
@@ -642,7 +694,7 @@ export default {
       const num = Math.random(0, 1)
 
       if (num <= 0.7) {
-        enemyAct.value = '방어'
+        enemyAct.value = '공격'
       } else if (num <= 0.9) {
         enemyAct.value = '방어'
       } else {
@@ -682,6 +734,8 @@ export default {
               if (enemyHp.value <= 0) {
                 phase.value = 'end'
                 status.value = 'win'
+                winBattle()
+
                 setTimeout(() => {
                   emit('changeBattle')
                 }, 2000)
@@ -698,6 +752,8 @@ export default {
               if (enemyHp.value <= 0) {
                 phase.value = 'end'
                 status.value = 'win'
+                winBattle()
+
                 setTimeout(() => {
                   emit('changeBattle')
                 }, 2000)
@@ -733,6 +789,8 @@ export default {
               if (enemyHp.value <= 0) {
                 phase.value = 'end'
                 status.value = 'win'
+                winBattle()
+
                 setTimeout(() => {
                   emit('changeBattle')
                 }, 2000)
@@ -749,6 +807,8 @@ export default {
               if (enemyHp.value <= 0) {
                 phase.value = 'end'
                 status.value = 'win'
+                winBattle()
+
                 setTimeout(() => {
                   emit('changeBattle')
                 }, 2000)
@@ -778,6 +838,8 @@ export default {
                         if (enemyHp.value <= 0) {
                           phase.value = 'end'
                           status.value = 'win'
+                          winBattle()
+
                           setTimeout(() => {
                             emit('changeBattle')
                           }, 2000)
@@ -798,6 +860,8 @@ export default {
         if (enemyHp.value <= 0) {
           phase.value = 'end'
           status.value = 'win'
+          winBattle()
+
           setTimeout(() => {
             emit('changeBattle')
           }, 2000)
@@ -839,6 +903,8 @@ export default {
                   if (enemyHp.value <= 0) {
                     phase.value = 'end'
                     status.value = 'win'
+                    winBattle()
+
                     setTimeout(() => {
                       emit('changeBattle')
                     }, 2000)
@@ -903,6 +969,8 @@ export default {
                 if (enemyHp.value <= 0) {
                   phase.value = 'end'
                   status.value = 'win'
+                  winBattle()
+
                   setTimeout(() => {
                     emit('changeBattle')
                   }, 2000)
@@ -946,8 +1014,10 @@ export default {
             if (myHp.value <= 0) {
               phase.value = 'end'
               status.value = 'lose'
+              msg.value = '배틀에서 졌다... 재시작합니다...'
+
               setTimeout(() => {
-                emit('changeBattle')
+                emit('startBattle')
               }, 2000)
             } else if (poison.value == true) {
               poisonCnt.value += 1
@@ -970,6 +1040,8 @@ export default {
                 if (enemyHp.value <= 0) {
                   phase.value = 'end'
                   status.value = 'win'
+                  winBattle()
+
                   setTimeout(() => {
                     emit('changeBattle')
                   }, 2000)
@@ -1008,8 +1080,10 @@ export default {
             if (myHp.value <= 0) {
               phase.value = 'end'
               status.value = 'lose'
+              msg.value = '배틀에서 졌다... 재시작합니다...'
+
               setTimeout(() => {
-                emit('changeBattle')
+                emit('startBattle')
               }, 2000)
             } else if (poison.value == true) {
               poisonCnt.value += 1
@@ -1032,6 +1106,8 @@ export default {
                 if (enemyHp.value <= 0) {
                   phase.value = 'end'
                   status.value = 'win'
+                  winBattle()
+
                   setTimeout(() => {
                     emit('changeBattle')
                   }, 2000)
@@ -1071,6 +1147,8 @@ export default {
               if (enemyHp.value <= 0) {
                 phase.value = 'end'
                 status.value = 'win'
+                winBattle()
+
                 setTimeout(() => {
                   emit('changeBattle')
                 }, 2000)
@@ -1225,6 +1303,8 @@ export default {
                       if (enemyHp.value <= 0) {
                         phase.value = 'end'
                         status.value = 'win'
+                        winBattle()
+
                         setTimeout(() => {
                           emit('changeBattle')
                         }, 2000)
@@ -1265,6 +1345,8 @@ export default {
         if (enemyHp.value <= 0) {
           phase.value = 'end'
           status.value = 'win'
+          winBattle()
+
           setTimeout(() => {
             emit('changeBattle')
           }, 2000)
@@ -1292,15 +1374,6 @@ export default {
 
       phase.value = 'start'
       msg.value = '적을 만남!!!!'
-
-      myMaxHp.value = 100
-      myHp.value = 100
-      myAttack.value = 20
-      myDefense.value = 10
-      enemyMaxHp.value = 100
-      enemyHp.value = 100
-      enemyAttack.value = 10
-      enemyDefense.value = 10
 
       actList.value = ['공격', '방어', '아이템']
       myAct.value = ''
@@ -1336,17 +1409,15 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res.data)
+          // console.log(res.data)
           myName.value = res.data.name
           myMaxHp.value = res.data.hp
           myHp.value = res.data.hp
           myAttack.value = res.data.attack
-          myDefense.value = res.data.defense
+          myDefense.value = res.data.defence
         })
         .catch((err) => console.log(err))
     }
-
-    getMonsterInfo(1)
 
     function getBossInfo(missionId) {
       axios
@@ -1356,17 +1427,15 @@ export default {
           }
         })
         .then((res) => {
-          console.log(res.data)
+          // console.log(res.data)
           enemyName.value = res.data.name
           enemyMaxHp.value = res.data.hp
           enemyHp.value = res.data.hp
           enemyAttack.value = res.data.attack
-          // enemyDefense.value = res.data.defense
+          enemyDefense.value = res.data.defence
         })
         .catch((err) => console.log(err))
     }
-
-    getBossInfo(1)
 
     function getItemList() {
       axios
@@ -1393,6 +1462,22 @@ export default {
           getItemList()
         })
         .catch((err) => console.log(err))
+    }
+
+    function winBattle() {
+      msg.value = '배틀에서 이겼다!!!!'
+
+      axios.put(
+        BASE_URL +
+          '/api/v1/mission/' +
+          userInfo.value.nowMissionId +
+          '?nowStatus=BATTLE_WIN',
+        {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        }
+      )
     }
 
     return {
@@ -1454,5 +1539,25 @@ canvas {
   z-index: 2;
 
   border-radius: 10px;
+}
+
+.triangle {
+  position: absolute;
+  top: 80%;
+  left: 96%;
+
+  display: inline-block;
+  border: 12px solid transparent;
+}
+
+.triangle--top {
+  border-top-color: black;
+  animation: blink-effect 1s step-end infinite;
+}
+
+@keyframes blink-effect {
+  50% {
+    opacity: 0;
+  }
 }
 </style>

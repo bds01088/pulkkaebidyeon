@@ -27,7 +27,8 @@
           <!-- <p>{{ item.itemName }}</p> -->
         </div>
       </div>
-      <div class="item__body1" v-else>
+      <div class="item__nomission" v-else>
+        <p>현재 보유한 미션 아이템이 없어요 😥</p>
         <p>미션을 해결하고 아이템을 모아보세요!</p>
       </div>
       <h3>배틀 사용 아이템</h3>
@@ -47,13 +48,16 @@
             <span class="tooltiptext"> {{ item.description }}</span>
             <div class="battle__item">
               <p>{{ item.itemName }} <br /></p>
-              <!-- <p>{{ item.count }}</p> -->
+              <p>
+                <span class="battle__count">{{ item.count }}</span
+                >개
+              </p>
             </div>
           </div>
         </div>
       </div>
-      <div class="item__body2" v-else>
-        <p>미니게임을 통해 아이템을 모아봐요 >.^</p>
+      <div class="item__nomission" v-else>
+        <p>미니게임을 통해 아이템을 모아보세요 🍀</p>
       </div>
     </div>
     <div class="item__x" v-else>
@@ -82,7 +86,7 @@ export default {
     function fetchItems() {
       axios({
         // 테스트용으로 요청 전체 아이템 받음 / 실제로는 item까지만
-        url: BASE_URL + '/api/v1/item/itemList',
+        url: BASE_URL + '/api/v1/item',
         method: 'GET',
         headers: {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
@@ -181,6 +185,11 @@ h3 {
   margin-left: 2vh;
 }
 
+.item__nomission {
+  margin: 1vw;
+  text-align: center;
+}
+
 .item__body2 {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -188,16 +197,18 @@ h3 {
 }
 
 .item__item {
-  width: 60px;
+  width: 70px;
   height: 68px;
   /* background-color: #ffffff; */
   border-radius: 10px;
-  margin-bottom: 2vh;
+  margin-bottom: 3vh;
   cursor: pointer;
+  /* margin-left: 0.5vh;
+  margin-right: 0.5vh; */
 }
 
 .item__image {
-  width: 100%;
+  width: 95%;
 }
 
 .item__item p {
@@ -207,22 +218,20 @@ h3 {
 .battle__item {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-evenly;
   text-align: center;
-  width: 60px;
+  width: 70px;
 }
 
 .battle__item p {
   /* margin-left: 10%; */
-  font-size: 0.3rem;
+  font-size: 0.6rem;
   text-align: center;
 }
-.item__count {
-  border: 1px solid white;
-  background-color: yellow;
-  width: 20%;
-  padding: 1vh;
-  border-radius: 10px;
+
+.battle__count {
+  color: #467302;
+  font-weight: bold;
 }
 
 .item__no {
@@ -253,7 +262,7 @@ h3 {
 
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 120px;
+  width: 200px;
   background-color: black;
   color: #fff;
   text-align: center;
