@@ -7,6 +7,7 @@
         {{ user.nickname }}
       </li>
     </div>
+    <button @click="leaveRoom()">방나가기</button>
   </div>
 </template>
 
@@ -19,7 +20,14 @@ export default {
     nowRoomUser: Array,
     QuizRoomEntered: Boolean
   },
-  setup() {}
+  setup(props, { emit }) {
+    function leaveRoom() {
+      emit('leaveRoom')
+    }
+    return {
+      leaveRoom
+    }
+  }
 }
 </script>
 

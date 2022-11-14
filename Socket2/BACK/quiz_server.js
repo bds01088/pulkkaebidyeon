@@ -57,6 +57,10 @@ io.on("connection", (socket) => {
     );
   });
 
+  setInterval(() => {
+    socket.emit("sendRooms", rooms);
+  }, 100);
+
   socket.on("createRoom", (data) => {
     // console.log("서버 방생성 요청");
     socket.join(`${roomNum}`);
@@ -67,7 +71,7 @@ io.on("connection", (socket) => {
       nickname: players[socket.id].object.nickname,
     });
     let payload = [roomInfo, players[socket.id].object];
-    socket.emit("createRoomOK", payload);
+    io.to(`${roomNum}`).emit("createRoomOK", payload);
     // console.log(roomInfo);
 
     roomNum += 1;
@@ -75,7 +79,6 @@ io.on("connection", (socket) => {
 
   socket.on("enterRoom", (data) => {
     socket.join(data);
-    console.log(data);
     let roomInfo = rooms.find((room) => room.roomId == data);
     roomInfo.currentUser.push({
       socketID: socket.id,
@@ -90,15 +93,16 @@ io.on("connection", (socket) => {
     socket.leave(`${nowRoom}`);
 
     let roomInfo = rooms.find((room) => room.roomId == nowRoom);
-    // let i = roomInfo.currentUser.indexOf(socket.id);
-    // roomInfo.currentUser.splice(i, 1);
-    currentUser = currentUser.filter(
-      (user) => user.socketID !== players[socket.id]
-    );
+    let i = roomInfo.currentUser.indexOf(socket.id);
+    roomInfo.currentUser.splice(i, 1);
+    // roomInfo.currentUser = roomInfo.currentUser.filter(
+    //   (user) => user.socketID !== players[socket.id]
+    // );
+    // console.log(roomInfo.currentUser);
     let payload = [roomInfo, players[socket.id].object];
 
     if (roomInfo.currentUser.length > 0) {
-      console.log(`${nowRoom}에 사람있어요`);
+      // console.log(`${nowRoom}에 사람있어요`);
       io.to(`${nowRoom}`).emit("leaveRoomOK", payload);
     } else {
       //   let i = rooms.indexOf(
@@ -111,8 +115,8 @@ io.on("connection", (socket) => {
       rooms = rooms.filter((room) => room.roomId !== roomInfo.roomId);
     }
 
-    console.log(`${nowRoom}에서 나갔지롱`);
-    console.log(roomInfo);
-    console.log(rooms);
+    // console.log(`${nowRoom}에서 나갔지롱`);
+    // console.log(roomInfo);
+    // console.log(rooms);
   });
 });

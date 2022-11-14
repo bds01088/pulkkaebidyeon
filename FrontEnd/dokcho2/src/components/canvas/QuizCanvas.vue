@@ -15,20 +15,31 @@
         placeholder="방 번호 나중에는선택하게할거임"
       />
       <button @click="enterRoom()">방참가</button>
+      <div>
+        <li
+          @click="enterRoom(room.roomId)"
+          v-for="room in this.rooms.rooms"
+          v-bind:key="room"
+        >
+          {{ room.roomName }}
+        </li>
+      </div>
+
+      <!-- <p>유저닉네임목록{{ this.nowRoomUserNickname.nowRoomUserNickname }}</p> -->
+    </div>
+    <div v-else>
       <button @click="leaveRoom()">방나가기</button>
       <p>{{ this.nowRoom.nowRoom }}번 방</p>
       <p>유저목록{{ this.nowRoomUser.nowRoomUser }}</p>
       <li v-for="user in this.nowRoomUser.nowRoomUser" v-bind:key="user">
         {{ user.nickname }}
       </li>
-      <!-- <p>유저닉네임목록{{ this.nowRoomUserNickname.nowRoomUserNickname }}</p> -->
-    </div>
-    <div v-else>
-      <QuizRoomCanvas
+      <!-- <QuizRoomCanvas
+        @leaveRoom="leaveRoom()"
         :roomName="this.roomName.roomName"
         :nowRoom="this.nowRoom.nowRoom"
         :nowRoomUser="this.nowRoomUser.nowRoomUser"
-      ></QuizRoomCanvas>
+      ></QuizRoomCanvas> -->
     </div>
   </div>
 </template>
@@ -36,23 +47,21 @@
 <script>
 import { io } from 'socket.io-client'
 import { ref } from 'vue'
-import QuizRoomCanvas from './QuizRoomCanvas.vue'
+// import QuizRoomCanvas from './QuizRoomCanvas.vue'
 
 export default {
   name: 'QuizCanvas',
   props: {
     nowPage: Number
   },
-  components: {
-    QuizRoomCanvas
-  },
   setup() {
     let inputText = ref({ inputText: '' })
     let inputRoomName = ref({ inputRoomName: '' })
     let nowRoom = ref({ nowRoom: '' })
     let roomName = ref({ roomName: '' })
-    let nowRoomUser = ref({ nowwRoomUser: '' })
+    let nowRoomUser = ref({ nowRoomUser: '' })
     let QuizRoomEntered = ref({ QuizRoomEntered: false })
+    let rooms = ref({ rooms: '' })
     // let nowRoomUserNickname = ref({ nowRoomUserNickname: '' })
 
     // nowRoomUser.value.nowwRoomUser.forEach(function (value) {
@@ -66,14 +75,15 @@ export default {
       socket.disconnect()
     }
 
-    function emitNickname() {
-      socket.emit('sendNickname', JSON.parse(localStorage.getItem('userInfo')))
-    }
-    emitNickname()
+    socket.emit('sendNickname', JSON.parse(localStorage.getItem('userInfo')))
+
+    socket.on('sendRooms', (data) => {
+      rooms.value.rooms = data
+    })
 
     function createRoom() {
       roomName.value.roomName = inputRoomName.value.inputRoomName
-      socket.emit('createRoom', roomName)
+      socket.emit('createRoom', roomName.value.roomName)
       // console.log('방생성 버튼 누름')
       QuizRoomEntered.value.QuizRoomEntered = true
     }
@@ -87,16 +97,20 @@ export default {
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
     })
 
-    function enterRoom() {
+    function enterRoom(roomId) {
       // console.log(inputText.value.inputText)
-      nowRoom.value.nowRoom = inputText.value.inputText
+      console.log(roomId)
+      nowRoom.value.nowRoom = roomId
+      console.log(nowRoom.value.nowRoom)
       console.log(`${nowRoom.value.nowRoom}번 방에 참가합니다`)
       socket.emit('enterRoom', nowRoom.value.nowRoom)
       QuizRoomEntered.value.QuizRoomEntered = true
     }
 
     socket.on('enterRoomOK', (payload) => {
-      console.log(payload)
+      console.log('엔터룸오케이왔다')
+      console.log(payload[0].roomId)
+      console.log('위 번호의 방에 들어왔다')
       nowRoom.value.nowRoom = payload[0].roomId
       // let enteredUser =
       // payload[0].currentUser[payload[0].currentUser.length - 1]
@@ -105,7 +119,6 @@ export default {
         `${payload[1].nickname}가 ${nowRoom.value.nowRoom}번 방에 참가했습니다`
       )
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
-
       console.log(nowRoomUser.value.nowRoomUser)
     })
 
@@ -118,8 +131,9 @@ export default {
     socket.on('leaveRoomOK', (payload) => {
       console.log(payload)
       console.log(`${payload[1].nickname}가 나갔습니다`)
+      console.log(payload[0].currentUser)
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
-      console.log(nowRoomUser)
+      console.log(nowRoomUser.value.nowRoomUser)
     })
 
     return {
@@ -129,9 +143,9 @@ export default {
       nowRoom,
       nowRoomUser,
       QuizRoomEntered,
+      rooms,
       // nowRoomUserNickname,
       disconnect,
-      emitNickname,
       enterRoom,
       leaveRoom,
       createRoom
