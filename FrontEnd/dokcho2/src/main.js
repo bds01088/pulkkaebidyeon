@@ -7,8 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 
 library.add(fas)
-
-createApp(App)
+const app = createApp(App)
+app
   .component('font-awesome-icon', FontAwesomeIcon)
   .use(store)
   .use(router)
