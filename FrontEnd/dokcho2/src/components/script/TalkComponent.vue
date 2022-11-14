@@ -5,7 +5,7 @@
         <div class="content__box">
           <div class="name">{{ this.isTalk.name }}</div>
           <div class="content">
-            <!-- {{ this.isTalk.content }} -->
+            {{ this.isTalk.content }}
             {{ this.isTalk.content.line[nowPage.nowPage] }}
           </div>
         </div>
