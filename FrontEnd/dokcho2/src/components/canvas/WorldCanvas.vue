@@ -24,7 +24,7 @@ import { Character } from '../modules/Character'
 import { Building } from '../modules/Building'
 import { Environment } from '../modules/Environment'
 import { Environments } from '../modules/Environments'
-import { FBXLoad } from '../modules/FBXLoader'
+import { Village } from '../modules/Village'
 import { myMon } from '../modules/MyMon'
 import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
@@ -98,7 +98,7 @@ export default {
 
       const cameraPosition = new THREE.Vector3(0, 35, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.3
+      camera.zoom = 0.25
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -329,11 +329,11 @@ export default {
         ['house6', { x: -60, y: 0, z: 68 }]
       ]
       village.forEach((element) => {
-        new FBXLoad({
+        new Village({
           scene,
           meshes,
-          cannonWorld,
-          modelSrc: `/models/Environment/${element[0]}.fbx`,
+          gltfLoader,
+          modelSrc: `./models/Environment/${element[0]}.glb`,
           position: element[1],
           name: element[0]
         })
@@ -374,7 +374,7 @@ export default {
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
         }
 
-        if (isLoading === 0 && scene.children.length === 155) {
+        if (isLoading === 0 && scene.children.length >= 155) {
           isLoading = 1
           console.log('로딩 끝1')
           emit('loadingEnd')
