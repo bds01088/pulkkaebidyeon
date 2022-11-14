@@ -200,7 +200,7 @@ export default {
         meshes,
         cannonWorld,
         gltfLoader,
-        modelSrc: '/models/bbb.glb'
+        modelSrc: '/models/character.glb'
       })
       console.log(player)
       const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
@@ -280,6 +280,11 @@ export default {
             camera.position.x = cameraPosition.x + player.modelMesh.position.x
             camera.position.z = cameraPosition.z + player.modelMesh.position.z
 
+            player.actions[0].stop()
+            player.actions[2].stop()
+            player.actions[3].stop()
+            player.actions[1].play()
+
             if (
               Math.abs(destinationPoint.x - player.modelMesh.position.x) <
                 0.02 &&
@@ -327,6 +332,18 @@ export default {
             }
           } else {
             // 서 있는 상태
+            if (player.rumba) {
+              player.actions[1].stop()
+              player.actions[3].stop()
+              player.actions[2].play()
+            } else if (player.hiphop) {
+              player.actions[1].stop()
+              player.actions[2].stop()
+              player.actions[3].play()
+            } else {
+              player.actions[1].stop()
+              player.actions[0].play()
+            }
           }
         }
 
@@ -472,18 +489,62 @@ export default {
         player.modelMesh.lookAt(destinationPoint)
       }
       window.addEventListener('keydown', (e) => {
-        if (!keys[e.key]) {
-          keys[e.key] = 1
+        console.log(e.key)
+        if (
+          e.key === 'a' ||
+          e.key === 's' ||
+          e.key === 'd' ||
+          e.key === 'w' ||
+          e.key === 'A' ||
+          e.key === 'S' ||
+          e.key === 'D' ||
+          e.key === 'W' ||
+          e.key === 'ArrowDown' ||
+          e.key === 'ArrowUp' ||
+          e.key === 'ArrowLeft' ||
+          e.key === 'ArrowRight'
+        ) {
+          if (!keys[e.key]) {
+            keys[e.key] = 1
+          }
+          player.moving = true
+          player.rumba = false
+          player.hiphop = false
+        } else if (e.key === 'p') {
+          player.moving = false
+          player.rumba = true
+          player.hiphop = false
+        } else if (e.key === 'o') {
+          player.moving = false
+          player.rumba = false
+          player.hiphop = true
         }
-        console.log(keys)
-        player.moving = true
       })
       window.addEventListener('keyup', (e) => {
         delete keys[e.key]
-        if (e.key === 'a' || e.key === 'd') {
+        if (!Object.keys(keys).length) {
+          player.moving = false
+          player.rumba = false
+          player.hiphop = false
+        }
+        if (
+          e.key === 'a' ||
+          e.key === 'd' ||
+          e.key === 'A' ||
+          e.key === 'D' ||
+          e.key === 'ArrowLeft' ||
+          e.key === 'ArrowRight'
+        ) {
           destinationPoint.x = player.modelMesh.position.x
         }
-        if (e.key === 'w' || e.key === 's') {
+        if (
+          e.key === 'w' ||
+          e.key === 's' ||
+          e.key === 'W' ||
+          e.key === 'S' ||
+          e.key === 'ArrowUp' ||
+          e.key === 'ArrowDown'
+        ) {
           destinationPoint.z = player.modelMesh.position.z
         }
         if (keys === {}) {
