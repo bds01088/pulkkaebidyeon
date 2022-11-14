@@ -42,24 +42,40 @@ export default {
     function endTalk() {
       const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+      console.log(content)
+      console.log(userInfo)
       if (content.status === 'STARTED') {
         emit('quizStart')
       } else {
         if (userInfo.nowMissionId === content.missionId) {
-          axios({
-            url: BASE_URL + '/api/v1/mission/',
-            method: 'PUT',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          })
-            .then(() => {
-              store.dispatch('fetchnowUserInfo')
+          if (content.status === 'READY') {
+            axios({
+              url: BASE_URL + '/api/v1/mission/',
+              method: 'PUT',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            }).then(() => {
               emit('talkClose')
             })
-            .catch((err) => {
-              console.log(err)
+          } else if (content.status === 'QUIZ_PASSED') {
+            emit('talkClose')
+            emit('enterBattle')
+          } else if (content.status === 'BATTLE_WIN') {
+            axios({
+              url: BASE_URL + '/api/v1/mission/',
+              method: 'PUT',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            }).then(() => {
+              emit('talkClose')
+              userInfo.nowMissionId += 1
+              localStorage.setItem('userInfo', JSON.stringify(userInfo))
             })
+          } else {
+            emit('talkClose')
+          }
         } else {
           emit('talkClose')
         }
