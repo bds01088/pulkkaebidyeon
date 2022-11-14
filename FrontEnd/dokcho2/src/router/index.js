@@ -1,61 +1,61 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import { BASE_URL } from '@/constant/BASE_URL'
-// import axios from 'axios'
+import { BASE_URL } from '@/constant/BASE_URL'
+import axios from 'axios'
 import StartView from '../views/start/StartView'
 
 // webpackPrefetch:true 가 추가되어있으면 제일 처음에 데이터 받아옴
 // 빈도가 많거나 사이즈가 크면 추가
 
-// const isAccessTokenExpired = function isAccessTokenExpired() {
-//   let expire = false
-//   // accessToken에서 .(도트)로 분리하여 payload를 가져옵니다.
-//   if (localStorage.getItem('accessToken') !== null) {
-//     let base64Payload = localStorage.getItem('accessToken').split('.')[1]
-//     // URL과 호환되지 않는 문자를 base64 표준 문자로 교체합니다.
-//     base64Payload = base64Payload.replace(/-/g, '+').replace(/_/g, '/')
-//     // atob() 메소드로 복호화합니다.
-//     base64Payload = atob(base64Payload)
-//     // JSON 객체로 변환합니다.
-//     const payloadObject = JSON.parse(base64Payload)
-//     // accessToken의 만료 시간을 확인합니다.
-//     const currentDate = new Date().getTime() / 1000
-//     if (payloadObject.exp <= currentDate) {
-//       expire = true
-//     }
-//   }
-//   return expire
-// }
+const isAccessTokenExpired = function isAccessTokenExpired() {
+  let expire = false
+  // accessToken에서 .(도트)로 분리하여 payload를 가져옵니다.
+  if (localStorage.getItem('accessToken') !== null) {
+    let base64Payload = localStorage.getItem('accessToken').split('.')[1]
+    // URL과 호환되지 않는 문자를 base64 표준 문자로 교체합니다.
+    base64Payload = base64Payload.replace(/-/g, '+').replace(/_/g, '/')
+    // atob() 메소드로 복호화합니다.
+    base64Payload = atob(base64Payload)
+    // JSON 객체로 변환합니다.
+    const payloadObject = JSON.parse(base64Payload)
+    // accessToken의 만료 시간을 확인합니다.
+    const currentDate = new Date().getTime() / 1000
+    if (payloadObject.exp <= currentDate) {
+      expire = true
+    }
+  }
+  return expire
+}
 
-// const doRefreshToken = async function doRefreshToken() {
-//   if (localStorage.getItem('accessToken') !== '') {
-//     const token = {
-//       accessToken: localStorage.getItem('accessToken'),
-//       refreshToken: localStorage.getItem('refreshToken')
-//     }
-//     try {
-//       const result = await axios.post(
-//         BASE_URL + '/api/v1/user/auth/refresh',
-//         token
-//       )
-//       if (result.status === 200) {
-//         localStorage.setItem('accessToken', result.data.accessToken)
-//         localStorage.setItem('refreshToken', result.data.refreshToken)
-//         axios.defaults.headers.common.AUTHORIZATION = result.data.accessToken
-//         location.reload()
-//       } else {
-//         localStorage.clear()
-//         location.reload()
-//       }
-//     } catch (err) {
-//       console.log(err)
-//       localStorage.clear()
-//       location.reload()
-//     }
-//   } else {
-//     localStorage.clear()
-//     location.reload()
-//   }
-// }
+const doRefreshToken = async function doRefreshToken() {
+  if (localStorage.getItem('accessToken') !== '') {
+    const token = {
+      accessToken: localStorage.getItem('accessToken'),
+      refreshToken: localStorage.getItem('refreshToken')
+    }
+    try {
+      const result = await axios.post(
+        BASE_URL + '/api/v1/user/auth/refresh',
+        token
+      )
+      if (result.status === 200) {
+        localStorage.setItem('accessToken', result.data.accessToken)
+        localStorage.setItem('refreshToken', result.data.refreshToken)
+        axios.defaults.headers.common.AUTHORIZATION = result.data.accessToken
+        location.reload()
+      } else {
+        localStorage.clear()
+        location.reload()
+      }
+    } catch (err) {
+      console.log(err)
+      localStorage.clear()
+      location.reload()
+    }
+  } else {
+    localStorage.clear()
+    location.reload()
+  }
+}
 
 const routes = [
   // 시작 (로그인 페이지)
@@ -144,37 +144,38 @@ const router = createRouter({
   routes
 })
 
-// router.beforeEach(async (to, from, next) => {
-//   let token = ''
-//   if (localStorage.getItem('accessToken')) {
-//     token = localStorage.getItem('accessToken')
-//   }
-//   if (
-//     to.path === '/' ||
-//     to.path === '/signup' ||
-//     to.path === '/findpassword' ||
-//     to.path === '/oauth' ||
-//     to.path === '/oauth2/authorization/kakao' ||
-//     to.path === '/kakaologinagreement' ||
-//     to.path === '/set/nickname'
-//   ) {
-//     if (localStorage.getItem('accessToken')) {
-//       if (!JSON.parse(localStorage.getItem('userInfo')).newbie) {
-//         return next({ path: '/main' })
-//       } else {
-//         next()
-//       }
-//     }
-//     next()
-//   } else if (token) {
-//     if (!isAccessTokenExpired()) {
-//       return next()
-//     } else {
-//       doRefreshToken()
-//     }
-//   } else {
-//     return next({ path: '/' })
-//   }
-// })
+router.beforeEach(async (to, from, next) => {
+  let token = ''
+  if (localStorage.getItem('accessToken')) {
+    token = localStorage.getItem('accessToken')
+  }
+  if (
+    to.path === '/' ||
+    to.path === '/signup' ||
+    to.path === '/findpassword' ||
+    to.path === '/startingcard' ||
+    // to.path === '/oauth' ||
+    // to.path === '/oauth2/authorization/kakao' ||
+    // to.path === '/kakaologinagreement' ||
+    to.path === '/set/nickname'
+  ) {
+    if (localStorage.getItem('accessToken')) {
+      if (!JSON.parse(localStorage.getItem('userInfo')).newbie) {
+        return router.push({ path: '/main' })
+      } else {
+        next()
+      }
+    }
+    next()
+  } else if (token) {
+    if (!isAccessTokenExpired()) {
+      return next()
+    } else {
+      doRefreshToken()
+    }
+  } else {
+    return next({ path: '/' })
+  }
+})
 
 export default router
