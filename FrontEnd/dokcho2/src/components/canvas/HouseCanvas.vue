@@ -175,7 +175,7 @@ export default {
       // 내가 가진 풀깨비 넣기
       for (let monsterID in userMonster.value.userMonster) {
         let id = Number(monsterID) + 1
-        gltfLoader.load(`/models/${id}.glb`, (item) => {
+        gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
           const monster = item.scene
           monster.name = ['monster', `${id}`]
           monster.position.x = (Math.random() - 0.5) * 5
