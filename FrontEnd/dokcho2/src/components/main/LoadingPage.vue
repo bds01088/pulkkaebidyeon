@@ -11,8 +11,11 @@
       모험을 떠나기로 했어요. <br />
       호랑이의 흔적을 찾아 동의보감을 되찾아주세요!
     </div>
-    <button v-if="!this.isloading" @click="gameStart()">
+    <button v-if="this.isloading !== 2">
       풀깨비뎐으로 들어가는중..
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
     </button>
     <button class="start__btn" v-else @click="gameStart()">입장하기</button>
   </div>
@@ -25,7 +28,6 @@ export default {
   },
   methods: {
     gameStart() {
-      console.log('aaa')
       this.$emit('gameStart')
     }
   }
@@ -53,7 +55,7 @@ export default {
 
 button {
   min-width: 15vw;
-  min-height: 6vh;
+  min-height: 10vh;
   font-size: 20px;
   transition: 0.5s;
 }
