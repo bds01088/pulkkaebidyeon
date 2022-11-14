@@ -81,7 +81,7 @@ export default {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
         }
       })
-      emit('quizClose')
+      emit('enterBattle')
     }
 
     function nextQuiz(answer) {
