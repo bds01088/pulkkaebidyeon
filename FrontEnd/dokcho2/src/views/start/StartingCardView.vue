@@ -1,7 +1,7 @@
 <template>
   <div class="introCard">
     <div class="introCard__top">
-      <p class="TITLE">
+      <p v-if="this.userInfo" class="TITLE">
         {{ this.userInfo.nickname }} 님과 여정을 함께 할 풀깨비가 찾아왔어요!
       </p>
     </div>
@@ -13,6 +13,11 @@
             <img src="@/assets/starting/1.png" alt="" class="card__image" />
           </div>
           <p class="card__name">개나리몬</p>
+          <p>" 난 봄이 좋아! "</p>
+          <p>
+            병충해와 추위에 잘 견디는 개나리는 <br /><br />
+            예전부터 관상용, 생울타리용으로 사용했대!
+          </p>
         </div>
       </div>
       <div class="introCard__bottom">
@@ -21,7 +26,7 @@
           :class="this.isChecked ? '' : 'none'"
           @click="goToMain()"
         >
-          메인 페이지로
+          개나리몬과 함께 탐험 시작하기
         </button>
       </div>
     </div>
@@ -57,7 +62,7 @@ export default {
   display: inline-block;
   width: 30%;
   height: 70%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 40px;
 }
 
@@ -68,7 +73,7 @@ export default {
 }
 
 .introCard__top p {
-  padding: 10vh;
+  padding: 7vh;
   font-size: 5vh;
   margin: 0;
 }
@@ -77,12 +82,8 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin-top: 7%;
-}
-
-.introCard__middle p {
-  font-weight: bold;
-  font-size: 3vh;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
 }
 
 .dockchoCard {
@@ -100,7 +101,9 @@ export default {
 }
 
 .card__name {
-  margin-bottom: 3vh;
+  margin-bottom: 5vh;
+  font-weight: bold;
+  font-size: 3vh;
 }
 
 .introCard__bottom {
@@ -108,13 +111,14 @@ export default {
 }
 
 .main__btn {
-  height: 4vh;
+  height: 5vh;
   border-radius: 50px;
   border: none;
   width: 12vw;
 }
 .main__btn:hover {
   cursor: pointer;
-  color: green;
+  background-color: green;
+  color: white;
 }
 </style>
