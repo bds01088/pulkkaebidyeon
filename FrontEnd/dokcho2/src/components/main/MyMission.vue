@@ -20,6 +20,7 @@
           mission__notyet: mission.status == 'NOT_YET'
         }"
       >
+        <!-- {{ mission.status }} -->
         <!-- CSS 하고 주석 풀 예정 -->
         <!-- <div v-if="mission.status !== 'NOT_YET'" class="mission__box">
         <p>{{ mission.missionId }}번째 사건. 해결 완료!</p>

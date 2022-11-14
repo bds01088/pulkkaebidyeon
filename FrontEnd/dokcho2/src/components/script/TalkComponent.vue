@@ -5,6 +5,7 @@
         <div class="content__box">
           <div class="name">{{ this.isTalk.name }}</div>
           <div class="content">
+            <!-- {{ this.isTalk.content }} -->
             {{ this.isTalk.content.line[nowPage.nowPage] }}
           </div>
         </div>
@@ -26,6 +27,7 @@
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { ref } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   props: {
@@ -33,6 +35,9 @@ export default {
   },
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
+
+    const store = useStore()
+    // store.dispatch('fetchnowUserInfo')
 
     function endTalk() {
       const content = props.isTalk.content
@@ -47,9 +52,14 @@ export default {
             headers: {
               AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
             }
-          }).then(() => {
-            emit('talkClose')
           })
+            .then(() => {
+              store.dispatch('fetchnowUserInfo')
+              emit('talkClose')
+            })
+            .catch((err) => {
+              console.log(err)
+            })
         } else {
           emit('talkClose')
         }
