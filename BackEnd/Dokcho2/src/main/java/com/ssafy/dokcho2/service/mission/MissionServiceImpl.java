@@ -68,13 +68,14 @@ public class MissionServiceImpl implements MissionService{
     }
 
     @Override
-    public void changeMissionStatus() {
+    public boolean changeMissionStatus() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
         Long missionId = user.getNowMissionId();
         Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
         UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
         MissionStatus nowStatus = userMission.getStatus();
         MissionStatus newStatus;
+        boolean flag = false;
 
         if(nowStatus == MissionStatus.NOT_YET){
             newStatus = MissionStatus.READY;
@@ -87,7 +88,7 @@ public class MissionServiceImpl implements MissionService{
         }else if(nowStatus == MissionStatus.BATTLE_WIN){
             // 미션 종료, 경험치 & 아이템 지급, 다음 미션 시작
             Monster monster = user.getRepresentMonster();
-            updateExp(user, monster, mission.getExp());
+            if(updateExp(user, monster, mission.getExp())) flag = true;
 
             Item relic = itemRepository.findById(mission.getRelic()).orElseThrow(ItemNotFoundException::new);
             Item item = itemRepository.findById(mission.getItem()).orElseThrow(ItemNotFoundException::new);
@@ -112,29 +113,33 @@ public class MissionServiceImpl implements MissionService{
 
         userMission.changeStatus(newStatus);
         userMissionRepository.save(userMission);
+        return flag;
     }
 
     @Override
-    public void updateExp(Integer rewardExp){
+    public boolean updateExp(Integer rewardExp){
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
         Monster monster = user.getRepresentMonster();
 
-        updateExp(user, monster, rewardExp);
+        return updateExp(user, monster, rewardExp);
     }
 
-    public void updateExp(User user, Monster monster, Integer rewardExp){
+    public boolean updateExp(User user, Monster monster, Integer rewardExp){
+        boolean flag = false;
         UserMonster um = userMonsterRepository.findByUserAndMonster(user, monster).orElseThrow(MonsterNotFoundException::new);
         Integer newLevel = um.getLevel();
         Integer newExp = um.getExp()+rewardExp;
         while (newLevel*100 <= newExp) {
             newExp -= newLevel*100;
             newLevel += 1;
+            flag = true;
         }
 
         um.setExp(newExp);
         um.setLevel(newLevel);
 
         userMonsterRepository.save(um);
+        return flag;
     }
 
     @Override

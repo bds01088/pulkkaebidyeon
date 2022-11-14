@@ -13,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,9 +44,9 @@ public class MissionController {
 
     @PutMapping("/")
     @ApiOperation(value = "미션 상태 바꾸기")
-    public ResponseEntity<List<MissionDto>> changeMissionStatus(){
-        missionService.changeMissionStatus();
-        return new ResponseEntity<>(missionService.getMissionList(), HttpStatus.OK);
+    public ResponseEntity<Boolean> changeMissionStatus(){
+
+        return new ResponseEntity<>(missionService.changeMissionStatus(), HttpStatus.OK);
     }
 
     @GetMapping("/boss/{missionId}")
@@ -55,9 +57,11 @@ public class MissionController {
 
     @PutMapping("/mini")
     @ApiOperation(value = "미니게임 경험치 저장")
-    public ResponseEntity<ItemDto> completeMiniGame(@RequestParam Integer rewardExp){
-        missionService.updateExp(rewardExp);
+    public ResponseEntity<Map<String, Object>> completeMiniGame(@RequestParam Integer rewardExp){
+        Map<String, Object> map = new HashMap<>();
+        map.put("levelup", missionService.updateExp(rewardExp));
         ItemDto itemDto = itemService.addUseItem();
-        return new ResponseEntity<>(itemDto, HttpStatus.OK);
+        map.put("itemDto", itemDto);
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }

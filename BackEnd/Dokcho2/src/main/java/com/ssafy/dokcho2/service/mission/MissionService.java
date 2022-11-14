@@ -13,7 +13,7 @@ public interface MissionService {
     MissionDto getMissionInfo(Long missionId);
     List<QuizDto> getQuizList(Long missionId);
     List<MissionDto> getMissionList();
-    void changeMissionStatus();
+    boolean changeMissionStatus();
     BossDto getBossInfo(Long missionId);
-    void updateExp(Integer rewardExp);
+    boolean updateExp(Integer rewardExp);
 }
