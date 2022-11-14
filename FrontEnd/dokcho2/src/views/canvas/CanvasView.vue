@@ -1,7 +1,6 @@
 <template>
   <div class="wholeCanvas">
     <NavBar @changeNavbar="changeNavbar" />
-    <vue-progress-bar></vue-progress-bar>
     <LoadingPage
       v-if="this.isGameStart === 0"
       @gameStart="gameStart"
@@ -19,6 +18,7 @@
     <HouseCanvas
       v-show="this.nowPage === 1"
       @changeCanvas="changeCanvas"
+      @loadingEnd="loadingEnd"
       :nowPage="this.nowPage"
       :nowNavbar="this.nowNavbar"
     />
@@ -58,23 +58,6 @@ export default {
     BattleCanvas: BattleCanvas,
     LoadingPage: LoadingPage
   },
-  created() {
-    //  [App.vue specific] When App.vue is first loaded start the progress bar
-    this.$Progress.start()
-    //  hook the progress bar to start before we move router-view
-    this.$router.beforeEach((to, from, next) => {
-      //  does the page we want to go to have a meta.progress object
-      if (to.meta.progress !== undefined) {
-        let meta = to.meta.progress
-        // parse meta tags
-        this.$Progress.parseMeta(meta)
-      }
-      //  start the progress bar
-      this.$Progress.start()
-      //  continue to next page
-      next()
-    })
-  },
   methods: {
     changeCanvas() {
       if (this.nowPage === 0) {
@@ -110,7 +93,7 @@ export default {
       setTimeout(() => {
         console.log('로딩끝?')
         this.isloading += 1
-        if (this.isloading === 1) {
+        if (this.isloading === 2) {
           this.$Progress.finish()
         }
       }, 1000)

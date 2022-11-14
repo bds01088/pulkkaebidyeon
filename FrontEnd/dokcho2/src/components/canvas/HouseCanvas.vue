@@ -50,6 +50,7 @@ export default {
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
+      let isLoading = 0
 
       // Renderer
       let canvas = document.querySelector('#HouseCanvas')
@@ -174,7 +175,7 @@ export default {
       // 내가 가진 풀깨비 넣기
       for (let monsterID in userMonster.value.userMonster) {
         let id = Number(monsterID) + 1
-        gltfLoader.load(`/models/${id}.glb`, (item) => {
+        gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
           const monster = item.scene
           monster.name = ['monster', `${id}`]
           monster.position.x = (Math.random() - 0.5) * 5
@@ -247,6 +248,12 @@ export default {
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
+        }
+        // 씬에 다 들어가는지?
+        if (isLoading === 0 && scene.children.length >= 12) {
+          isLoading = 1
+          console.log('로딩 끝2')
+          emit('loadingEnd')
         }
 
         if (player.mixer) player.mixer.update(delta)

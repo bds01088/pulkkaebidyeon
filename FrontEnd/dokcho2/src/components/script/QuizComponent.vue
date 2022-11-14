@@ -75,11 +75,7 @@ export default {
         timer: 1500
       })
       axios({
-        url:
-          BASE_URL +
-          '/api/v1/mission/' +
-          userInfo.nowMissionId +
-          '?nowStatus=STARTED',
+        url: BASE_URL + '/api/v1/mission/',
         method: 'PUT',
         headers: {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')

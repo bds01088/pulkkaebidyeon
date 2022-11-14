@@ -153,14 +153,15 @@ const router = createRouter({
 //     to.path === '/' ||
 //     to.path === '/signup' ||
 //     to.path === '/findpassword' ||
-//     to.path === '/oauth' ||
-//     to.path === '/oauth2/authorization/kakao' ||
-//     to.path === '/kakaologinagreement' ||
+//     to.path === '/startingcard' ||
+//     // to.path === '/oauth' ||
+//     // to.path === '/oauth2/authorization/kakao' ||
+//     // to.path === '/kakaologinagreement' ||
 //     to.path === '/set/nickname'
 //   ) {
 //     if (localStorage.getItem('accessToken')) {
 //       if (!JSON.parse(localStorage.getItem('userInfo')).newbie) {
-//         return next({ path: '/main' })
+//         return router.push({ path: '/main' })
 //       } else {
 //         next()
 //       }
