@@ -27,7 +27,7 @@
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { ref } from 'vue'
-import { useStore } from 'vuex'
+// import { useStore } from 'vuex'
 
 export default {
   props: {
@@ -36,7 +36,7 @@ export default {
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
 
-    const store = useStore()
+    // const store = useStore()
     // store.dispatch('fetchnowUserInfo')
 
     function endTalk() {
