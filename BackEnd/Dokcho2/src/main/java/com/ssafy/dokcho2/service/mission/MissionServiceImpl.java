@@ -84,6 +84,7 @@ public class MissionServiceImpl implements MissionService{
         }else if(nowStatus == MissionStatus.QUIZ_PASSED){
             newStatus = MissionStatus.BATTLE_WIN;
         }else if(nowStatus == MissionStatus.BATTLE_WIN){
+            // 미션 종료, 경험치 & 아이템 지급, 다음 미션 시작
             Monster monster = user.getRepresentMonster();
             updateExp(user, monster, mission.getExp());
 
@@ -97,6 +98,12 @@ public class MissionServiceImpl implements MissionService{
             if(missionId < 8) {
                 user.changeNowMissionId(missionId + 1);
                 userRepository.save(user);
+
+                Mission newMission = missionRepository.findById(missionId+1).orElseThrow(MissionNotFoundException::new);
+                UserMission newUserMission = userMissionRepository.findUserMissionByUserAndMission(user, newMission).orElseThrow(MissionNotFoundException::new);
+
+                newUserMission.changeStatus(MissionStatus.READY);
+                userMissionRepository.save(newUserMission);
             }
         }else{
             newStatus = nowStatus;

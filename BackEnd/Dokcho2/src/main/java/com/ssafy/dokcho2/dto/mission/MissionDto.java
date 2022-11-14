@@ -47,9 +47,6 @@ public class MissionDto {
             next = nexts[5];
         }
 
-
-
-
         return MissionDto.builder()
                 .missionId(entity.getMissionId())
                 .characters(entity.getCharacters())
