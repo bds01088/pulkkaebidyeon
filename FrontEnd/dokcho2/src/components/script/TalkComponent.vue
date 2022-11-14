@@ -53,19 +53,8 @@ export default {
               AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
             }
           }).then(() => {
-            if (content.status === 'BATTLE_WIN') {
-              let nextMissionId = userInfo.nowMissionId + 1
-              axios({
-                url: BASE_URL + '/api/v1/user/nowMission/' + nextMissionId,
-                method: 'PUT',
-                headers: {
-                  AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-                }
-              }).then(() => {
-                userInfo.nowMissionId += 1
-                localStorage.setItem('userInfo', JSON.stringify(userInfo))
-              })
-            }
+            userInfo.nowMissionId += 1
+            localStorage.setItem('userInfo', JSON.stringify(userInfo))
             emit('talkClose')
           })
         } else {
