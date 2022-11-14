@@ -125,7 +125,7 @@ export const Environments = [
   ['tree7', { x: -59, y: 0, z: -36 }],
   ['lake', { x: -3, y: 0, z: 63 }, { x: 16.5, y: 10, z: 24 }],
   ['mountain', { x: 60, y: 0, z: -60 }, { x: 30, y: 2, z: 30 }],
-  ['mountain2', { x: 15, y: 0, z: -60 }, { x: 53, y: 2, z: 30 }],
+  ['mountain2', { x: 18, y: 0, z: -60 }, { x: 53, y: 2, z: 35 }],
   ['field', { x: 57, y: 0, z: 63 }]
   // ['house2', { x: 5, y: 0, z: 10 }, { x: 3, y: 2, z: 3 }],
   // ['house3', { x: 10, y: 0, z: 10 }, { x: 3, y: 2, z: 3 }],
