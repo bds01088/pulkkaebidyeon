@@ -1,6 +1,5 @@
 <template>
   <div>
-    소켓임 해위
     <div v-if="this.QuizRoomEntered.QuizRoomEntered === false">
       <button @click="disconnect()">디스커넥트</button>
       <button @click="createRoom()">방생성</button>
@@ -9,12 +8,6 @@
         v-model="inputRoomName.inputRoomName"
         placeholder="방 이름"
       />
-      <input
-        type="text"
-        v-model="inputText.inputText"
-        placeholder="방 번호 나중에는선택하게할거임"
-      />
-      <button @click="enterRoom()">방참가</button>
       <div>
         <li
           @click="enterRoom(room.roomId)"
@@ -29,17 +22,33 @@
     </div>
     <div v-else>
       <button @click="leaveRoom()">방나가기</button>
-      <p>{{ this.nowRoom.nowRoom }}번 방</p>
-      <p>유저목록{{ this.nowRoomUser.nowRoomUser }}</p>
+      <p>{{ this.nowRoomInfo.nowRoomInfo.roomId }}번 방</p>
+      <p>방제 : {{ this.nowRoomInfo.nowRoomInfo.roomName }}</p>
       <li v-for="user in this.nowRoomUser.nowRoomUser" v-bind:key="user">
         {{ user.nickname }}
       </li>
-      <!-- <QuizRoomCanvas
-        @leaveRoom="leaveRoom()"
-        :roomName="this.roomName.roomName"
-        :nowRoom="this.nowRoom.nowRoom"
-        :nowRoomUser="this.nowRoomUser.nowRoomUser"
-      ></QuizRoomCanvas> -->
+      <li v-for="msg in this.allMsg.allMsg" v-bind:key="msg">
+        <p v-if="this.userSocketId.userSocketId === msg.socketId">
+          내가 한 말 : {{ msg.content }}
+        </p>
+
+        <p v-else>
+          {{ msg.nickname }}{{ msg.socketId }}가 한 말 : {{ msg.content }}
+        </p>
+      </li>
+      <input
+        type="text"
+        v-model="inputMsg.inputMsg"
+        placeholder="메세지"
+        @keyup.enter="
+          sendMsg(
+            this.nowRoomInfo.nowRoomInfo.roomId,
+            this.userSocketId.userSocketId,
+            this.userNickName.userNickName,
+            this.inputMsg.inputMsg
+          )
+        "
+      />
     </div>
   </div>
 </template>
@@ -55,27 +64,35 @@ export default {
     nowPage: Number
   },
   setup() {
-    let inputText = ref({ inputText: '' })
     let inputRoomName = ref({ inputRoomName: '' })
-    let nowRoom = ref({ nowRoom: '' })
+    let nowRoomInfo = ref({ nowRoomInfo: [] })
     let roomName = ref({ roomName: '' })
     let nowRoomUser = ref({ nowRoomUser: '' })
     let QuizRoomEntered = ref({ QuizRoomEntered: false })
     let rooms = ref({ rooms: '' })
-    // let nowRoomUserNickname = ref({ nowRoomUserNickname: '' })
-
-    // nowRoomUser.value.nowwRoomUser.forEach(function (value) {
-    //   nowRoomUserNickname.value.nowRoomUserNickname.push(value.nickname)
-    // })
+    let userNickName = ref({ userNickName: '' })
+    let inputMsg = ref({ inputMsg: '' })
+    let msgNickname = ref({ msgNickname: '' })
+    let msgContent = ref({ msgContent: '' })
+    let allMsg = ref({ allMsg: [] })
+    let userSocketId = ref({ userSocketId: '' })
+    let msgSocketId = ref({ msgSocketId: '' })
 
     const socket = io('http://localhost:3000/')
-    // console.log(socket)
 
     function disconnect() {
       socket.disconnect()
     }
 
     socket.emit('sendNickname', JSON.parse(localStorage.getItem('userInfo')))
+
+    userNickName.value.userNickName = JSON.parse(
+      localStorage.getItem('userInfo')
+    ).nickname
+
+    socket.on('sendSocketId', (data) => {
+      userSocketId.value.userSocketId = data
+    })
 
     socket.on('sendRooms', (data) => {
       rooms.value.rooms = data
@@ -84,71 +101,71 @@ export default {
     function createRoom() {
       roomName.value.roomName = inputRoomName.value.inputRoomName
       socket.emit('createRoom', roomName.value.roomName)
-      // console.log('방생성 버튼 누름')
       QuizRoomEntered.value.QuizRoomEntered = true
     }
 
     socket.on('createRoomOK', (payload) => {
-      console.log(payload)
-      nowRoom.value.nowRoom = payload[0].roomId
-      console.log(
-        `방생성완료, 방 번호 : ${nowRoom.value.nowRoom}, 방 이름 : ${payload[0].roomName}`
-      )
+      nowRoomInfo.value.nowRoomInfo = payload[0]
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
     })
 
-    function enterRoom(roomId) {
-      // console.log(inputText.value.inputText)
-      console.log(roomId)
-      nowRoom.value.nowRoom = roomId
-      console.log(nowRoom.value.nowRoom)
-      console.log(`${nowRoom.value.nowRoom}번 방에 참가합니다`)
-      socket.emit('enterRoom', nowRoom.value.nowRoom)
+    function enterRoom(data) {
+      nowRoomInfo.value.nowRoomInfo.roomId = data
+      socket.emit('enterRoom', nowRoomInfo.value.nowRoomInfo.roomId)
       QuizRoomEntered.value.QuizRoomEntered = true
     }
 
     socket.on('enterRoomOK', (payload) => {
-      console.log('엔터룸오케이왔다')
-      console.log(payload[0].roomId)
-      console.log('위 번호의 방에 들어왔다')
-      nowRoom.value.nowRoom = payload[0].roomId
-      // let enteredUser =
-      // payload[0].currentUser[payload[0].currentUser.length - 1]
-      // payload[1].nickname
-      console.log(
-        `${payload[1].nickname}가 ${nowRoom.value.nowRoom}번 방에 참가했습니다`
-      )
+      nowRoomInfo.value.nowRoomInfo = payload[0]
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
-      console.log(nowRoomUser.value.nowRoomUser)
     })
 
     function leaveRoom() {
-      socket.emit('leaveRoom', nowRoom.value.nowRoom)
-      console.log(`${nowRoom.value.nowRoom}번 방에서 나갑니다`)
+      socket.emit('leaveRoom', nowRoomInfo.value.nowRoomInfo.roomId)
       QuizRoomEntered.value.QuizRoomEntered = false
     }
 
     socket.on('leaveRoomOK', (payload) => {
-      console.log(payload)
-      console.log(`${payload[1].nickname}가 나갔습니다`)
-      console.log(payload[0].currentUser)
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
-      console.log(nowRoomUser.value.nowRoomUser)
+    })
+
+    function sendMsg(roomId, socketId, nickname, msg) {
+      let payload = [roomId, socketId, nickname, msg]
+      socket.emit('msg', payload)
+    }
+
+    socket.on('msg', (msgpayload) => {
+      console.log('메세지 왔당')
+      // msgSocketId.value.msgSocketId = msgpayload[1]
+      msgNickname.value.msgNickname = msgpayload[2]
+      msgContent.value.msgContent = msgpayload[3]
+      allMsg.value.allMsg.push({
+        socketId: msgpayload[1],
+        nickname: msgNickname.value.msgNickname,
+        content: msgContent.value.msgContent
+      })
+      // console.log(allMsg.value.allMsg)
     })
 
     return {
-      inputText,
       inputRoomName,
       roomName,
-      nowRoom,
+      nowRoomInfo,
       nowRoomUser,
       QuizRoomEntered,
       rooms,
-      // nowRoomUserNickname,
+      inputMsg,
+      userNickName,
+      msgNickname,
+      msgContent,
+      allMsg,
+      userSocketId,
+      msgSocketId,
       disconnect,
       enterRoom,
       leaveRoom,
-      createRoom
+      createRoom,
+      sendMsg
     }
   }
 }

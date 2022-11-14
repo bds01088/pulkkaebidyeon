@@ -1,6 +1,6 @@
 <template>
   <div class="wholeCanvas">
-    <button @click="changeCanvas">소켓디스커넥트제발</button>
+    <button @click="changeCanvas">체인지캔버스</button>
 
     <QuizCanvas
       v-if="this.nowPage === 0"
