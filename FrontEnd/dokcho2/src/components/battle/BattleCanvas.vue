@@ -134,8 +134,6 @@ export default {
 
   setup(props, { emit }) {
     // console.log(JSON.parse(localStorage.getItem('userInfo')))
-    const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
-    console.log(userInfo)
 
     const myHpBar = ref('100')
     const enemyHpBar = ref('100')
@@ -224,6 +222,8 @@ export default {
       () => props.startSignal,
       () => {
         setTimeout(() => {
+          const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
+
           begin.value += 1
           initValue()
           getItemList()
@@ -413,7 +413,7 @@ export default {
 
                 player.cannonBody.position.y += 0.03
 
-                if (player.cannonBody.position.y >= 1) {
+                if (player.cannonBody.position.y >= 0.9) {
                   status.value = '대기'
                 }
               }
@@ -471,7 +471,7 @@ export default {
 
                 enemy.cannonBody.position.y += 0.03
 
-                if (enemy.cannonBody.position.y >= 1) {
+                if (enemy.cannonBody.position.y >= 0.9) {
                   enemyStatus.value = '대기'
                 }
               }
@@ -1448,7 +1448,13 @@ export default {
         })
         .then((res) => {
           // console.log(res.data)
-          itemList.value = res.data
+          const useItemList = []
+          res.data.forEach((d) => {
+            if (d.type == 'USE_ITEM') {
+              useItemList.push(d)
+            }
+          })
+          itemList.value = useItemList
         })
         .catch((err) => console.log(err))
     }
@@ -1469,11 +1475,19 @@ export default {
     function winBattle() {
       msg.value = '배틀에서 이겼다!!!!'
 
-      axios.put(BASE_URL + '/api/v1/mission/', {
+      // axios.put(BASE_URL + '/api/v1/mission/', {
+      //   headers: {
+      //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+      //   }
+      // })
+
+      axios({
+        url: BASE_URL + '/api/v1/mission/',
+        method: 'PUT',
         headers: {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
         }
-      })
+      }).then(() => {})
     }
 
     return {

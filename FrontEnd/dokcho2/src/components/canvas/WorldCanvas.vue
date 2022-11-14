@@ -6,12 +6,9 @@
       @talkClose="talkClose"
       @quizStart="quizStart"
       :isTalk="isTalk"
-    />
-    <QuizComponent
-      v-if="isQuiz.quiz"
-      @quizClose="quizClose"
       @enterBattle="enterBattle"
     />
+    <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
     <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
     <miniGame2 v-if="miniGame1.miniGame2" @miniGame2Close="miniGame2Close" />
     <miniGame3 v-if="miniGame1.miniGame3" @miniGame3Close="miniGame3Close" />
