@@ -32,7 +32,7 @@ import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
 import TalkComponent from '../script/TalkComponent.vue'
 import QuizComponent from '../script/QuizComponent.vue'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 
@@ -64,6 +64,7 @@ export default {
     const isMinigame = ref({ isMinigame: false })
     setTimeout(() => {
       // Texture
+
       const textureLoader = new THREE.TextureLoader()
       const floorTexture = textureLoader.load('/images/map17.png')
       floorTexture.wrapS = THREE.RepeatWrapping
@@ -193,10 +194,10 @@ export default {
         gltfLoader,
         scene,
         meshes,
-        modelSrc: '/models/house.glb',
-        x: 5,
+        modelSrc: '/models/Environment/house4.glb',
+        x: -23,
         y: 0,
-        z: 2
+        z: -60
       })
 
       // 플레이어
@@ -205,29 +206,11 @@ export default {
         meshes,
         cannonWorld,
         gltfLoader,
-        modelSrc: '/models/character.glb'
+        modelSrc: '/models/character.glb',
+        x: -25,
+        y: 0,
+        z: -55
       })
-
-      // 맵 이동하는 박스 만들기(수정 예정)
-
-      const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
-      const boxMaterial = new THREE.MeshStandardMaterial({
-        color: 'seagreen'
-      })
-      const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
-      boxMesh.position.y = 0.5
-      boxMesh.name = 'box'
-      scene.add(boxMesh)
-      meshes.push(boxMesh)
-
-      // 박스에 캐논 씌우기
-      const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
-      const boxBody = new CANNON.Body({
-        mass: 0,
-        position: new CANNON.Vec3(0, 0, 0),
-        shape: boxShape
-      })
-      cannonWorld.addBody(boxBody)
 
       // 맵 막는 박스 만들기
       new Wall({
@@ -348,7 +331,10 @@ export default {
         scene,
         meshes,
         gltfLoader,
-        modelSrc: `/models/Monsters/${myMonsterId}.glb`
+        modelSrc: `/models/Monsters/${myMonsterId}.glb`,
+        x: -24,
+        y: 0.25,
+        z: -55
       })
 
       const raycaster = new THREE.Raycaster()
@@ -368,14 +354,12 @@ export default {
         if (delta < 0.01) cannonStepTime = 1 / 120
         cannonWorld.step(cannonStepTime, delta, 3)
 
-        boxMesh.position.copy(boxBody.position) // 위치
-        boxMesh.quaternion.copy(boxBody.quaternion) // 회전
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
         }
 
-        if (isLoading === 0 && scene.children.length >= 160) {
+        if (isLoading === 0 && scene.children.length >= 159) {
           isLoading = 1
           console.log('로딩 끝1')
           emit('loadingEnd')
@@ -488,6 +472,7 @@ export default {
               ) > 2
             ) {
               myMoster.moving = true
+              myMoster.actions[0].play()
             }
           }
 
@@ -511,6 +496,7 @@ export default {
               ) < 1
             ) {
               myMoster.moving = false
+              myMoster.actions[0].stop()
             }
           }
         }
@@ -536,7 +522,7 @@ export default {
           //   pointerMesh.position.x = destinationPoint.x
           //   pointerMesh.position.z = destinationPoint.z
           // }
-          if (item.object.name === 'box') {
+          if (item.object.name === 'house') {
             onClick()
             isPressed = false
           }
@@ -751,6 +737,26 @@ export default {
         emit('changeCanvas')
         // emit('changeBattle')
       }
+      // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
+      watchEffect(() => {
+        console.log(props.nowPage)
+        if (myMoster.modelMesh) {
+          const id = JSON.parse(
+            localStorage.getItem('userInfo')
+          ).representMonster
+          console.log('바뀌나??', myMoster)
+          scene.remove(myMoster.modelMesh)
+          myMoster = new myMon({
+            scene,
+            meshes,
+            gltfLoader,
+            modelSrc: `/models/Monsters/${id}.glb`,
+            x: -24,
+            y: 0.25,
+            z: -55
+          })
+        }
+      })
     }, 100)
 
     // 대화를 시작하는 함수(미리 받아야 status를 알고 위인과 빌런을 구분할 수 있음)
