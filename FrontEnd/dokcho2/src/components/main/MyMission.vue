@@ -48,7 +48,7 @@
         <div v-else class="mission__box tooltip">
           <div class="mission__text">
             <span class="tooltiptext">
-              <br />✨설명 <br />{{ mission.next }}</span
+              <br />✨설명 <br />{{ mission.prev }}</span
             >
             <p class="mission__id">🔑 {{ mission.missionId }}번째 미션</p>
             <p class="mission__name" v-if="mission.characters === '단군'">

@@ -27,7 +27,9 @@
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { ref } from 'vue'
-// import { useStore } from 'vuex'
+import { useStore } from 'vuex'
+import Swal from 'sweetalert2'
+
 
 export default {
   props: {
@@ -48,6 +50,7 @@ export default {
         emit('quizStart')
       } else {
         if (userInfo.nowMissionId === content.missionId) {
+
           if (content.status === 'READY') {
             axios({
               url: BASE_URL + '/api/v1/mission/',
@@ -69,10 +72,18 @@ export default {
                 AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
               }
             }).then(() => {
+              store.dispatch('fetchnowUserInfo')
+              // 미션 아예 다른 미션으로 넘어갈때 mission complete alert 그 외에는 다음 설명
+              Swal.fire({
+                title: `${props.isTalk.content.next}`,
+                text: '  ',
+                imageUrl: 'https://unsplash.it/400/200',
+                imageWidth: 400,
+                imageHeight: 200,
+                imageAlt: 'Custom image'
+              })
               emit('talkClose')
-              userInfo.nowMissionId += 1
-              localStorage.setItem('userInfo', JSON.stringify(userInfo))
-            })
+              
           } else {
             emit('talkClose')
           }
