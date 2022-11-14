@@ -375,7 +375,7 @@ export default {
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
         }
 
-        if (isLoading === 0 && scene.children.length >= 155) {
+        if (isLoading === 0 && scene.children.length >= 160) {
           isLoading = 1
           console.log('로딩 끝1')
           emit('loadingEnd')
