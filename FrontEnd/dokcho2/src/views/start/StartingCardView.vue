@@ -2,42 +2,27 @@
   <div class="introCard">
     <div class="introCard__top">
       <p class="TITLE">
-        {{ this.userInfo.nickname }} 님과 함께 할 풀깨비들이 찾아왔어요!
+        {{ this.userInfo.nickname }} 님과 여정을 함께 할 풀깨비가 찾아왔어요!
       </p>
     </div>
 
     <div class="introCard__body">
       <div class="introCard__middle">
-        <div class="dockchoCard" v-for="(dockcho, i) in this.dockchos" :key="i">
+        <div class="dockchoCard">
           <div class="imageBG">
-            <!-- <img
-              :src="require('@/assets/intro-card/' + (i + 1) + '.png')"
-              alt=""
-              class="card__image"
-              :class="this.isChecked ? '' : 'dark'"
-            /> -->
-            <img src="@/assets/intro-card/1.png" alt="" class="card__image" />
+            <img src="@/assets/starting/1.png" alt="" class="card__image" />
           </div>
-          <p class="card__name" :class="this.isChecked ? '' : 'hidden'">
-            {{ dockcho }}
-          </p>
+          <p class="card__name">개나리몬</p>
         </div>
       </div>
       <div class="introCard__bottom">
-        <!-- <div
-        class="checkBtn"
-        :class="this.isChecked ? 'none' : ''"
-        @click="onClickBtn()"
-      >
-        눌러서 확인하기
-      </div> -->
-        <div
-          class="checkBtn"
+        <button
+          class="main__btn"
           :class="this.isChecked ? '' : 'none'"
           @click="goToMain()"
         >
-          <p class="main__btn">메인 페이지로</p>
-        </div>
+          메인 페이지로
+        </button>
       </div>
     </div>
   </div>
@@ -47,15 +32,10 @@
 export default {
   data() {
     return {
-      dockchos: ['개나리몬', '마늘몬', '도꼬마리몬'],
-      isChecked: false,
       userInfo: JSON.parse(localStorage.getItem('userInfo'))
     }
   },
   methods: {
-    onClickBtn() {
-      this.isChecked = !this.isChecked
-    },
     goToMain() {
       this.$router.push({ path: '/main' })
     }
@@ -75,8 +55,8 @@ export default {
 
 .introCard__body {
   display: inline-block;
-  width: 60%;
-  height: 60%;
+  width: 30%;
+  height: 70%;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 40px;
 }
@@ -107,15 +87,16 @@ export default {
 
 .dockchoCard {
   margin: auto;
-  color: black;
+  /* color: black;
   background-color: antiquewhite;
   border: 1px solid burlywood;
-  border-radius: 20px;
+  border-radius: 20px; */
 }
 
 .card__image {
-  width: 70%;
-  margin-top: 3vh;
+  width: 50%;
+
+  /* margin-top: 3vh; */
 }
 
 .card__name {
@@ -127,7 +108,10 @@ export default {
 }
 
 .main__btn {
-  font-size: 4vh;
+  height: 4vh;
+  border-radius: 50px;
+  border: none;
+  width: 12vw;
 }
 .main__btn:hover {
   cursor: pointer;
