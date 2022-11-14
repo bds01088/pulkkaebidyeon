@@ -16,12 +16,14 @@ public class ConsonantDto {
     private String question;
     private String hint;
     private String answer;
+    private String description;
 
     public static ConsonantDto from(Consonant entity){
         return ConsonantDto.builder()
                 .question(entity.getQuestion())
                 .hint(entity.getHint())
                 .answer(entity.getAnswer())
+                .description(entity.getDescription())
                 .build();
     }
 }

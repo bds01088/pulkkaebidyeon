@@ -27,4 +27,7 @@ public class Consonant {
 
     @Column(name = "answer")
     private String answer;
+
+    @Column(name = "description")
+    private String description;
 }
