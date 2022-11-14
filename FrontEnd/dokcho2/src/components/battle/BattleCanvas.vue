@@ -142,7 +142,6 @@ export default {
     const begin = ref(0)
 
     const phase = ref('start')
-    const msg = ref(`${enemyName.value}과의 싸움이 시작된다!!!!`)
 
     const myName = ref('')
     const myMaxHp = ref(100)
@@ -155,6 +154,8 @@ export default {
     const enemyHp = ref(100)
     const enemyAttack = ref(20)
     const enemyDefense = ref(10)
+
+    const msg = ref(`${enemyName.value}과의 싸움이 시작된다!!!!`)
 
     const actList = ref(['공격', '방어', '아이템'])
     const myAct = ref('')
