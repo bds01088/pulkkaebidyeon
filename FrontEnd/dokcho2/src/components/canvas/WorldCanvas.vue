@@ -69,6 +69,7 @@ export default {
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
+      let isLoading = 0
 
       // Renderer
       let canvas = document.querySelector('#WorldCanvas')
@@ -371,6 +372,12 @@ export default {
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
+        }
+
+        if (isLoading === 0 && scene.children.length === 160) {
+          isLoading = 1
+          console.log('로딩 끝1')
+          emit('loadingEnd')
         }
 
         if (player.mixer) player.mixer.update(delta)

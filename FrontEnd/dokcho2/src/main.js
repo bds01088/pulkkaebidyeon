@@ -5,11 +5,27 @@ import store from './store'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
+import VueProgressBar from '@aacassandra/vue3-progressbar'
 
 library.add(fas)
 
+const options = {
+  color: '#467302',
+  failedColor: '#874b4b',
+  thickness: '8px',
+  transition: {
+    speed: '0.1s',
+    opacity: '0.6s',
+    termination: 300
+  },
+  autoRevert: true,
+  location: 'top',
+  inverse: false
+}
+
 createApp(App)
   .component('font-awesome-icon', FontAwesomeIcon)
+  .use(VueProgressBar, options)
   .use(store)
   .use(router)
   .mount('#app')
