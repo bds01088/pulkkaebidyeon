@@ -36,6 +36,14 @@
           {{ msg.nickname }}{{ msg.socketId }}가 한 말 : {{ msg.content }}
         </p>
       </li>
+      <!-- <li
+        v-for="quiz in this.nowRoomInfo.nowRoomInfo.roomQuiz"
+        v-bind:key="quiz"
+      >
+        {{ quiz.quiestion }}
+        {{ quiz.description }}
+        {{ quiz.right_answer }}
+      </li> -->
       <input
         type="text"
         v-model="inputMsg.inputMsg"
@@ -106,7 +114,12 @@ export default {
 
     socket.on('createRoomOK', (payload) => {
       nowRoomInfo.value.nowRoomInfo = payload[0]
+      // console.log(nowRoomInfo.value.nowRoomInfo)
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
+      // console.log(nowRoomInfo.value.nowRoomInfo.roomQuiz)
+      // nowQuizAnswer.value.nowQuizAnswer =
+      //   nowRoomInfo.value.nowRoomInfo.roomQuiz[0].right_answer
+      // console.log(nowQuizAnswer.value.nowQuizAnswer)
     })
 
     function enterRoom(data) {
@@ -144,7 +157,17 @@ export default {
         nickname: msgNickname.value.msgNickname,
         content: msgContent.value.msgContent
       })
+
       // console.log(allMsg.value.allMsg)
+    })
+
+    socket.on('correct', (data) => {
+      for (let user of nowRoomUser.value.nowRoomUser) {
+        if (user.socketId == data) {
+          console.log(`${user.nickname} 가 정답을 맞췄넹`)
+        }
+      }
+      // console.log(`${user[data].nickname} 가 정답을 맞췄넹`)
     })
 
     return {
