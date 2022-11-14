@@ -50,7 +50,6 @@ export default {
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
-      let isLoading = 0
 
       // Renderer
       let canvas = document.querySelector('#HouseCanvas')
@@ -248,12 +247,6 @@ export default {
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
-        }
-        // 씬에 다 들어가는지?
-        if (isLoading === 0 && scene.children.length >= 12) {
-          isLoading = 1
-          console.log('로딩 끝2')
-          emit('loadingEnd')
         }
 
         if (player.mixer) player.mixer.update(delta)

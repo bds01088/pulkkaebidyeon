@@ -11,7 +11,7 @@
       모험을 떠나기로 했어요. <br />
       호랑이의 흔적을 찾아 동의보감을 되찾아주세요!
     </div>
-    <button v-if="this.isloading !== 2">
+    <button v-if="this.isloading !== 1">
       풀깨비뎐으로 들어가는중..
       <div class="spinner-border text-success" role="status">
         <span class="visually-hidden">Loading...</span>
