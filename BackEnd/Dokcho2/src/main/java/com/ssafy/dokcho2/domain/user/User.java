@@ -69,5 +69,6 @@ public class User extends BaseTime {
     @PrePersist
     public void prePersist(){
         this.role = this.role == null ? Role.ROLE_USER : this.role;
+        this.nowMissionId = this.nowMissionId == null ? 1 : this.nowMissionId;
     }
 }

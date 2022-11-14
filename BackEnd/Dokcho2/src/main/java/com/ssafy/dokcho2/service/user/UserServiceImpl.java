@@ -334,6 +334,8 @@ public class UserServiceImpl implements UserService{
                         .build();
             }
             userMissionRepository.save(um);
+            user.changeNowMissionId((long)1);
+            userRepository.save(user);
         }
 
         // 기본 풀깨비 지급
