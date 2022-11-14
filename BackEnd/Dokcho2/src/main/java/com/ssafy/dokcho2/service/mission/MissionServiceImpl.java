@@ -68,11 +68,12 @@ public class MissionServiceImpl implements MissionService{
     }
 
     @Override
-    public void changeMissionStatus(Long missionId, MissionStatus nowStatus) {
+    public void changeMissionStatus() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+        Long missionId = user.getNowMissionId();
         Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
         UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
-
+        MissionStatus nowStatus = userMission.getStatus();
         MissionStatus newStatus;
 
         if(nowStatus == MissionStatus.NOT_YET){

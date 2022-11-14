@@ -40,10 +40,10 @@ public class MissionController {
         return new ResponseEntity<>(missionService.getMissionList(), HttpStatus.OK);
     }
 
-    @PutMapping("/{missionId}")
+    @PutMapping("/")
     @ApiOperation(value = "미션 상태 바꾸기")
-    public ResponseEntity<List<MissionDto>> changeMissionStatus(@PathVariable Long missionId, @RequestParam MissionStatus nowStatus){
-        missionService.changeMissionStatus(missionId, nowStatus);
+    public ResponseEntity<List<MissionDto>> changeMissionStatus(){
+        missionService.changeMissionStatus();
         return new ResponseEntity<>(missionService.getMissionList(), HttpStatus.OK);
     }
 
