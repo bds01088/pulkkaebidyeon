@@ -26,7 +26,7 @@ public class MissionDto {
     public static MissionDto from(Mission entity, MissionStatus status){
         String line = "";
         String next = "";
-        String[] nexts = entity.getNext().split("\t");
+        String[] nexts = entity.getNext().split("\\\\t");
         if(status == MissionStatus.READY){
             line = entity.getLine1();
             next = nexts[1];
