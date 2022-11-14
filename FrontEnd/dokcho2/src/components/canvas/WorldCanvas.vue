@@ -24,7 +24,9 @@ import { Character } from '../modules/Character'
 import { Building } from '../modules/Building'
 import { Environment } from '../modules/Environment'
 import { Environments } from '../modules/Environments'
+import { FBXLoad } from '../modules/FBXLoader'
 import { myMon } from '../modules/MyMon'
+import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
@@ -126,6 +128,7 @@ export default {
       const cannonWorld = new CANNON.World()
       cannonWorld.gravity.set(0, -10, 0)
 
+      // 안 떨어지게 하기
       const floorShape = new CANNON.Plane()
       const floorBody = new CANNON.Body({
         mass: 0,
@@ -138,16 +141,10 @@ export default {
       )
       cannonWorld.addBody(floorBody)
 
-      const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
-      const boxBody = new CANNON.Body({
-        mass: 0,
-        position: new CANNON.Vec3(0, 0, 0),
-        shape: boxShape
-      })
-      cannonWorld.addBody(boxBody)
-
       // Mesh
       const meshes = []
+
+      // 바닥 만들기
       const floorMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(150, 150),
         new THREE.MeshStandardMaterial({
@@ -158,21 +155,22 @@ export default {
       floorMesh.rotation.x = -Math.PI / 2
       floorMesh.receiveShadow = true
       scene.add(floorMesh)
-      meshes.push(floorMesh)
 
-      const pointerMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.5, 0.5),
-        new THREE.MeshBasicMaterial({
-          color: 'crimson',
-          transparent: true,
-          opacity: 0.5
-        })
-      )
-      pointerMesh.rotation.x = -Math.PI / 2
-      pointerMesh.position.y = 0.01
-      pointerMesh.receiveShadow = true
-      scene.add(pointerMesh)
+      // 포인터 매쉬 필요없음(삭제 예정)
+      // const pointerMesh = new THREE.Mesh(
+      //   new THREE.PlaneGeometry(0.5, 0.5),
+      //   new THREE.MeshBasicMaterial({
+      //     color: 'crimson',
+      //     transparent: true,
+      //     opacity: 0.5
+      //   })
+      // )
+      // pointerMesh.rotation.x = -Math.PI / 2
+      // pointerMesh.position.y = 0.01
+      // pointerMesh.receiveShadow = true
+      // scene.add(pointerMesh)
 
+      // 집 앞에 있는 노란 박스(삭제 예정)
       const spotMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 3),
         new THREE.MeshStandardMaterial({
@@ -188,6 +186,7 @@ export default {
 
       const gltfLoader = new GLTFLoader()
 
+      // 집(수정 예정)
       const house = new House({
         gltfLoader,
         scene,
@@ -198,6 +197,7 @@ export default {
         z: 2
       })
 
+      // 플레이어
       const player = new Player({
         scene,
         meshes,
@@ -205,6 +205,8 @@ export default {
         gltfLoader,
         modelSrc: '/models/character.glb'
       })
+
+      // 맵 이동하는 박스 만들기(수정 예정)
 
       const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
       const boxMaterial = new THREE.MeshStandardMaterial({
@@ -216,6 +218,21 @@ export default {
       scene.add(boxMesh)
       meshes.push(boxMesh)
 
+      // 박스에 캐논 씌우기
+      const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
+      const boxBody = new CANNON.Body({
+        mass: 0,
+        position: new CANNON.Vec3(0, 0, 0),
+        shape: boxShape
+      })
+      cannonWorld.addBody(boxBody)
+
+      // 맵 막는 박스 만들기
+      new Wall({
+        cannonWorld,
+        x: 68,
+        z: 68
+      })
       // 위인들
 
       const Greats = [
@@ -300,6 +317,26 @@ export default {
       //   cannonWorld,
       //   gltfLoader
       // })
+
+      // 마을
+      const village = [
+        ['house1', { x: -67, y: 0, z: 66 }],
+        ['house2', { x: -62, y: 0, z: 61 }],
+        ['house3', { x: -61, y: 0, z: 63 }],
+        ['house4', { x: -58, y: 0, z: 64 }],
+        ['house5', { x: -59, y: 0, z: 61 }],
+        ['house6', { x: -60, y: 0, z: 68 }]
+      ]
+      village.forEach((element) => {
+        new FBXLoad({
+          scene,
+          meshes,
+          cannonWorld,
+          modelSrc: `/models/Environment/${element[0]}.fbx`,
+          position: element[1],
+          name: element[0]
+        })
+      })
 
       // 내 풀깨비
       let myMonsterId = JSON.parse(
@@ -565,6 +602,20 @@ export default {
         checkIntersects()
       }
 
+      function onPointerMove(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+        mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObjects(meshes)
+
+        if (intersects && intersects.length > 0) {
+          document.body.style.cursor = 'pointer'
+        } else {
+          document.body.style.cursor = 'default'
+        }
+      }
+
       // 마우스 이벤트
       canvas.addEventListener('mousedown', (e) => {
         isPressed = true
@@ -576,6 +627,9 @@ export default {
       canvas.addEventListener('mousemove', (e) => {
         if (isPressed) {
           calculateMousePosition(e)
+        }
+        if (props.nowPage === 0) {
+          onPointerMove(e)
         }
       })
 
