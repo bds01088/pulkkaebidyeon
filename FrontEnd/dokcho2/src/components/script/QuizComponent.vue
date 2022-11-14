@@ -41,6 +41,7 @@
 
 <script>
 import axios from 'axios'
+import swal from 'sweetalert'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { onMounted } from '@vue/runtime-core'
 import { ref } from 'vue'
@@ -66,7 +67,13 @@ export default {
     }
 
     function endQuiz() {
-      alert('다맞춤')
+      swal({
+        title: '모든 문제를 다 맞췄습니다!!',
+        icon: 'success',
+        text: '축하축하~',
+        buttons: false,
+        timer: 1500
+      })
       axios({
         url:
           BASE_URL +
@@ -83,13 +90,25 @@ export default {
 
     function nextQuiz(answer) {
       if (answer === quiz.value.content[quiz.value.nowPage].right_answer) {
-        alert('정답')
+        swal({
+          title: '정답!!!',
+          icon: 'success',
+          text: '다음 문제도 풀어볼까요?',
+          buttons: false,
+          timer: 1000
+        })
         quiz.value.nowPage += 1
         if (quiz.value.nowPage === quiz.value.content.length) {
           endQuiz()
         }
       } else {
-        alert('더 공부하셈')
+        swal({
+          title: '틀렸습니다. 더 공부하고 도전하세요!',
+          icon: 'error',
+          text: '🤔',
+          buttons: false,
+          timer: 2000
+        })
         emit('quizClose')
       }
     }
@@ -116,6 +135,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  cursor: auto;
 }
 .quiz__box {
   display: flex;
@@ -163,5 +183,12 @@ export default {
   height: 6vh;
   border-radius: 3vh;
   background-color: rgb(242, 241, 235);
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+.answers > div:hover {
+  scale: 1.05;
+  background-color: rgb(171, 174, 240);
 }
 </style>

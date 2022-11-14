@@ -7,10 +7,6 @@ export class FBXLoad {
     this.scene = info.scene
     this.meshes = info.meshes
     this.cannonWorld = info.cannonWorld
-    this.rotationY = info.rotationY || 0
-    this.width = info.width.x || 0.8
-    this.height = info.width.y || 0.8
-    this.depth = info.width.z || 0.8
     this.x = info.position.x
     this.y = info.position.y
     this.z = info.position.z
@@ -18,7 +14,7 @@ export class FBXLoad {
     this.fbxloader.load(
       info.modelSrc,
       (object) => {
-        object.scale.set(0.023, 0.023, 0.023)
+        object.scale.set(0.018, 0.018, 0.018)
         object.position.set(this.x, this.y, this.z)
         this.scene.add(object)
       },

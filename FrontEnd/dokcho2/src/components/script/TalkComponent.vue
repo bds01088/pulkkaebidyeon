@@ -98,6 +98,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  cursor: auto;
 }
 .talk__box {
   display: flex;
@@ -136,6 +137,7 @@ export default {
   justify-content: center;
   align-items: center;
   font-size: 3vh;
+  font-weight: bold;
 }
 .content {
   margin-top: 3vh;
@@ -152,5 +154,12 @@ button {
   width: 7vw;
   height: 4vh;
   font-size: 1vw;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+button:hover {
+  scale: 1.05;
+  background-color: rgb(171, 174, 240);
 }
 </style>
