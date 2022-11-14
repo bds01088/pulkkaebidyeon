@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const axios = require("axios");
+const _ = require("lodash");
 
 const app = express();
 const server = http.createServer(app);
@@ -16,11 +17,14 @@ const io = require("socket.io")(server, {
   },
 });
 
-let quizs = [];
-
 server.listen(3000, () => {
   console.log("Listening at port 3000...");
 });
+
+let quizs = [];
+let players = {};
+let roomNum = 0;
+let rooms = [];
 
 axios({
   url: BASE_URL + "/api/v1/game/words/auth/10",
@@ -28,16 +32,10 @@ axios({
 })
   .then((res) => {
     quizs = res.data;
-    // console.log(res.data);
-    // console.log(quizs);
   })
   .catch((err) => {
     console.log(err);
   });
-
-let players = {};
-let roomNum = 0;
-let rooms = [];
 
 io.on("connection", (socket) => {
   console.log(`User ${socket.id} connected`);
@@ -55,68 +53,79 @@ io.on("connection", (socket) => {
         players[socket.id].object.nickname
       }님이 퀴즈에 입장했습니다`
     );
+    socket.emit("sendSocketId", socket.id);
   });
 
   setInterval(() => {
     socket.emit("sendRooms", rooms);
-  }, 100);
+    // console.log(rooms);
+  }, 3000);
 
   socket.on("createRoom", (data) => {
-    // console.log("서버 방생성 요청");
     socket.join(`${roomNum}`);
-    rooms.push({ roomId: roomNum, roomName: data, currentUser: [] });
+    rooms.push({
+      roomId: roomNum,
+      roomName: data,
+      currentUser: [],
+      roomQuiz: [],
+      nowQuizNumber: 0,
+    });
     let roomInfo = rooms.find((room) => room.roomId == roomNum);
     roomInfo.currentUser.push({
-      socketID: socket.id,
+      socketId: socket.id,
       nickname: players[socket.id].object.nickname,
     });
+    roomInfo.roomQuiz = _.sampleSize(quizs, 5);
+    // console.log(roomInfo.roomQuiz);
     let payload = [roomInfo, players[socket.id].object];
     io.to(`${roomNum}`).emit("createRoomOK", payload);
-    // console.log(roomInfo);
-
     roomNum += 1;
   });
 
   socket.on("enterRoom", (data) => {
-    socket.join(data);
+    socket.join(`${data}`);
     let roomInfo = rooms.find((room) => room.roomId == data);
     roomInfo.currentUser.push({
-      socketID: socket.id,
+      socketId: socket.id,
       nickname: players[socket.id].object.nickname,
     });
     let payload = [roomInfo, players[socket.id].object];
     io.to(`${data}`).emit("enterRoomOK", payload);
-    console.log(payload);
+    for (user of roomInfo.currentUser) {
+      io.to(`${user.socketId}`).emit("enterRoomOK", payload);
+    }
   });
 
   socket.on("leaveRoom", (nowRoom) => {
     socket.leave(`${nowRoom}`);
-
     let roomInfo = rooms.find((room) => room.roomId == nowRoom);
-    let i = roomInfo.currentUser.indexOf(socket.id);
-    roomInfo.currentUser.splice(i, 1);
-    // roomInfo.currentUser = roomInfo.currentUser.filter(
-    //   (user) => user.socketID !== players[socket.id]
-    // );
-    // console.log(roomInfo.currentUser);
+    roomInfo.currentUser = roomInfo.currentUser.filter(
+      (user) => user.socketId !== socket.id
+    );
     let payload = [roomInfo, players[socket.id].object];
 
     if (roomInfo.currentUser.length > 0) {
-      // console.log(`${nowRoom}에 사람있어요`);
-      io.to(`${nowRoom}`).emit("leaveRoomOK", payload);
+      for (user of roomInfo.currentUser) {
+        io.to(`${user.socketId}`).emit("leaveRoomOK", payload);
+      }
     } else {
-      //   let i = rooms.indexOf(
-      //     rooms.find((room) => {
-      //       room.roomId == data;
-      //     })
-      //   );
-      //   rooms.splice(i, 1);
-
       rooms = rooms.filter((room) => room.roomId !== roomInfo.roomId);
     }
+  });
 
-    // console.log(`${nowRoom}에서 나갔지롱`);
-    // console.log(roomInfo);
-    // console.log(rooms);
+  socket.on("msg", (data) => {
+    console.log(data);
+    let roomInfo = rooms.find((room) => room.roomId == data[0]);
+    for (user of roomInfo.currentUser) {
+      io.to(`${user.socketId}`).emit("msg", data);
+    }
+    console.log(`정답 전달 됨`);
+    console.log(roomInfo.roomQuiz[roomInfo.nowQuizNumber]);
+    if (data[3] === roomInfo.roomQuiz[roomInfo.nowQuizNumber].right_answer) {
+      console.log("정답 검사함");
+      io.to(`${roomInfo.roomId}`).emit("correct", socket.id);
+      rooms.find((room) => room.roomId == data[0]).nowQuizNumber += 1;
+      console.log(roomInfo.roomQuiz[roomInfo.nowQuizNumber]);
+    }
   });
 });
