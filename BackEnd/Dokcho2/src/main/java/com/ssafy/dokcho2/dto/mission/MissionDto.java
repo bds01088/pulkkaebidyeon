@@ -29,16 +29,16 @@ public class MissionDto {
         String[] nexts = entity.getNext().split("\\\\t");
         if(status == MissionStatus.READY){
             line = entity.getLine1();
-            next = nexts[1];
+            next = nexts[2];
         }else if(status == MissionStatus.STARTED){
             line = entity.getLine2();
-            next = nexts[2];
+            next = nexts[3];
         }else if (status == MissionStatus.QUIZ_PASSED){
             line = entity.getLine3();
-            next = nexts[3];
+            next = nexts[4];
         }else if(status == MissionStatus.BATTLE_WIN){
             line = entity.getLine4();
-            next = nexts[4];
+            next = nexts[5];
         } else if(status == MissionStatus.NOT_YET){
             line = entity.getLine0();
             next = nexts[0];
