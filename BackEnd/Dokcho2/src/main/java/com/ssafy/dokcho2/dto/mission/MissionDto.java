@@ -18,23 +18,37 @@ public class MissionDto {
     private String characters;
     private String line;
     private String description;
+    private String next;
     private MissionStatus status;
     private Long relic;
     private Long item;
 
     public static MissionDto from(Mission entity, MissionStatus status){
         String line = "";
+        String next = "";
+        String[] nexts = entity.getNext().split("\t");
         if(status == MissionStatus.READY){
             line = entity.getLine1();
+            next = nexts[1];
         }else if(status == MissionStatus.STARTED){
             line = entity.getLine2();
+            next = nexts[2];
         }else if (status == MissionStatus.QUIZ_PASSED){
             line = entity.getLine3();
+            next = nexts[3];
         }else if(status == MissionStatus.BATTLE_WIN){
             line = entity.getLine4();
-        } else {
+            next = nexts[4];
+        } else if(status == MissionStatus.NOT_YET){
             line = entity.getLine0();
+            next = nexts[0];
+        } else{
+            line = entity.getLine0();
+            next = nexts[5];
         }
+
+
+
 
         return MissionDto.builder()
                 .missionId(entity.getMissionId())
@@ -42,6 +56,7 @@ public class MissionDto {
                 .line(line)
                 .description(entity.getDescription())
                 .status(status)
+                .next(next)
                 .relic(entity.getRelic())
                 .item(entity.getItem())
                 .build();

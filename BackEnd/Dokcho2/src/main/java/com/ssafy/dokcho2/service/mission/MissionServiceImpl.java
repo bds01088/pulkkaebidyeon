@@ -84,7 +84,20 @@ public class MissionServiceImpl implements MissionService{
         }else if(nowStatus == MissionStatus.QUIZ_PASSED){
             newStatus = MissionStatus.BATTLE_WIN;
         }else if(nowStatus == MissionStatus.BATTLE_WIN){
+            Monster monster = user.getRepresentMonster();
+            updateExp(user, monster, mission.getExp());
+
+            Item relic = itemRepository.findById(mission.getRelic()).orElseThrow(ItemNotFoundException::new);
+            Item item = itemRepository.findById(mission.getItem()).orElseThrow(ItemNotFoundException::new);
+            userItemRepository.save(UserItem.builder().item(relic).user(user).count(1).build());
+            userItemRepository.save(UserItem.builder().item(item).user(user).count(1).build());
+
             newStatus = MissionStatus.FINISHED;
+
+            if(missionId < 8) {
+                user.changeNowMissionId(missionId + 1);
+                userRepository.save(user);
+            }
         }else{
             newStatus = nowStatus;
         }
@@ -114,24 +127,6 @@ public class MissionServiceImpl implements MissionService{
         um.setLevel(newLevel);
 
         userMonsterRepository.save(um);
-    }
-
-    @Override
-    public void completeMission(Long missionId) {
-        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
-        Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
-        UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
-
-        Monster monster = user.getRepresentMonster();
-        updateExp(user, monster, mission.getExp());
-
-        Item relic = itemRepository.findById(mission.getRelic()).orElseThrow(ItemNotFoundException::new);
-        Item item = itemRepository.findById(mission.getItem()).orElseThrow(ItemNotFoundException::new);
-        userItemRepository.save(UserItem.builder().item(relic).user(user).count(1).build());
-        userItemRepository.save(UserItem.builder().item(item).user(user).count(1).build());
-        
-        userMission.changeStatus(MissionStatus.FINISHED);
-        userMissionRepository.save(userMission);
     }
 
     @Override

@@ -47,13 +47,6 @@ public class MissionController {
         return new ResponseEntity<>(missionService.getMissionList(), HttpStatus.OK);
     }
 
-    @PutMapping("/complete/{missionId}")
-    @ApiOperation(value = "미션 완료")
-    public ResponseEntity<List<MissionDto>> completeMission(@PathVariable Long missionId){
-        missionService.completeMission(missionId);
-        return new ResponseEntity<>(missionService.getMissionList(), HttpStatus.OK);
-    }
-
     @GetMapping("/boss/{missionId}")
     @ApiOperation(value = "보스 정보")
     public ResponseEntity<BossDto> getBossInfo(@PathVariable Long missionId){

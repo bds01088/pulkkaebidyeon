@@ -14,7 +14,6 @@ public interface MissionService {
     List<QuizDto> getQuizList(Long missionId);
     List<MissionDto> getMissionList();
     void changeMissionStatus(Long missionId, MissionStatus nowStatus);
-    void completeMission(Long missionId);
     BossDto getBossInfo(Long missionId);
     void updateExp(Integer rewardExp);
 }
