@@ -91,7 +91,7 @@ export default {
           icon: 'success',
           text: '다음 문제도 풀어볼까요?',
           buttons: false,
-          timer: 1000
+          timer: 800
         })
         quiz.value.nowPage += 1
         if (quiz.value.nowPage === quiz.value.content.length) {
