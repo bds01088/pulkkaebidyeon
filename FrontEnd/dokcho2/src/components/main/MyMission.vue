@@ -13,7 +13,10 @@
         class="mission__body"
         :class="{
           mission__finished: mission.status == 'FINISHED',
-          mission__now: mission.status == 'STARTED',
+          mission__now:
+            mission.status == 'STARTED' ||
+            mission.status == 'QUIZ_PASSED' ||
+            mission.status == 'BATTLE_WIN',
           mission__notyet: mission.status == 'NOT_YET'
         }"
       >
