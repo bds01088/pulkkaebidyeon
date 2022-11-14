@@ -5,6 +5,7 @@
         <div class="content__box">
           <div class="name">{{ this.isTalk.name }}</div>
           <div class="content">
+            <!-- {{ this.isTalk.content }} -->
             {{ this.isTalk.content.line[nowPage.nowPage] }}
           </div>
         </div>
@@ -26,6 +27,9 @@
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { ref } from 'vue'
+import { useStore } from 'vuex'
+import Swal from 'sweetalert2'
+
 
 export default {
   props: {
@@ -34,40 +38,55 @@ export default {
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
 
+    // const store = useStore()
+    // store.dispatch('fetchnowUserInfo')
+
     function endTalk() {
       const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+      console.log(content)
+      console.log(userInfo)
       if (content.status === 'STARTED') {
         emit('quizStart')
       } else {
         if (userInfo.nowMissionId === content.missionId) {
-          axios({
-            url:
-              BASE_URL +
-              '/api/v1/mission/' +
-              userInfo.nowMissionId +
-              '?nowStatus=' +
-              content.status,
-            method: 'PUT',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          }).then(() => {
-            if (content.status === 'BATTLE_WIN') {
-              let nextMissionId = userInfo.nowMissionId + 1
-              axios({
-                url: BASE_URL + '/api/v1/user/nowMission/' + nextMissionId,
-                method: 'PUT',
-                headers: {
-                  AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-                }
-              }).then(() => {
-                userInfo.nowMissionId += 1
-                localStorage.setItem('userInfo', JSON.stringify(userInfo))
-              })
-            }
+
+          if (content.status === 'READY') {
+            axios({
+              url: BASE_URL + '/api/v1/mission/',
+              method: 'PUT',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            }).then(() => {
+              emit('talkClose')
+            })
+          } else if (content.status === 'QUIZ_PASSED') {
             emit('talkClose')
-          })
+            emit('enterBattle')
+          } else if (content.status === 'BATTLE_WIN') {
+            axios({
+              url: BASE_URL + '/api/v1/mission/',
+              method: 'PUT',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            }).then(() => {
+              store.dispatch('fetchnowUserInfo')
+              // 미션 아예 다른 미션으로 넘어갈때 mission complete alert 그 외에는 다음 설명
+              Swal.fire({
+                title: `${props.isTalk.content.next}`,
+                text: '  ',
+                imageUrl: 'https://unsplash.it/400/200',
+                imageWidth: 400,
+                imageHeight: 200,
+                imageAlt: 'Custom image'
+              })
+              emit('talkClose')
+              
+          } else {
+            emit('talkClose')
+          }
         } else {
           emit('talkClose')
         }

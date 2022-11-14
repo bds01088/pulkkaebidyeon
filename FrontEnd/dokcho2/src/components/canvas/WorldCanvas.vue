@@ -6,6 +6,7 @@
       @talkClose="talkClose"
       @quizStart="quizStart"
       :isTalk="isTalk"
+      @enterBattle="enterBattle"
     />
     <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
     <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
@@ -24,7 +25,7 @@ import { Character } from '../modules/Character'
 import { Building } from '../modules/Building'
 import { Environment } from '../modules/Environment'
 import { Environments } from '../modules/Environments'
-import { FBXLoad } from '../modules/FBXLoader'
+import { Village } from '../modules/Village'
 import { myMon } from '../modules/MyMon'
 import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
@@ -56,11 +57,13 @@ export default {
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
+
     const miniGame1 = ref({
       miniGame1: false,
       miniGame2: false,
       miniGame3: false
     })
+    const isMinigame = ref({ isMinigame: false })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
@@ -69,6 +72,7 @@ export default {
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
+      let isLoading = 0
 
       // Renderer
       let canvas = document.querySelector('#WorldCanvas')
@@ -97,7 +101,7 @@ export default {
 
       const cameraPosition = new THREE.Vector3(0, 35, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.01
+      camera.zoom = 0.25
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -241,8 +245,8 @@ export default {
         ['선덕여왕', { x: -5, y: 0, z: -13 }],
         ['공민왕', { x: 35, y: 0, z: 0 }],
         ['세종대왕', { x: -44, y: 0, z: 20 }],
-        ['이순신', { x: -15, y: 0, z: 55 }],
-        ['유관순', { x: 50, y: 0, z: 42 }]
+        ['이순신', { x: -15, y: 0, z: 45 }],
+        ['유관순', { x: 45, y: 0, z: 42 }]
       ]
       Greats.forEach((element) => {
         new Character({
@@ -259,13 +263,13 @@ export default {
       // 빌런들
 
       const Villain = [
-        ['지현몬', { x: -38, y: 0, z: -45 }],
-        ['효근몬', { x: -58, y: 0, z: -17 }],
-        ['재준몬', { x: 0, y: 0, z: -10 }],
-        ['근희몬', { x: 32, y: 0, z: 5 }],
-        ['상균몬', { x: -41, y: 0, z: 17 }],
-        ['지원몬', { x: -18, y: 0, z: 52 }],
-        ['하민몬', { x: 45, y: 0, z: 40 }]
+        ['지현몬', { x: -62, y: 0, z: -50 }],
+        ['효근몬', { x: -56, y: 0, z: 3 }],
+        ['재준몬', { x: 8, y: 0, z: -30 }],
+        ['근희몬', { x: 43, y: 0, z: 20 }],
+        ['상균몬', { x: -58, y: 0, z: 60 }],
+        ['지원몬', { x: 10, y: 0, z: 60 }],
+        ['하민몬', { x: 57, y: 0, z: 65 }]
       ]
       Villain.forEach((element) => {
         new Character({
@@ -328,11 +332,11 @@ export default {
         ['house6', { x: -60, y: 0, z: 68 }]
       ]
       village.forEach((element) => {
-        new FBXLoad({
+        new Village({
           scene,
           meshes,
-          cannonWorld,
-          modelSrc: `/models/Environment/${element[0]}.fbx`,
+          gltfLoader,
+          modelSrc: `./models/Environment/${element[0]}.glb`,
           position: element[1],
           name: element[0]
         })
@@ -373,6 +377,12 @@ export default {
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
         }
 
+        if (isLoading === 0 && scene.children.length >= 160) {
+          isLoading = 1
+          console.log('로딩 끝1')
+          emit('loadingEnd')
+        }
+
         if (player.mixer) player.mixer.update(delta)
 
         if (player.modelMesh) {
@@ -382,7 +392,8 @@ export default {
           player.modelMesh &&
           props.nowPage === 0 &&
           !props.nowNavbar &&
-          !isTalk.value.talk
+          !isTalk.value.talk &&
+          !isMinigame.value.isMinigame
         ) {
           if (isPressed) {
             raycasting()
@@ -555,6 +566,7 @@ export default {
           }
           if (item.object.name.slice(0, 1) === '건') {
             isPressed = false
+
             if (item.object.name.slice(1, 2) === '1') {
               miniGame1.value.miniGame1 = true
             } else if (item.object.name.slice(1, 2) === '2') {
@@ -562,6 +574,8 @@ export default {
             } else if (item.object.name.slice(1, 2) === '3') {
               miniGame1.value.miniGame3 = true
             }
+
+            isMinigame.value.isMinigame = true
             // 건1, 건2, 건3
 
             // 숫자 따라서 다른 함수 실행 -> 컴포넌트 true값으로 변경
@@ -704,10 +718,24 @@ export default {
           player.rumba = false
           player.hiphop = false
         }
-        if (e.key === 'a' || e.key === 'd') {
+        if (
+          e.key === 'a' ||
+          e.key === 'd' ||
+          e.key === 'A' ||
+          e.key === 'D' ||
+          e.key === 'ArrowLeft' ||
+          e.key === 'ArrowRight'
+        ) {
           destinationPoint.x = player.modelMesh.position.x
         }
-        if (e.key === 'w' || e.key === 's') {
+        if (
+          e.key === 'w' ||
+          e.key === 's' ||
+          e.key === 'W' ||
+          e.key === 'S' ||
+          e.key === 'ArrowUp' ||
+          e.key === 'ArrowDown'
+        ) {
           destinationPoint.z = player.modelMesh.position.z
         }
         localStorage.setItem(
@@ -757,16 +785,24 @@ export default {
       isQuiz.value.quiz = false
     }
 
+    function enterBattle() {
+      isQuiz.value.quiz = false
+      emit('changeBattle')
+    }
+
     function miniGame1Close() {
       miniGame1.value.miniGame1 = false
+      isMinigame.value.isMinigame = false
     }
 
     function miniGame2Close() {
       miniGame1.value.miniGame2 = false
+      isMinigame.value.isMinigame = false
     }
 
     function miniGame3Close() {
       miniGame1.value.miniGame3 = false
+      isMinigame.value.isMinigame = false
     }
 
     return {
@@ -778,7 +814,8 @@ export default {
       quizClose,
       miniGame1Close,
       miniGame2Close,
-      miniGame3Close
+      miniGame3Close,
+      enterBattle
     }
   }
 }

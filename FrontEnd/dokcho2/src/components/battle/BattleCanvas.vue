@@ -108,7 +108,7 @@
 <script>
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { Player } from '../modules/Player'
+import { Monster } from '../modules/Monster'
 import { Boss } from '../modules/Boss'
 
 // import gsap from 'gsap'
@@ -134,14 +134,12 @@ export default {
 
   setup(props, { emit }) {
     // console.log(JSON.parse(localStorage.getItem('userInfo')))
-    const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
 
     const myHpBar = ref('100')
     const enemyHpBar = ref('100')
     const begin = ref(0)
 
     const phase = ref('start')
-    const msg = ref('적을 만남!!!!')
 
     const myName = ref('')
     const myMaxHp = ref(100)
@@ -154,6 +152,8 @@ export default {
     const enemyHp = ref(100)
     const enemyAttack = ref(20)
     const enemyDefense = ref(10)
+
+    const msg = ref(`${enemyName.value}과의 싸움이 시작된다!!!!`)
 
     const actList = ref(['공격', '방어', '아이템'])
     const myAct = ref('')
@@ -222,6 +222,8 @@ export default {
       () => props.startSignal,
       () => {
         setTimeout(() => {
+          const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
+
           begin.value += 1
           initValue()
           getItemList()
@@ -324,7 +326,7 @@ export default {
 
           const gltfLoader = new GLTFLoader()
 
-          const player = new Player({
+          const player = new Monster({
             scene,
             meshes,
             cannonWorld,
@@ -411,7 +413,7 @@ export default {
 
                 player.cannonBody.position.y += 0.03
 
-                if (player.cannonBody.position.y >= 1) {
+                if (player.cannonBody.position.y >= 0.9) {
                   status.value = '대기'
                 }
               }
@@ -469,7 +471,7 @@ export default {
 
                 enemy.cannonBody.position.y += 0.03
 
-                if (enemy.cannonBody.position.y >= 1) {
+                if (enemy.cannonBody.position.y >= 0.9) {
                   enemyStatus.value = '대기'
                 }
               }
@@ -691,11 +693,11 @@ export default {
     }
 
     function enemySelectAct() {
-      const num = Math.random(0, 1)
+      const num = Math.floor(Math.random() * 10)
 
-      if (num <= 0.7) {
+      if (num <= 7) {
         enemyAct.value = '공격'
-      } else if (num <= 0.9) {
+      } else if (num <= 8) {
         enemyAct.value = '방어'
       } else {
         enemyAct.value = '버프'
@@ -1446,7 +1448,13 @@ export default {
         })
         .then((res) => {
           // console.log(res.data)
-          itemList.value = res.data
+          const useItemList = []
+          res.data.forEach((d) => {
+            if (d.type == 'USE_ITEM') {
+              useItemList.push(d)
+            }
+          })
+          itemList.value = useItemList
         })
         .catch((err) => console.log(err))
     }
@@ -1467,17 +1475,19 @@ export default {
     function winBattle() {
       msg.value = '배틀에서 이겼다!!!!'
 
-      axios.put(
-        BASE_URL +
-          '/api/v1/mission/' +
-          userInfo.value.nowMissionId +
-          '?nowStatus=BATTLE_WIN',
-        {
-          headers: {
-            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-          }
+      // axios.put(BASE_URL + '/api/v1/mission/', {
+      //   headers: {
+      //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+      //   }
+      // })
+
+      axios({
+        url: BASE_URL + '/api/v1/mission/',
+        method: 'PUT',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
         }
-      )
+      }).then(() => {})
     }
 
     return {

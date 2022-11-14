@@ -2,7 +2,9 @@
   <router-view />
 </template>
 
-<script></script>
+<script>
+export default {}
+</script>
 
 <style>
 @font-face {

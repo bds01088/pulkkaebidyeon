@@ -13,10 +13,14 @@
         class="mission__body"
         :class="{
           mission__finished: mission.status == 'FINISHED',
-          mission__now: mission.status == 'STARTED',
+          mission__now:
+            mission.status == 'STARTED' ||
+            mission.status == 'QUIZ_PASSED' ||
+            mission.status == 'BATTLE_WIN',
           mission__notyet: mission.status == 'NOT_YET'
         }"
       >
+        <!-- {{ mission.status }} -->
         <!-- CSS 하고 주석 풀 예정 -->
         <!-- <div v-if="mission.status !== 'NOT_YET'" class="mission__box">
         <p>{{ mission.missionId }}번째 사건. 해결 완료!</p>
@@ -34,8 +38,18 @@
           </div>
         </div>
 
-        <div v-else class="mission__box">
+        <div v-else-if="mission.status === 'FINISHED'" class="mission__box">
           <div class="mission__text">
+            <p class="mission__id">🔑 {{ mission.missionId }}번째 미션</p>
+            <p>🔓 {{ mission.characters }}의 문제 해결 완료!</p>
+          </div>
+        </div>
+
+        <div v-else class="mission__box tooltip">
+          <div class="mission__text">
+            <span class="tooltiptext">
+              <br />✨설명 <br />{{ mission.prev }}</span
+            >
             <p class="mission__id">🔑 {{ mission.missionId }}번째 미션</p>
             <p class="mission__name" v-if="mission.characters === '단군'">
               <b>{{ mission.characters }}</b> : 고조선의 보물을 찾아라!
@@ -261,5 +275,50 @@ export default {
 
 .mission__notyet {
   background-color: rgba(255, 255, 187, 0.881);
+}
+
+.tooltip {
+  position: relative;
+  cursor: pointer;
+  /* display: inline-block; */
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 150px;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.808);
+  color: black;
+  text-align: center;
+  border-radius: 30px;
+  padding: 7px 0;
+  font-size: 0.8rem;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  /* top: -200%; */
+  bottom: -100%;
+  left: -20%;
+  margin-left: -5vw;
+  transition: opacity 1s;
+  line-height: 1.5rem;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip .tooltiptext::after {
+  content: ' ';
+  position: absolute;
+
+  top: 50%;
+  left: 100%;
+  /* margin-left: -10px; */
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent transparent rgba(255, 255, 255, 0.808);
 }
 </style>

@@ -1,11 +1,17 @@
 <template>
   <div class="wholeCanvas">
     <NavBar @changeNavbar="changeNavbar" />
+    <LoadingPage
+      v-if="this.isGameStart === 0"
+      @gameStart="gameStart"
+      :isloading="this.isloading"
+    />
     <WorldCanvas
       v-show="this.nowPage === 0"
       @changeCanvas="changeCanvas"
       @changeBattle="changeBattle"
       @talkStart="talkStart"
+      @loadingEnd="loadingEnd"
       :nowPage="this.nowPage"
       :nowNavbar="this.nowNavbar"
     />
@@ -30,6 +36,7 @@
 import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
 import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
 import NavBar from '../../components/main/NavBar.vue'
+import LoadingPage from '../../components/main/LoadingPage.vue'
 
 import BattleCanvas from '../../components/battle/BattleCanvas.vue'
 
@@ -38,14 +45,17 @@ export default {
     return {
       nowPage: 0,
       nowNavbar: false,
-      startSignal: 0
+      startSignal: 0,
+      isloading: 0,
+      isGameStart: 0
     }
   },
   components: {
     WorldCanvas: WorldCanvas,
     HouseCanvas: HouseCanvas,
     NavBar: NavBar,
-    BattleCanvas: BattleCanvas
+    BattleCanvas: BattleCanvas,
+    LoadingPage: LoadingPage
   },
   methods: {
     changeCanvas() {
@@ -76,6 +86,17 @@ export default {
       } else {
         this.nowNavbar = true
       }
+    },
+
+    loadingEnd() {
+      setTimeout(() => {
+        console.log('로딩끝?')
+        this.isloading = 1
+      }, 5000)
+    },
+
+    gameStart() {
+      this.isGameStart = 1
     }
   }
 }
