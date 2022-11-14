@@ -785,14 +785,17 @@ export default {
 
     function miniGame1Close() {
       miniGame1.value.miniGame1 = false
+      isMinigame.value.isMinigame = false
     }
 
     function miniGame2Close() {
       miniGame1.value.miniGame2 = false
+      isMinigame.value.isMinigame = false
     }
 
     function miniGame3Close() {
       miniGame1.value.miniGame3 = false
+      isMinigame.value.isMinigame = false
     }
 
     return {
