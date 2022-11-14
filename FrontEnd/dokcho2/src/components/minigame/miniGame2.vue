@@ -270,7 +270,7 @@ export default {
           })
             .then((res) => {
               // console.log(res.data)
-              item.value.item = res.data
+              item.value.item = res.data.itemDto
             })
             .catch((err) => console.log(err))
         }, 1000)
