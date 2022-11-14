@@ -11,7 +11,9 @@
       모험을 떠나기로 했어요. <br />
       호랑이의 흔적을 찾아 동의보감을 되찾아주세요!
     </div>
-    <button v-if="!this.isloading">풀깨비뎐으로 들어가는중..</button>
+    <button v-if="!this.isloading" @click="gameStart()">
+      풀깨비뎐으로 들어가는중..
+    </button>
     <button class="start__btn" v-else @click="gameStart()">입장하기</button>
   </div>
 </template>
