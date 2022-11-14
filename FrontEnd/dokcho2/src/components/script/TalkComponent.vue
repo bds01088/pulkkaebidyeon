@@ -30,6 +30,7 @@ import { ref } from 'vue'
 import { useStore } from 'vuex'
 import Swal from 'sweetalert2'
 
+
 export default {
   props: {
     isTalk: Object
@@ -37,24 +38,40 @@ export default {
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
 
-    const store = useStore()
+    // const store = useStore()
     // store.dispatch('fetchnowUserInfo')
 
     function endTalk() {
       const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+      console.log(content)
+      console.log(userInfo)
       if (content.status === 'STARTED') {
         emit('quizStart')
       } else {
         if (userInfo.nowMissionId === content.missionId) {
-          axios({
-            url: BASE_URL + '/api/v1/mission/',
-            method: 'PUT',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          })
-            .then(() => {
+
+          if (content.status === 'READY') {
+            axios({
+              url: BASE_URL + '/api/v1/mission/',
+              method: 'PUT',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            }).then(() => {
+              emit('talkClose')
+            })
+          } else if (content.status === 'QUIZ_PASSED') {
+            emit('talkClose')
+            emit('enterBattle')
+          } else if (content.status === 'BATTLE_WIN') {
+            axios({
+              url: BASE_URL + '/api/v1/mission/',
+              method: 'PUT',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            }).then(() => {
               store.dispatch('fetchnowUserInfo')
               // 미션 아예 다른 미션으로 넘어갈때 mission complete alert 그 외에는 다음 설명
               Swal.fire({
@@ -66,10 +83,10 @@ export default {
                 imageAlt: 'Custom image'
               })
               emit('talkClose')
-            })
-            .catch((err) => {
-              console.log(err)
-            })
+              
+          } else {
+            emit('talkClose')
+          }
         } else {
           emit('talkClose')
         }
