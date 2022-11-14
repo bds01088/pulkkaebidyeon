@@ -1,28 +1,44 @@
 <template>
   <div>
     <div id="enemyStatus">
-      <p>적 이름</p>
+      <p style="margin-left: 10px">{{ enemyName }}</p>
       <div
         id="enemyMaxHp"
-        style="border: 5px solid black; height: 30px; width: 90%"
+        style="border: 5px solid black; height: 30px; width: 88%"
       >
         <div
           id="enemyHp"
-          style="background-color: green; height: 30px; width: 100%"
+          style="
+            background-color: green;
+            height: 31px;
+            width: 100%;
+            margin-left: 0;
+          "
         ></div>
       </div>
+      <p style="margin-top: 5px; margin-left: 75%">
+        {{ enemyHp }} / {{ enemyMaxHp }}
+      </p>
     </div>
     <div id="myStatus">
-      <p>내 이름</p>
+      <p style="margin-left: 10px">{{ myName }}</p>
       <div
         id="myMaxHp"
-        style="border: 5px solid black; height: 30px; width: 90%"
+        style="border: 5px solid black; height: 30px; width: 88%"
       >
         <div
           id="myHp"
-          style="background-color: green; height: 30px; width: 100%"
+          style="
+            background-color: green;
+            height: 31px;
+            width: 100%;
+            margin-left: 0;
+          "
         ></div>
       </div>
+      <p style="margin-top: 5px; margin-left: 75%">
+        {{ myHp }} / {{ myMaxHp }}
+      </p>
     </div>
   </div>
 </template>
@@ -38,23 +54,39 @@ export default {
     }
   },
 
-  props: { myHpBar: String, enemyHpBar: String, begin: Number },
+  props: {
+    myHpBar: String,
+    enemyHpBar: String,
+    begin: Number,
+    poison: Boolean,
+    myMaxHp: Number,
+    myHp: Number,
+    enemyMaxHp: Number,
+    enemyHp: Number,
+    myName: String,
+    enemyName: String
+  },
 
   created() {
     setInterval(() => {
       this.time += 1
-    }, 100)
+    }, 30)
   },
 
   watch: {
     time() {
       if (this.enemyHpBar < this.getEnemyHpBar) {
-        this.getEnemyHpBar -= 5
+        this.getEnemyHpBar -= 1
+      } else if (this.enemyHpBar > this.getEnemyHpBar) {
+        this.getEnemyHpBar += 1
       }
       var enemyHpBarPer = this.getEnemyHpBar.toString() + '%'
       document.querySelector('#enemyHp').style.width = enemyHpBarPer
+
       if (this.myHpBar < this.getmyHpBar) {
-        this.getmyHpBar -= 5
+        this.getmyHpBar -= 1
+      } else if (this.myHpBar > this.getmyHpBar) {
+        this.getmyHpBar += 1
       }
       var myHpBarPer = this.getmyHpBar.toString() + '%'
       document.querySelector('#myHp').style.width = myHpBarPer
@@ -66,6 +98,14 @@ export default {
 
       document.querySelector('#enemyHp').style.width = this.getEnemyHpBar
       document.querySelector('#myHp').style.width = this.getmyHpBar
+    },
+
+    poison() {
+      if (this.poison == true) {
+        document.querySelector('#enemyHp').style.backgroundColor = 'purple'
+      } else {
+        document.querySelector('#enemyHp').style.backgroundColor = 'green'
+      }
     }
   },
 
@@ -76,25 +116,33 @@ export default {
 <style>
 #enemyStatus {
   position: absolute;
-  top: 100px;
-  left: 200px;
+  top: 15%;
+  left: 15%;
 
   padding: 10px;
-  width: 400px;
-  height: 100px;
+  padding-right: 0px;
+  width: 28%;
+  height: 12%;
   background-color: white;
   z-index: 1;
+
+  border: 2px solid black;
+  border-radius: 10px;
 }
 
 #myStatus {
   position: absolute;
-  top: 400px;
-  left: 1000px;
+  top: 55%;
+  left: 60%;
 
   padding: 10px;
-  width: 400px;
-  height: 100px;
+  padding-right: 0px;
+  width: 28%;
+  height: 12%;
   background-color: white;
   z-index: 1;
+
+  border: 2px solid black;
+  border-radius: 10px;
 }
 </style>

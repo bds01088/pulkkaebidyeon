@@ -2,31 +2,37 @@
   <div class="quiz">
     <div class="quiz__box">
       <div class="box" v-if="quiz.content[quiz.nowPage]">
-        <div class="question">{{ quiz.content[quiz.nowPage].question }}</div>
-        <img :src="quiz.content[quiz.nowPage].img" alt="quiz-image" />
-        <div
-          class="answer1"
-          @click="nextQuiz(quiz.content[quiz.nowPage].answer1)"
-        >
-          {{ quiz.content[quiz.nowPage].answer1 }}
+        <div class="question">
+          {{ quiz.nowPage + 1 }}. {{ quiz.content[quiz.nowPage].question }}
         </div>
-        <div
-          class="answer2"
-          @click="nextQuiz(quiz.content[quiz.nowPage].answer2)"
-        >
-          {{ quiz.content[quiz.nowPage].answer2 }}
-        </div>
-        <div
-          class="answer3"
-          @click="nextQuiz(quiz.content[quiz.nowPage].answer3)"
-        >
-          {{ quiz.content[quiz.nowPage].answer3 }}
-        </div>
-        <div
-          class="answer4"
-          @click="nextQuiz(quiz.content[quiz.nowPage].answer4)"
-        >
-          {{ quiz.content[quiz.nowPage].answer4 }}
+        <div class="content">
+          <img :src="quiz.content[quiz.nowPage].img" alt="quiz-image" />
+          <div class="answers">
+            <div
+              class="answer1"
+              @click="nextQuiz(quiz.content[quiz.nowPage].answer1)"
+            >
+              (1) {{ quiz.content[quiz.nowPage].answer1 }}
+            </div>
+            <div
+              class="answer2"
+              @click="nextQuiz(quiz.content[quiz.nowPage].answer2)"
+            >
+              (2) {{ quiz.content[quiz.nowPage].answer2 }}
+            </div>
+            <div
+              class="answer3"
+              @click="nextQuiz(quiz.content[quiz.nowPage].answer3)"
+            >
+              (3) {{ quiz.content[quiz.nowPage].answer3 }}
+            </div>
+            <div
+              class="answer4"
+              @click="nextQuiz(quiz.content[quiz.nowPage].answer4)"
+            >
+              (4) {{ quiz.content[quiz.nowPage].answer4 }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -35,6 +41,7 @@
 
 <script>
 import axios from 'axios'
+import swal from 'sweetalert'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { onMounted } from '@vue/runtime-core'
 import { ref } from 'vue'
@@ -60,7 +67,13 @@ export default {
     }
 
     function endQuiz() {
-      alert('다맞춤')
+      swal({
+        title: '모든 문제를 다 맞췄습니다!!',
+        icon: 'success',
+        text: '축하축하~',
+        buttons: false,
+        timer: 1500
+      })
       axios({
         url:
           BASE_URL +
@@ -77,14 +90,26 @@ export default {
 
     function nextQuiz(answer) {
       if (answer === quiz.value.content[quiz.value.nowPage].right_answer) {
-        alert('정답')
+        swal({
+          title: '정답!!!',
+          icon: 'success',
+          text: '다음 문제도 풀어볼까요?',
+          buttons: false,
+          timer: 1000
+        })
+        quiz.value.nowPage += 1
+        if (quiz.value.nowPage === quiz.value.content.length) {
+          endQuiz()
+        }
       } else {
-        alert('더 공부하셈')
+        swal({
+          title: '틀렸습니다. 더 공부하고 도전하세요!',
+          icon: 'error',
+          text: '🤔',
+          buttons: false,
+          timer: 2000
+        })
         emit('quizClose')
-      }
-      quiz.value.nowPage += 1
-      if (quiz.value.nowPage === quiz.value.content.length) {
-        endQuiz()
       }
     }
 
@@ -110,6 +135,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  cursor: auto;
 }
 .quiz__box {
   display: flex;
@@ -120,8 +146,49 @@ export default {
   height: 100%;
 }
 .box {
-  width: 80%;
-  height: 70%;
-  background-color: rgb(167, 105, 105);
+  border-radius: 8vw;
+  padding: 5vw;
+  width: 70%;
+  height: 60%;
+  background-color: rgb(231, 227, 186);
+  display: flex;
+  flex-direction: column;
+}
+.question {
+  font-size: 1.5vw;
+  width: 100%;
+  height: 10%;
+}
+.content {
+  width: 100%;
+  height: 90%;
+  display: flex;
+}
+.content > img {
+  max-width: 50vw;
+  max-height: 50vh;
+}
+.answers {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 2vw;
+}
+.answers > div {
+  display: flex;
+  align-items: center;
+  margin: 1vw;
+  padding: 0 1vw;
+  width: 20vw;
+  height: 6vh;
+  border-radius: 3vh;
+  background-color: rgb(242, 241, 235);
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+.answers > div:hover {
+  scale: 1.05;
+  background-color: rgb(171, 174, 240);
 }
 </style>

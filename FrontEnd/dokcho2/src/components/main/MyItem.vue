@@ -27,7 +27,8 @@
           <!-- <p>{{ item.itemName }}</p> -->
         </div>
       </div>
-      <div class="item__body1" v-else>
+      <div class="item__nomission" v-else>
+        <p>현재 보유한 미션 아이템이 없어요 😥</p>
         <p>미션을 해결하고 아이템을 모아보세요!</p>
       </div>
       <h3>배틀 사용 아이템</h3>
@@ -39,22 +40,24 @@
         >
           <div class="tooltip">
             <!-- 지금 이미지, count 안넣어서 주석처리해둠 -->
-            <!-- <img
+            <img
               :src="require('@/assets/item/' + item.itemId + '.png')"
               alt=""
               class="item__image"
-            /> -->
+            />
             <span class="tooltiptext"> {{ item.description }}</span>
             <div class="battle__item">
-              <p>{{ item.itemName }}</p>
-              <p>1</p>
-              <!-- <p>{{ item.count }}</p> -->
+              <p>{{ item.itemName }} <br /></p>
+              <p>
+                <span class="battle__count">{{ item.count }}</span
+                >개
+              </p>
             </div>
           </div>
         </div>
       </div>
-      <div class="item__body2" v-else>
-        <p>미니게임을 통해 아이템을 모아봐요 >.^</p>
+      <div class="item__nomission" v-else>
+        <p>미니게임을 통해 아이템을 모아보세요 🍀</p>
       </div>
     </div>
     <div class="item__x" v-else>
@@ -83,7 +86,7 @@ export default {
     function fetchItems() {
       axios({
         // 테스트용으로 요청 전체 아이템 받음 / 실제로는 item까지만
-        url: BASE_URL + '/api/v1/item/itemList',
+        url: BASE_URL + '/api/v1/item',
         method: 'GET',
         headers: {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
@@ -166,7 +169,7 @@ export default {
   border: 1px solid white;
   background-color: #ffffff;
   width: 80%;
-  height: 60%;
+  height: 65%;
   top: 30%;
   padding: 1vh;
   border-radius: 10px;
@@ -176,7 +179,17 @@ export default {
 h3 {
   margin: 2vh;
 }
-.item__body1,
+.item__body1 {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-left: 2vh;
+}
+
+.item__nomission {
+  margin: 1vw;
+  text-align: center;
+}
+
 .item__body2 {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -184,19 +197,18 @@ h3 {
 }
 
 .item__item {
-  width: 60px;
-  height: 60px;
-  /* border: 1px solid black; */
-  background-color: #ffffff;
-  /* padding: 1vh; */
+  width: 70px;
+  height: 68px;
+  /* background-color: #ffffff; */
   border-radius: 10px;
-  /* box-shadow: 1px 1px 5px 1px gray; */
-  margin-bottom: 2vh;
+  margin-bottom: 3vh;
   cursor: pointer;
+  /* margin-left: 0.5vh;
+  margin-right: 0.5vh; */
 }
 
 .item__image {
-  width: 100%;
+  width: 95%;
 }
 
 .item__item p {
@@ -206,19 +218,20 @@ h3 {
 .battle__item {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-evenly;
   text-align: center;
+  width: 70px;
 }
 
 .battle__item p {
-  margin-left: 10%;
+  /* margin-left: 10%; */
+  font-size: 0.6rem;
+  text-align: center;
 }
-.item__count {
-  border: 1px solid white;
-  background-color: yellow;
-  width: 20%;
-  padding: 1vh;
-  border-radius: 10px;
+
+.battle__count {
+  color: #467302;
+  font-weight: bold;
 }
 
 .item__no {
@@ -245,12 +258,11 @@ h3 {
 .tooltip {
   position: relative;
   display: inline-block;
-  /* border-bottom: 1px dotted black; */
 }
 
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 120px;
+  width: 200px;
   background-color: black;
   color: #fff;
   text-align: center;

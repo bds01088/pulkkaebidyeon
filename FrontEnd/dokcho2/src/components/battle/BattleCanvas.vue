@@ -5,688 +5,1559 @@
       :myHpBar="myHpBar"
       :enemyHpBar="enemyHpBar"
       :begin="begin"
+      :poison="poison"
+      :myMaxHp="myMaxHp"
+      :myHp="myHp"
+      :enemyMaxHp="enemyMaxHp"
+      :enemyHp="enemyHp"
+      :myName="myName"
+      :enemyName="enemyName"
     ></battle-status>
 
-    <div id="battleDiv">
-      <div id="battle"></div>
-    </div>
+    <div id="battleDiv"><div id="battle"></div></div>
 
     <div id="consoleDiv">
-      <div id="console" @click="changePhase()">
-        <p v-show="this.phase === 'start'">적을 만남!!!</p>
-        <p v-show="this.phase === 'ready'">기술을 선택하세요!!!</p>
-        <p v-show="this.phase === 'mySelect'">
-          <span v-for="(tech, idx) in myTech" :key="idx">
-            <button @click="doMySelect(tech)">{{ tech.name }}</button>
+      <div
+        id="console"
+        @click="changePhase()"
+        v-show="phase === 'start'"
+        style="cursor: pointer"
+      >
+        <p>{{ msg }}</p>
+        <div class="triangle triangle--top"></div>
+      </div>
+
+      <div
+        id="console"
+        @click="changePhase()"
+        v-show="phase === 'ready'"
+        style="cursor: pointer"
+      >
+        <p>{{ msg }}</p>
+        <div class="triangle triangle--top"></div>
+      </div>
+
+      <div id="console" v-show="phase === 'selectAct'">
+        <p>
+          <span v-for="(act, idx) in actList" :key="idx">
+            <button @click="doSelectAct(act)" style="cursor: pointer">
+              {{ act }}
+            </button>
           </span>
         </p>
-        <p v-show="this.phase === 'showMySelect'">{{ actMyMsg[1] }}</p>
-        <p v-show="this.phase === 'myAct'">{{ actMyMsg[1] }}</p>
-        <p v-show="this.phase === 'enemyAct'">{{ actEnemyMsg[1] }}</p>
-        <p v-show="this.phase === 'enemyResult'">
-          {{ actEnemyMsg[1] }}
-        </p>
-        <p v-show="this.phase === 'win'" @click="changeBattle()">
-          {{ endMsg }}
-        </p>
-        <p v-show="this.phase === 'lose'" @click="changeBattle()">
-          {{ endMsg }}
-        </p>
       </div>
-      <!-- <button @click="changeBattle()">rr</button> -->
+
+      <div id="console" v-show="phase === 'showAct'">
+        <p>{{ msg }}</p>
+      </div>
+
+      <div id="console" v-show="phase === 'actResult'">
+        <p>{{ msg }}</p>
+      </div>
+
+      <div id="console" v-show="phase === 'showEnemyAct'">
+        <p>{{ msg }}</p>
+      </div>
+
+      <div id="console" v-show="phase === 'enemyActResult'">
+        <p>{{ msg }}</p>
+      </div>
+
+      <div id="console" v-show="phase === 'noHappen'">
+        <p>{{ msg }}</p>
+      </div>
+
+      <div id="console" v-show="phase === 'end'">
+        <p>{{ msg }}</p>
+      </div>
+
+      <div id="console" v-show="phase === 'selectItem'" style="cursor: pointer">
+        <span v-for="(item, idx) in itemList" :key="idx">
+          <button @click="doSelectItem(item)">
+            {{ item.itemName }} x {{ item.count }}
+          </button>
+        </span>
+        <br />
+        <div style="float: right; cursor: pointer">
+          <button @click="itemToSelect()" style="cursor: pointer">뒤로</button>
+        </div>
+      </div>
+
+      <div
+        id="console"
+        v-show="phase === 'itemResult'"
+        @click="changePhase()"
+        style="cursor: pointer"
+      >
+        <p>{{ msg }}</p>
+        <div class="triangle triangle--top"></div>
+      </div>
+
+      <div id="console" v-show="phase === 'sacrifice'">
+        <p>{{ msg }}</p>
+      </div>
+
+      <div id="console" v-show="phase === 'poison'" @click="changePhase()">
+        <p>{{ msg }}</p>
+        <div class="triangle triangle--top"></div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { Player } from '../modules/Player'
+import { Boss } from '../modules/Boss'
 
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-// import Stats from 'three/examples/jsm/libs/stats.module.js'
+// import gsap from 'gsap'
+import * as CANNON from 'cannon-es'
 
 import BattleStatus from './BattleStatus.vue'
+import { ref, watch } from 'vue'
+
+import { CreateText } from '../modules/CreateText'
+
+import { BASE_URL } from '@/constant/BASE_URL'
+import axios from 'axios'
 
 export default {
   name: 'BattleCanvas',
+
   props: {
-    nowPage: Number
+    nowPage: Number,
+    startSignal: Number
   },
+
   components: { BattleStatus },
-  data() {
-    return {
-      begin: 0,
-      turn: 1,
-      phase: 'start',
-      status: 'normal',
-      first: '',
 
-      myMaxHp: 100,
-      myHp: 100,
-      myHpBar: 100,
-      myAttack: 10,
-      myDefense: 10,
-      mySpeed: 5,
-      myTech: [
-        { name: '공격', type: 'att', value: 3 },
-        { name: '버프', type: 'buff', value: 0.5 }
-      ],
-      mySelectTech: { name: '', type: '', value: 0 },
+  setup(props, { emit }) {
+    // console.log(JSON.parse(localStorage.getItem('userInfo')))
+    const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
 
-      enemyMaxHp: 100,
-      enemyHp: 100,
-      enemyHpBar: 100,
-      enemyAttack: 20,
-      enemyDefense: 10,
-      enemySpeed: 10,
-      enemyTech: [
-        { name: '공격', type: 'att', value: 4 },
-        { name: '버프', type: 'buff', value: 0.2 }
-      ],
+    const myHpBar = ref('100')
+    const enemyHpBar = ref('100')
+    const begin = ref(0)
 
-      actMyMsg: [],
-      actEnemyMsg: [],
-      myDamage: 0,
-      enemyDamage: 0,
+    const phase = ref('start')
+    const msg = ref('적을 만남!!!!')
 
-      endMsg: ''
-    }
-  },
+    const myName = ref('')
+    const myMaxHp = ref(100)
+    const myHp = ref(100)
+    const myAttack = ref(20)
+    const myDefense = ref(10)
 
-  // mounted() {
-  //   this.init()
-  // },
+    const enemyName = ref('')
+    const enemyMaxHp = ref(100)
+    const enemyHp = ref(100)
+    const enemyAttack = ref(20)
+    const enemyDefense = ref(10)
 
-  watch: {
-    nowPage() {
-      if (this.nowPage == 3) {
-        this.begin += 1
-        const battleDiv = document.querySelector('#battleDiv')
-        const battle = document.querySelector('#battle')
-        battle.remove()
+    const actList = ref(['공격', '방어', '아이템'])
+    const myAct = ref('')
+    const status = ref('대기')
 
-        const newBattle = document.createElement('div')
-        newBattle.id = 'battle'
-        battleDiv.appendChild(newBattle)
+    const enemyAct = ref('')
+    const enemyStatus = ref('대기')
 
-        // 초기화
-        this.phase = 'start'
-        this.myMaxHp = 100
-        this.myHp = 100
-        this.myHpBar = 100
-        this.enemyMaxHp = 100
-        this.enemyHp = 100
-        this.enemyHpBar = 100
+    const myDamage = ref(0)
+    const enemyDamage = ref(0)
 
-        this.init()
-      }
-    }
-  },
+    // const itemList = ref([
+    //   '회복 물약(소)',
+    //   '회복 물약(중)',
+    //   '회복 물약(대)',
+    //   '공격 무효화',
+    //   '더블 어택',
+    //   '공격력 증가',
+    //   '방어력 증가',
+    //   '희생',
+    //   '생존',
+    //   '기절',
+    //   '흡혈',
+    //   '독극물',
+    //   '무력화'
+    // ])
+    const itemList = ref([])
 
-  methods: {
-    init() {
-      const divContainer = document.querySelector('#battle')
-      this._divContainer = divContainer
+    const useItem = ref('')
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true })
-      renderer.setPixelRatio(window.devicePixelRatio)
-      divContainer.appendChild(renderer.domElement)
+    const absoluteDefense = ref(false)
+    const doubleAttack = ref(false)
+    const sacrifice = ref(false)
+    const survive = ref(false)
+    const stun = ref(false)
+    const blood = ref(false)
+    const poison = ref(false)
+    const poisonCnt = ref(0)
+    const incapacitate = ref(false)
 
-      renderer.shadowMap.enabled = true
-      renderer.shadowMap.type = THREE.VSMShadowMap
+    const defensePlayerText = new CreateText({
+      content: '방어',
+      x: -0.5,
+      y: -10,
+      z: 3,
+      color: '#adb5bd'
+    })
 
-      this._renderer = renderer
+    const defenseEnemyText = new CreateText({
+      content: '방어',
+      x: -0.125,
+      y: -10,
+      z: -0.75,
+      color: '#adb5bd'
+    })
 
-      const scene = new THREE.Scene()
-      this._scene = scene
+    const buffEnemyText = new CreateText({
+      content: '버프',
+      x: -0.125,
+      y: -20,
+      z: -0.75,
+      color: '#ffcc00'
+    })
 
-      //this._setupOctree();
-      this._setupCamera()
-      this._setupLight()
-      // this._setupBack()
-      this._setupBackground()
-      // this._setupModel()
-      // this._setupEnemy()
-      this._setupControls()
+    watch(
+      () => props.startSignal,
+      () => {
+        setTimeout(() => {
+          begin.value += 1
+          initValue()
+          getItemList()
+          getMonsterInfo(userInfo.value.representMonster)
+          getBossInfo(userInfo.value.nowMissionId)
 
-      window.onresize = this.resize.bind(this)
-      this.resize()
+          // Texture
+          const textureLoader = new THREE.TextureLoader()
+          const floorTexture = textureLoader.load('/images/map13.png')
+          floorTexture.wrapS = THREE.RepeatWrapping
+          floorTexture.wrapT = THREE.RepeatWrapping
+          floorTexture.repeat.x = 1
+          floorTexture.repeat.y = 1
 
-      requestAnimationFrame(this.render.bind(this))
-    },
+          const battleDiv = document.querySelector('#battleDiv')
+          const battle = document.querySelector('#battle')
+          battle.remove()
 
-    _setupControls() {
-      this._controls = new OrbitControls(this._camera, this._divContainer)
-      this._controls.target.set(100, 0, -40)
-      this._controls.enabled = false
-      // this._controls.enablePan = false
-      // this._controls.enableDamping = true
-    },
+          const newBattle = document.createElement('div')
+          newBattle.id = 'battle'
+          battleDiv.appendChild(newBattle)
 
-    _processAnimation() {
-      const previousAnimationAction = this._currentAnimationAction
-      if (this.nowPage === 0) {
-        if (
-          this._pressedKeys['w'] ||
-          this._pressedKeys['a'] ||
-          this._pressedKeys['s'] ||
-          this._pressedKeys['d']
-        ) {
-          this.maxSpeed = 350
-          this.acceleration = 3
-          //   if (this._pressedKeys['shift']) {
-          //     this._currentAnimationAction = this._animationMap['Run']
-          //     // this.speed = 350;
-          //     this.maxSpeed = 350
-          //     this.acceleration = 3
-          //   } else {
-          //     this._currentAnimationAction = this._animationMap['Walk']
-          //     //this.speed = 80;
-          //     this.maxSpeed = 80
-          //     this.acceleration = 3
-          //   }
-        } else {
-          // this._currentAnimationAction = this._animationMap['Idle']
-          this.speed = 0
-          this.maxSpeed = 0
-          this.acceleration = 0
-        }
+          // Renderer
+          let canvas = document.querySelector('#battle')
 
-        if (previousAnimationAction !== this._currentAnimationAction) {
-          previousAnimationAction.fadeOut(0.5)
-          this._currentAnimationAction.reset().fadeIn(0.5).play()
-        }
-      }
-    },
+          const renderer = new THREE.WebGLRenderer({ antialias: true })
+          renderer.setSize(window.innerWidth, window.innerHeight)
+          renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
+          canvas.appendChild(renderer.domElement)
+          renderer.shadowMap.enabled = true
+          renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
-    _setupModel() {
-      const gltfLoader = new GLTFLoader()
+          // Scene
+          const scene = new THREE.Scene()
 
-      const items = [
-        { url: '/models/character.glb' },
-        { url: '/models/enemy.glb' }
-      ]
+          // Camera
+          const camera = new THREE.PerspectiveCamera(
+            60,
+            window.innerWidth / window.innerHeight,
+            1,
+            1000
+          )
 
-      items.forEach((item, index) => {
-        gltfLoader.load(item.url, (gltf) => {
-          if (index == 0) {
-            gltf.scene.scale.set(10, 10, 10)
-          } else if (index == 1) {
-            gltf.scene.scale.set(50, 50, 50)
-          }
+          camera.position.set(2, 3, 4.5)
+          camera.lookAt(-0.5, 0, 1.5)
+          scene.add(camera)
 
-          const obj3d = gltf.scene
-          this._scene.add(obj3d)
+          // Light
+          const ambientLight = new THREE.AmbientLight('white', 0.7)
+          scene.add(ambientLight)
 
-          obj3d.traverse((child) => {
-            child.castShadow = true
-            child.receiveShadow = true
+          const directionalLight = new THREE.DirectionalLight('white', 0.5)
+          const directionalLightOriginPosition = new THREE.Vector3(1, 1, 1)
+          directionalLight.position.x = directionalLightOriginPosition.x
+          directionalLight.position.y = directionalLightOriginPosition.y
+          directionalLight.position.z = directionalLightOriginPosition.z
+          directionalLight.castShadow = true
+
+          // mapSize 세팅으로 그림자 퀄리티 설정
+          directionalLight.shadow.mapSize.width = 2048
+          directionalLight.shadow.mapSize.height = 2048
+          // 그림자 범위
+          directionalLight.shadow.camera.left = -100
+          directionalLight.shadow.camera.right = 100
+          directionalLight.shadow.camera.top = 100
+          directionalLight.shadow.camera.bottom = -100
+          directionalLight.shadow.camera.near = -100
+          directionalLight.shadow.camera.far = 100
+          scene.add(directionalLight)
+
+          // Cannon(물리 엔진)
+          const cannonWorld = new CANNON.World()
+          cannonWorld.gravity.set(0, -10, 0)
+
+          const floorShape = new CANNON.Plane()
+          const floorBody = new CANNON.Body({
+            mass: 0,
+            position: new CANNON.Vec3(0, 0, 0),
+            shape: floorShape
+          })
+          floorBody.quaternion.setFromAxisAngle(
+            new CANNON.Vec3(-1, 0, 0),
+            Math.PI / 2
+          )
+          cannonWorld.addBody(floorBody)
+
+          // Mesh
+          const meshes = []
+          const floorMesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(50, 50),
+            new THREE.MeshStandardMaterial({
+              map: floorTexture
+            })
+          )
+          floorMesh.name = 'floor'
+          floorMesh.rotation.x = -Math.PI / 2
+          floorMesh.receiveShadow = true
+          scene.add(floorMesh)
+          meshes.push(floorMesh)
+
+          const gltfLoader = new GLTFLoader()
+
+          const player = new Player({
+            scene,
+            meshes,
+            cannonWorld,
+            gltfLoader,
+            modelSrc: `/models/${userInfo.value.representMonster}.glb`,
+            x: -0.5,
+            y: 2,
+            z: 3
           })
 
-          const animationClips = gltf.animations // THREE.AnimationClip[]
-          const mixer = new THREE.AnimationMixer(obj3d)
-          const animationsMap = {}
-          animationClips.forEach((clip) => {
-            const name = clip.name
-            // console.log(name)
-            animationsMap[name] = mixer.clipAction(clip) // THREE.AnimationAction
+          // const defensePlayerText = new CreateText({
+          //   content: '방어',
+          //   scene: scene,
+          //   x: -0.5,
+          //   y: -10,
+          //   z: 3
+          // })
+
+          const villain = [
+            '지현몬',
+            '효근몬',
+            '재준몬',
+            '근희몬',
+            '상균몬',
+            '지원몬',
+            '하민몬'
+          ]
+
+          const enemy = new Boss({
+            scene,
+            meshes,
+            cannonWorld,
+            gltfLoader,
+            modelSrc: `/models/Villain/${
+              villain[userInfo.value.nowMissionId - 1]
+            }.glb`,
+            x: -0.125,
+            y: 2,
+            z: -0.75
           })
 
-          if (index == 0) {
-            // obj3d.position.set(-100, 0, 100)
-            obj3d.position.set(-120, 0, 100)
-            obj3d.lookAt(170, 0, -30)
+          // const enemy = new Character({
+          //   scene,
+          //   meshes,
+          //   cannonWorld,
+          //   gltfLoader,
+          //   modelSrc: `/models/Villain/${villain[0][0]}.glb`,
+          //   position: villain[0][1],
+          //   name: villain[0][0]
+          // })
 
-            this._myModel = obj3d
-            this._myMixer = mixer
-            // this._myAnimationMap = animationsMap
-            // this._myCurrentAnimationAction = this._animationMap['Idle']
-            // this._myCurrentAnimationAction.play()
-          } else if (index == 1) {
-            // obj3d.position.set(170, 20, 90)
-            obj3d.position.set(170, 20, 120)
-            obj3d.lookAt(-100, -10, 100)
+          // const defenseEnemyText = new CreateText({
+          //   content: '방어',
+          //   scene: scene,
+          //   x: -0.125,
+          //   y: -10,
+          //   z: -0.75
+          // })
 
-            this._enemyModel = obj3d
-            this._enemyMixer = mixer
-            // this._enemyAnimationMap = animationsMap
-            // this._enemyCurrentAnimationAction = this._animationMap['Idle']
-            // this._enemyCurrentAnimationAction.play()
+          scene.add(defensePlayerText.modelMesh)
+          scene.add(defenseEnemyText.modelMesh)
+          scene.add(buffEnemyText.modelMesh)
+
+          // 그리기
+          const clock = new THREE.Clock()
+
+          function draw() {
+            const delta = clock.getDelta()
+
+            let cannonStepTime = 1 / 60
+            if (delta < 0.01) cannonStepTime = 1 / 120
+            cannonWorld.step(cannonStepTime, delta, 3)
+
+            if (player.modelMesh) {
+              player.modelMesh.position.copy(player.cannonBody.position)
+              player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
+              player.modelMesh.lookAt(-0.5, 0, -3)
+
+              if (status.value == '공격') {
+                // gsap.to(player.cannonBody.position, {
+                //   duration: 0.2,
+                //   y: 1
+                // })
+
+                player.cannonBody.position.y += 0.03
+
+                if (player.cannonBody.position.y >= 1) {
+                  status.value = '대기'
+                }
+              }
+
+              if (status.value == '방어') {
+                // console.log(defenseText.modelMesh.position)
+                defensePlayerText.modelMesh.position.y =
+                  player.modelMesh.position.y + 1
+                status.value = '대기'
+              }
+
+              if (defensePlayerText.modelMesh) {
+                if (defensePlayerText.modelMesh.position.y >= 1) {
+                  defensePlayerText.modelMesh.position.y += 0.0005
+                  if (
+                    defensePlayerText.modelMesh.position.y >=
+                    player.modelMesh.position.y + 1.05
+                  ) {
+                    defensePlayerText.modelMesh.position.y = -10
+                  }
+                }
+              }
+
+              if (status.value == 'lose') {
+                scene.remove(defensePlayerText.modelMesh)
+                scene.remove(defenseEnemyText.modelMesh)
+                scene.remove(buffEnemyText.modelMesh)
+                // gsap.to(player.cannonBody.position, {
+                //   duration: 5,
+                //   x: -20,
+                //   y: 10,
+                //   z: 10
+                // })
+
+                player.cannonBody.position.x -= 0.05
+                player.cannonBody.position.y += 0.05
+                player.cannonBody.position.z += 0.05
+
+                if (player.cannonBody.position.y >= 15) {
+                  status.value = '대기'
+                }
+              }
+            }
+
+            if (enemy.modelMesh) {
+              enemy.modelMesh.position.copy(enemy.cannonBody.position)
+              enemy.modelMesh.quaternion.copy(enemy.cannonBody.quaternion)
+              enemy.modelMesh.lookAt(-0.5, 0, 3)
+
+              if (enemyStatus.value == '공격') {
+                // gsap.to(enemy.cannonBody.position, {
+                //   duration: 0.2,
+                //   y: 1
+                // })
+
+                enemy.cannonBody.position.y += 0.03
+
+                if (enemy.cannonBody.position.y >= 1) {
+                  enemyStatus.value = '대기'
+                }
+              }
+
+              if (enemyStatus.value == '방어') {
+                // console.log(defenseEnemyText.modelMesh.position)
+                defenseEnemyText.modelMesh.position.y =
+                  enemy.modelMesh.position.y + 1.48
+                enemyStatus.value = '대기'
+              }
+
+              if (defenseEnemyText.modelMesh) {
+                if (defenseEnemyText.modelMesh.position.y >= 1) {
+                  defenseEnemyText.modelMesh.position.y += 0.0005
+                  if (
+                    defenseEnemyText.modelMesh.position.y >=
+                    enemy.modelMesh.position.y + 1.53
+                  ) {
+                    defenseEnemyText.modelMesh.position.y = -10
+                  }
+                }
+              }
+
+              if (enemyStatus.value == '버프') {
+                console.log(buffEnemyText.modelMesh.position)
+                buffEnemyText.modelMesh.position.y =
+                  enemy.modelMesh.position.y + 1.48
+                enemyStatus.value = '대기'
+              }
+
+              if (buffEnemyText.modelMesh) {
+                if (buffEnemyText.modelMesh.position.y >= 1) {
+                  buffEnemyText.modelMesh.position.y += 0.0005
+                  if (
+                    buffEnemyText.modelMesh.position.y >=
+                    enemy.modelMesh.position.y + 1.53
+                  ) {
+                    buffEnemyText.modelMesh.position.y = -20
+                  }
+                }
+              }
+
+              if (status.value == 'win') {
+                scene.remove(defensePlayerText.modelMesh)
+                scene.remove(defenseEnemyText.modelMesh)
+                scene.remove(buffEnemyText.modelMesh)
+                // gsap.to(enemy.cannonBody.position, {
+                //   duration: 5,
+                //   x: 20,
+                //   y: 10,
+                //   z: -15
+                // })
+
+                enemy.cannonBody.position.x += 0.05
+                enemy.cannonBody.position.y += 0.05
+                enemy.cannonBody.position.z -= 0.05
+
+                if (enemy.cannonBody.position.y >= 15) {
+                  enemyStatus.value = '대기'
+                }
+              }
+            }
+
+            if (player.mixer) player.mixer.update(delta)
+            if (enemy.mixer) enemy.mixer.update(delta)
+
+            renderer.render(scene, camera)
+            renderer.setAnimationLoop(draw)
           }
-        })
-      })
-    },
 
-    _setupBack() {
-      const textureLoader = new THREE.TextureLoader()
-      const floorTexture = textureLoader.load('/images/grid.png')
-      floorTexture.wrapS = THREE.RepeatWrapping
-      floorTexture.wrapT = THREE.RepeatWrapping
-      floorTexture.repeat.x = 10
-      floorTexture.repeat.y = 10
+          function setSize() {
+            camera.left = -(window.innerWidth / window.innerHeight)
+            camera.right = window.innerWidth / window.innerHeight
+            camera.top = 1
+            camera.bottom = -1
 
-      const floorMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(1000, 1000),
-        new THREE.MeshStandardMaterial({
-          color: 0xffcc00
-        })
-      )
-      floorMesh.name = 'floor'
-      floorMesh.rotation.x = -Math.PI / 2
-      floorMesh.receiveShadow = true
-      this._scene.add(floorMesh)
-    },
-
-    _setupBackground() {
-      const loader = new THREE.CubeTextureLoader()
-      loader.load(
-        [
-          '/cubemap/Lycksele/posx.jpg',
-          '/cubemap/Lycksele/negx.jpg',
-          '/cubemap/Lycksele/posy.jpg',
-          '/cubemap/Lycksele/negy.jpg',
-          '/cubemap/Lycksele/posz.jpg',
-          '/cubemap/Lycksele/negz.jpg'
-        ],
-        (cubeTexture) => {
-          this._scene.background = cubeTexture
-          this._setupModel()
-        }
-      )
-    },
-
-    _setupCamera() {
-      const camera = new THREE.PerspectiveCamera(
-        60,
-        window.innerWidth / window.innerHeight,
-        2,
-        5000
-      )
-      // camera.position.set(100, 0, -40)
-      camera.position.set(-120, 15, 130)
-      this._camera = camera
-    },
-
-    _addPointLight(x, y, z, helperColor) {
-      const color = 0xffffff
-      const intensity = 1.5
-
-      const pointLight = new THREE.PointLight(color, intensity, 2000)
-      pointLight.position.set(x, y, z)
-
-      this._scene.add(pointLight)
-
-      const pointLightHelper = new THREE.PointLightHelper(
-        pointLight,
-        10,
-        helperColor
-      )
-      this._scene.add(pointLightHelper)
-    },
-
-    _setupLight() {
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
-      this._scene.add(ambientLight)
-
-      this._addPointLight(500, 150, 500, 0xff0000)
-      this._addPointLight(-500, 150, 500, 0xffff00)
-      this._addPointLight(-500, 150, -500, 0x00ff00)
-      this._addPointLight(500, 150, -500, 0x0000ff)
-
-      const shadowLight = new THREE.DirectionalLight(0xffffff, 0.2)
-      shadowLight.position.set(200, 500, 200)
-      shadowLight.target.position.set(0, 0, 0)
-      const directionalLightHelper = new THREE.DirectionalLightHelper(
-        shadowLight,
-        10
-      )
-      this._scene.add(directionalLightHelper)
-
-      this._scene.add(shadowLight)
-      this._scene.add(shadowLight.target)
-
-      shadowLight.castShadow = true
-      shadowLight.shadow.mapSize.width = 1024
-      shadowLight.shadow.mapSize.height = 1024
-      shadowLight.shadow.camera.top = shadowLight.shadow.camera.right = 700
-      shadowLight.shadow.camera.bottom = shadowLight.shadow.camera.left = -700
-      shadowLight.shadow.camera.near = 100
-      shadowLight.shadow.camera.far = 900
-      shadowLight.shadow.radius = 5
-      const shadowCameraHelper = new THREE.CameraHelper(
-        shadowLight.shadow.camera
-      )
-      this._scene.add(shadowCameraHelper)
-    },
-
-    update(time) {
-      time *= 0.001 // second unit
-
-      this._controls.update()
-
-      // this._fps.update()
-      if (this._myMixer) {
-        this._myMixer.update(time)
-
-        if (this._myModel) {
-          if (this._myModel.position.x <= -100) {
-            this._myModel.position.x += 0.2
+            camera.updateProjectionMatrix()
+            renderer.setSize(window.innerWidth, window.innerHeight)
+            renderer.render(scene, camera)
           }
-        }
+
+          // 이벤트
+          window.addEventListener('resize', setSize)
+          draw()
+        }, 100)
       }
+    )
 
-      if (this._enemyMixer) {
-        this._enemyMixer.update(time)
-
-        if (this._enemyModel) {
-          if (this._enemyModel.position.z >= 70) {
-            this._enemyModel.position.z -= 0.4
-          }
-        }
+    function changePhase() {
+      if (phase.value == 'start') {
+        setTimeout(() => {
+          msg.value = '기술을 선택해!!!'
+          phase.value = 'ready'
+        }, 100)
       }
-    },
+      if (phase.value == 'ready') {
+        phase.value = 'selectAct'
+      }
+      if (phase.value == 'itemResult') {
+        phase.value = 'selectAct'
+      }
+      if (phase.value == 'poison') {
+        phase.value = 'selectAct'
+      }
+    }
 
-    render(time) {
-      this._renderer.render(this._scene, this._camera)
-      this.update(time)
+    function doSelectAct(item) {
+      status.value = item
+      myAct.value = item
 
-      requestAnimationFrame(this.render.bind(this))
-    },
+      enemySelectAct()
 
-    resize() {
-      // const width = this._divContainer.clientWidth
-      // const height = this._divContainer.clientHeight
+      if (myAct.value == '공격') {
+        enemyDamage.value = enemyAttack.value
 
-      // this._camera.aspect = width / height
-      // this._camera.updateProjectionMatrix()
+        msg.value = item + ' 사용!!!'
+        phase.value = 'showAct'
 
-      // this._renderer.setSize(width, height)
+        if (enemyAct.value == '방어') {
+          myDamage.value = myAttack.value - enemyDefense.value
 
-      this._camera.aspect = window.innerWidth / window.innerHeight
-      this._camera.updateProjectionMatrix()
+          setTimeout(() => {
+            if (stun.value == true) {
+              stun.value = false
+              // phase.value = 'selectAct'
 
-      this._renderer.setSize(window.innerWidth, window.innerHeight)
-    },
+              setTimeout(() => {
+                if (poison.value == true) {
+                  poisonCnt.value += 1
 
-    changeBattle() {
-      this.$emit('changeBattle')
-    },
+                  if (poisonCnt.value > 10) {
+                    poisonCnt.value = 0
+                    poison.value = false
+                    msg.value = '적이 독으로부터 회복되었다!!!!!!'
 
-    changeTurn() {
-      this.turn += 1
-    },
+                    phase.value = 'ready'
+                  } else {
+                    phase.value = 'poison'
+                    enemyHp.value -= 10
+                    enemyHpBar.value = Math.round(
+                      (enemyHp.value / enemyMaxHp.value) * 100
+                    )
 
-    chooseFirst() {
-      if (this.mySpeed > this.enemySpeed) {
-        this.first = 'me'
-      } else if (this.mySpeed < this.enemySpeed) {
-        this.first = 'enemy'
-      } else {
-        const selectFirst = Math.random(0, 1)
-        if (selectFirst >= 0.5) {
-          this.first = 'me'
+                    msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+                    if (enemyHp.value <= 0) {
+                      phase.value = 'end'
+                      status.value = 'win'
+
+                      winBattle()
+
+                      setTimeout(() => {
+                        emit('changeBattle')
+                      }, 2000)
+                    }
+                  }
+                } else {
+                  phase.value = 'ready'
+                }
+              }, 800)
+            } else {
+              enemyShowAct()
+            }
+          }, 1000)
         } else {
-          this.first = 'enemy'
-        }
-      }
-    },
+          myDamage.value = myAttack.value
 
-    changePhase() {
-      if (this.phase == 'start') {
-        this.chooseFirst()
-        setTimeout(() => {
-          this.phase = 'ready'
-        }, 300)
-      }
-
-      if (this.phase == 'ready') {
-        setTimeout(() => {
-          this.phase = 'mySelect'
-        }, 300)
-      }
-    },
-
-    doMySelect(item) {
-      this.mySelectTech.type = item.type
-      this.mySelectTech.name = item.name
-      this.mySelectTech.value = item.value
-
-      this.actMyMsg = [
-        this.mySelectTech.type,
-        this.mySelectTech.name + '를 사용했다!!!'
-      ]
-
-      // 선공
-      if (this.first == 'me') {
-        this.phase = 'showMySelect'
-
-        setTimeout(() => {
-          this.phase = 'myAct'
-          this.getMySelect()
-        }, 500)
-      }
-      // 후공
-      else {
-        setTimeout(() => {
-          this.doEnemyAct()
-          this.phase = 'enemyAct'
-        }, 500)
-      }
-    },
-
-    getMySelect() {
-      if (this.mySelectTech.type == 'att') {
-        // this.myDamage =
-        //   this.myAttack * this.mySelectTech.value - this.enemyDefense
-        // this.actMyMsg[1] = `${this.myDamage}의 피해를 입혔다!!!`
-
-        // 선공
-        if (this.first == 'me') {
           setTimeout(() => {
-            this.phase = 'myAct'
-            this.getMyResult()
-
-            if (this.enemyHp <= 0) {
-              setTimeout(() => {
-                this.phase = 'win'
-                this.endMsg = '이김!!!!!!!!!!!!1'
-              }, 2000)
-            } else {
-              setTimeout(() => {
-                this.doEnemyAct()
-                this.phase = 'enemyAct'
-              }, 2000)
-            }
-          }, 300)
+            showActResult()
+          }, 1000)
         }
-        // 후공
-        else {
-          setTimeout(() => {
-            this.phase = 'myAct'
-            this.getMyResult()
+      } else if (myAct.value == '방어') {
+        enemyDamage.value = enemyAttack.value - myDefense.value
 
-            if (this.enemyHp <= 0) {
-              setTimeout(() => {
-                this.phase = 'win'
-                this.endMsg = '이김!!!!!!!!!!!!1'
-              }, 2000)
-            } else {
-              setTimeout(() => {
-                this.phase = 'ready'
-              }, 2000)
-            }
-          }, 300)
-        }
-      } else if (this.mySelectTech.type == 'buff') {
-        // this.myAttack += this.myAttack * this.mySelectTech.value
-        // this.actMyMsg[1] = `${
-        //   this.myAttack * this.mySelectTech.value
-        // }만큼 공격력 상승!!!`
+        msg.value = item + ' 사용!!!'
+        phase.value = 'showAct'
 
-        // 선공
-        if (this.first == 'me') {
-          setTimeout(() => {
-            this.phase = 'myAct'
-            this.getMyResult()
-
+        setTimeout(() => {
+          if (stun.value == true) {
+            stun.value = false
+            // phase.value = 'selectAct'
             setTimeout(() => {
-              this.doEnemyAct()
-              this.phase = 'enemyAct'
-            }, 2000)
-          }, 300)
-        }
-        // 후공
-        else {
-          setTimeout(() => {
-            this.phase = 'myAct'
-            this.getMyResult()
+              if (poison.value == true) {
+                poisonCnt.value += 1
 
-            if (this.enemyHp <= 0) {
-              setTimeout(() => {
-                this.phase = 'win'
-                this.endMsg = '이김!!!!!!!!!!1'
-              }, 2000)
-            } else {
-              setTimeout(() => {
-                this.phase = 'ready'
-              }, 2000)
-            }
-          }, 300)
-        }
+                if (poisonCnt.value > 10) {
+                  poisonCnt.value = 0
+                  poison.value = false
+                  msg.value = '적이 독으로부터 회복되었다!!!!!!'
+
+                  phase.value = 'ready'
+                } else {
+                  phase.value = 'poison'
+                  enemyHp.value -= 10
+                  enemyHpBar.value = Math.round(
+                    (enemyHp.value / enemyMaxHp.value) * 100
+                  )
+
+                  msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+                  if (enemyHp.value <= 0) {
+                    phase.value = 'end'
+                    status.value = 'win'
+
+                    winBattle()
+                  }
+                }
+              } else {
+                phase.value = 'ready'
+              }
+            }, 800)
+          } else {
+            enemyShowAct()
+          }
+        }, 1000)
+      } else if (myAct.value == '아이템') {
+        phase.value = 'selectItem'
       }
-    },
+    }
 
-    getMyResult() {
-      if (this.actMyMsg[0] === 'att') {
-        this.myDamage =
-          this.myAttack * this.mySelectTech.value - this.enemyDefense
-        this.enemyHp -= this.myDamage
-        this.enemyHpBar = Math.round((this.enemyHp / this.enemyMaxHp) * 100)
-        this.actMyMsg[1] = `${this.myDamage}의 피해를 입혔다!!!`
-      } else if (this.actMyMsg[0] === 'buff') {
-        this.myAttack += this.myAttack * this.mySelectTech.value
-        this.actMyMsg[1] = `${
-          this.myAttack * this.mySelectTech.value
-        }만큼 공격력 상승!!!`
-      }
-    },
+    function enemySelectAct() {
+      const num = Math.random(0, 1)
 
-    doEnemyAct() {
-      const roll = Math.random(0, 1)
-
-      if (roll >= 0.3) {
-        this.actEnemyMsg = [
-          'enemyAtt',
-          `적은 ${this.enemyTech[0].name}을 사용했다!!!`
-        ]
-        setTimeout(() => {
-          this.getEnemyResult()
-          this.phase = 'enemyResult'
-        }, 800)
+      if (num <= 0.7) {
+        enemyAct.value = '공격'
+      } else if (num <= 0.9) {
+        enemyAct.value = '방어'
       } else {
-        this.actEnemyMsg = [
-          'enemyBuff',
-          `적은 ${this.enemyTech[1].name}을 사용했다!!!`
-        ]
-
-        setTimeout(() => {
-          this.getEnemyResult()
-          this.phase = 'enemyResult'
-        }, 800)
+        enemyAct.value = '버프'
       }
-    },
+    }
 
-    getEnemyResult() {
-      if (this.actEnemyMsg[0] == 'enemyAtt') {
-        this.enemyDamage =
-          this.enemyAttack * this.enemyTech[0].value - this.myDefense
-        this.actEnemyMsg[1] = `${this.enemyDamage}의 피해를 입었다!!!`
+    function showActResult() {
+      if (myAct.value == '공격') {
+        if (enemyAct.value == '방어') {
+          msg.value =
+            '적의 방어태세로 ' +
+            myDamage.value.toString() +
+            '의 피해를 주었다!!!'
+          phase.value = 'actResult'
 
-        this.myHp -= this.enemyDamage
-        this.myHpBar = Math.round((this.myHp / this.myMaxHp) * 100)
+          enemyHp.value -= myDamage.value
+          enemyHpBar.value = Math.round(
+            (enemyHp.value / enemyMaxHp.value) * 100
+          )
 
-        // 선공
-        if (this.first == 'me') {
-          if (this.myHp <= 0) {
+          if (blood.value == true) {
+            blood.value = false
+
+            const bloodSuck = Math.round(myDamage.value * 0.3)
+            if (myHp.value + bloodSuck > myMaxHp.value) {
+              myHp.value = myMaxHp.value
+            } else {
+              myHp.value += bloodSuck
+            }
+
+            myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
+          }
+
+          if (doubleAttack.value == true) {
             setTimeout(() => {
-              this.phase = 'lose'
-              this.endMsg = '짐!!!!!!!!!!!11'
-            }, 2000)
+              if (enemyHp.value <= 0) {
+                phase.value = 'end'
+                status.value = 'win'
+                winBattle()
+
+                setTimeout(() => {
+                  emit('changeBattle')
+                }, 2000)
+              } else {
+                status.value = '공격'
+                doubleAttack.value = false
+                setTimeout(() => {
+                  showActResult()
+                }, 1000)
+              }
+            }, 1200)
           } else {
             setTimeout(() => {
-              this.phase = 'ready'
-            }, 2000)
+              if (enemyHp.value <= 0) {
+                phase.value = 'end'
+                status.value = 'win'
+                winBattle()
+
+                setTimeout(() => {
+                  emit('changeBattle')
+                }, 2000)
+              } else {
+                phase.value = 'ready'
+              }
+            }, 1000)
           }
-        }
-        // 후공
-        else {
-          if (this.myHp <= 0) {
+        } else {
+          msg.value = myDamage.value.toString() + '의 피해를 주었다!!!'
+          phase.value = 'actResult'
+
+          enemyHp.value -= myDamage.value
+          enemyHpBar.value = Math.round(
+            (enemyHp.value / enemyMaxHp.value) * 100
+          )
+
+          if (blood.value == true) {
+            blood.value = false
+
+            const bloodSuck = myDamage.value * 0.3
+            if (myHp.value + bloodSuck > myMaxHp.value) {
+              myHp.value = myMaxHp.value
+            } else {
+              myHp.value += bloodSuck
+            }
+
+            myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
+          }
+
+          if (doubleAttack.value == true) {
             setTimeout(() => {
-              this.phase = 'lose'
-              this.endMsg = '짐!!!!!!!!!!!11'
-            }, 2000)
+              if (enemyHp.value <= 0) {
+                phase.value = 'end'
+                status.value = 'win'
+                winBattle()
+
+                setTimeout(() => {
+                  emit('changeBattle')
+                }, 2000)
+              } else {
+                status.value = '공격'
+                doubleAttack.value = false
+                setTimeout(() => {
+                  showActResult()
+                }, 1000)
+              }
+            }, 1600)
           } else {
             setTimeout(() => {
-              this.phase = 'showMySelect'
+              if (enemyHp.value <= 0) {
+                phase.value = 'end'
+                status.value = 'win'
+                winBattle()
 
-              setTimeout(() => {
-                this.getMySelect()
-              }, 500)
-            }, 500)
+                setTimeout(() => {
+                  emit('changeBattle')
+                }, 2000)
+              } else {
+                if (stun.value == true) {
+                  stun.value = false
+                  // phase.value = 'selectAct'
+                  setTimeout(() => {
+                    if (poison.value == true) {
+                      poisonCnt.value += 1
+
+                      if (poisonCnt.value > 10) {
+                        poisonCnt.value = 0
+                        poison.value = false
+                        msg.value = '적이 독으로부터 회복되었다!!!!!!'
+
+                        phase.value = 'ready'
+                      } else {
+                        phase.value = 'poison'
+                        enemyHp.value -= 10
+                        enemyHpBar.value = Math.round(
+                          (enemyHp.value / enemyMaxHp.value) * 100
+                        )
+
+                        msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+                        if (enemyHp.value <= 0) {
+                          phase.value = 'end'
+                          status.value = 'win'
+                          winBattle()
+
+                          setTimeout(() => {
+                            emit('changeBattle')
+                          }, 2000)
+                        }
+                      }
+                    } else {
+                      phase.value = 'ready'
+                    }
+                  }, 800)
+                } else {
+                  enemyShowAct()
+                }
+              }
+            }, 1000)
           }
         }
-      } else if (this.actEnemyMsg[0] == 'enemyBuff') {
-        this.enemyAttack += this.enemyAttack * this.enemyTech[1].value
-        this.actEnemyMsg[1] = `${
-          this.enemyAttack * this.enemyTech[1].value
-        }만큼 적의 공격력 상승!!!`
+      } else {
+        if (enemyHp.value <= 0) {
+          phase.value = 'end'
+          status.value = 'win'
+          winBattle()
 
-        // 선공
-        if (this.first == 'me') {
           setTimeout(() => {
-            this.phase = 'ready'
+            emit('changeBattle')
           }, 2000)
         }
-        // 후공
-        else {
-          setTimeout(() => {
-            this.phase = 'showMySelect'
+      }
+    }
 
+    function enemyShowAct() {
+      msg.value = '적은 ' + enemyAct.value + ' 사용!!!'
+      enemyStatus.value = enemyAct.value
+      phase.value = 'showEnemyAct'
+
+      if (myAct.value == '방어' || sacrifice.value == true) {
+        sacrifice.value = false
+        if (enemyAct.value == '방어') {
+          setTimeout(() => {
+            phase.value = 'noHappen'
+            msg.value = '아무일도 일어나지 않았다...'
+            // phase.value = 'ready'
             setTimeout(() => {
-              this.getMySelect()
-            }, 500)
-          }, 500)
+              if (poison.value == true) {
+                poisonCnt.value += 1
+
+                if (poisonCnt.value > 10) {
+                  poisonCnt.value = 0
+                  poison.value = false
+                  msg.value = '적이 독으로부터 회복되었다!!!!!!'
+
+                  phase.value = 'ready'
+                } else {
+                  phase.value = 'poison'
+                  enemyHp.value -= 10
+                  enemyHpBar.value = Math.round(
+                    (enemyHp.value / enemyMaxHp.value) * 100
+                  )
+
+                  msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+                  if (enemyHp.value <= 0) {
+                    phase.value = 'end'
+                    status.value = 'win'
+                    winBattle()
+
+                    setTimeout(() => {
+                      emit('changeBattle')
+                    }, 2000)
+                  }
+                }
+              } else {
+                phase.value = 'ready'
+              }
+            }, 800)
+          }, 1000)
+        } else {
+          setTimeout(() => {
+            enemyActResult()
+          }, 800)
+        }
+      } else if (enemyAct.value == '방어') {
+        setTimeout(() => {
+          showActResult()
+        }, 800)
+      } else {
+        setTimeout(() => {
+          enemyActResult()
+        }, 800)
+      }
+    }
+
+    function enemyActResult() {
+      if (survive.value == true) {
+        survive.value = false
+
+        if (enemyDamage.value >= myHp.value) {
+          enemyDamage.value = myHp.value - 1
         }
       }
+
+      if (enemyAct.value == '공격') {
+        if (absoluteDefense.value == true) {
+          msg.value = '적의 공격이 무효화 되었다!!!'
+          phase.value = 'enemyActResult'
+
+          absoluteDefense.value = false
+
+          setTimeout(() => {
+            if (poison.value == true) {
+              poisonCnt.value += 1
+
+              if (poisonCnt.value > 10) {
+                poisonCnt.value = 0
+                poison.value = false
+                msg.value = '적이 독으로부터 회복되었다!!!!!!'
+
+                phase.value = 'ready'
+              } else {
+                phase.value = 'poison'
+                enemyHp.value -= 10
+                enemyHpBar.value = Math.round(
+                  (enemyHp.value / enemyMaxHp.value) * 100
+                )
+
+                msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+                if (enemyHp.value <= 0) {
+                  phase.value = 'end'
+                  status.value = 'win'
+                  winBattle()
+
+                  setTimeout(() => {
+                    emit('changeBattle')
+                  }, 2000)
+                }
+              }
+            } else {
+              phase.value = 'ready'
+            }
+          }, 800)
+        } else if (myAct.value == '방어') {
+          if (incapacitate.value == true) {
+            incapacitate.value = false
+            if (enemyDamage.value < 30) {
+              enemyDamage.value = 0
+            } else {
+              enemyDamage.value -= 30
+            }
+          }
+
+          msg.value =
+            '나의 방어태세로 ' +
+            enemyDamage.value.toString() +
+            '의 피해를 받았다!!!'
+          phase.value = 'enemyActResult'
+
+          myHp.value -= enemyDamage.value
+          myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
+
+          myAct.value = ''
+
+          // setTimeout(() => {
+          //   if (myHp.value <= 0) {
+          //     phase.value = 'end'
+          //     status.value = 'lose'
+          //   } else {
+          //     phase.value = 'ready'
+          //   }
+          // }, 1000)
+
+          setTimeout(() => {
+            if (myHp.value <= 0) {
+              phase.value = 'end'
+              status.value = 'lose'
+              msg.value = '배틀에서 졌다... 재시작합니다...'
+
+              setTimeout(() => {
+                emit('startBattle')
+              }, 2000)
+            } else if (poison.value == true) {
+              poisonCnt.value += 1
+
+              if (poisonCnt.value > 10) {
+                poisonCnt.value = 0
+                poison.value = false
+                msg.value = '적이 독으로부터 회복되었다!!!!!!'
+
+                phase.value = 'ready'
+              } else {
+                phase.value = 'poison'
+                enemyHp.value -= 10
+                enemyHpBar.value = Math.round(
+                  (enemyHp.value / enemyMaxHp.value) * 100
+                )
+
+                msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+                if (enemyHp.value <= 0) {
+                  phase.value = 'end'
+                  status.value = 'win'
+                  winBattle()
+
+                  setTimeout(() => {
+                    emit('changeBattle')
+                  }, 2000)
+                }
+              }
+            } else {
+              phase.value = 'ready'
+            }
+          }, 1000)
+        } else {
+          if (incapacitate.value == true) {
+            incapacitate.value = false
+            if (enemyDamage.value < 30) {
+              enemyDamage.value = 0
+            } else {
+              enemyDamage.value -= 30
+            }
+          }
+
+          msg.value = enemyDamage.value.toString() + '의 피해를 받았다!!!'
+          phase.value = 'enemyActResult'
+
+          myHp.value -= enemyDamage.value
+          myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
+
+          // setTimeout(() => {
+          //   if (myHp.value <= 0) {
+          //     phase.value = 'end'
+          //     status.value = 'lose'
+          //   } else {
+          //     phase.value = 'ready'
+          //   }
+          // }, 1000)
+
+          setTimeout(() => {
+            if (myHp.value <= 0) {
+              phase.value = 'end'
+              status.value = 'lose'
+              msg.value = '배틀에서 졌다... 재시작합니다...'
+
+              setTimeout(() => {
+                emit('startBattle')
+              }, 2000)
+            } else if (poison.value == true) {
+              poisonCnt.value += 1
+
+              if (poisonCnt.value > 10) {
+                poisonCnt.value = 0
+                poison.value = false
+                msg.value = '적이 독으로부터 회복되었다!!!!!!'
+
+                phase.value = 'ready'
+              } else {
+                phase.value = 'poison'
+                enemyHp.value -= 10
+                enemyHpBar.value = Math.round(
+                  (enemyHp.value / enemyMaxHp.value) * 100
+                )
+
+                msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+                if (enemyHp.value <= 0) {
+                  phase.value = 'end'
+                  status.value = 'win'
+                  winBattle()
+
+                  setTimeout(() => {
+                    emit('changeBattle')
+                  }, 2000)
+                }
+              }
+            } else {
+              phase.value = 'ready'
+            }
+          }, 1000)
+        }
+      } else if (enemyAct.value == '버프') {
+        const buff = Math.round(enemyAttack.value * 0.2)
+        enemyAttack.value += buff
+
+        msg.value = buff.toString() + '만큼 공격력 상승!!!'
+        phase.value = 'enemyActResult'
+
+        setTimeout(() => {
+          if (poison.value == true) {
+            poisonCnt.value += 1
+
+            if (poisonCnt.value > 10) {
+              poisonCnt.value = 0
+              poison.value = false
+              msg.value = '적이 독으로부터 회복되었다!!!!!!'
+
+              phase.value = 'ready'
+            } else {
+              phase.value = 'poison'
+              enemyHp.value -= 10
+              enemyHpBar.value = Math.round(
+                (enemyHp.value / enemyMaxHp.value) * 100
+              )
+
+              msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+              if (enemyHp.value <= 0) {
+                phase.value = 'end'
+                status.value = 'win'
+                winBattle()
+
+                setTimeout(() => {
+                  emit('changeBattle')
+                }, 2000)
+              }
+            }
+          } else {
+            phase.value = 'ready'
+          }
+        }, 1000)
+      }
+    }
+
+    function doSelectItem(item) {
+      useItem.value = item.itemName
+      deleteItem(item.itemId)
+
+      if (useItem.value == '회복 물약(소)') {
+        phase.value = 'itemResult'
+
+        let heal = 50
+        if (myHp.value + heal > myMaxHp.value) {
+          heal = Math.round(myMaxHp.value - myHp.value)
+        }
+
+        msg.value = heal.toString() + ' 체력을 회복했다!!!'
+
+        myHp.value += heal
+        myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
+
+        useItem.value = ''
+      } else if (useItem.value == '회복 물약(중)') {
+        phase.value = 'itemResult'
+
+        let heal = 200
+        if (myHp.value + heal > myMaxHp.value) {
+          heal = Math.round(myMaxHp.value - myHp.value)
+        }
+
+        msg.value = heal.toString() + ' 체력을 회복했다!!!'
+
+        myHp.value += heal
+        myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
+
+        useItem.value = ''
+      } else if (useItem.value == '회복 물약(대)') {
+        phase.value = 'itemResult'
+
+        let heal = 500
+        if (myHp.value + heal > myMaxHp.value) {
+          heal = Math.round(myMaxHp.value - myHp.value)
+        }
+
+        msg.value = heal.toString() + ' 체력을 회복했다!!!'
+
+        myHp.value += heal
+        myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
+
+        useItem.value = ''
+      } else if (useItem.value == '공격 무효화') {
+        phase.value = 'itemResult'
+        absoluteDefense.value = true
+
+        msg.value = '다음 적의 공격은 무효화된다!!!'
+        useItem.value = ''
+      } else if (useItem.value == '더블 어택') {
+        phase.value = 'itemResult'
+        doubleAttack.value = true
+
+        msg.value = '다음 나의 공격은 2번 연속!!!'
+        useItem.value = ''
+      } else if (useItem.value == '공격력 증가') {
+        phase.value = 'itemResult'
+        const plusAttack = Math.round(myAttack.value * 0.2)
+        myAttack.value += plusAttack
+
+        msg.value = plusAttack.toString() + '만큼 공격력 증가!!!'
+        useItem.value = ''
+      } else if (useItem.value == '방어력 증가') {
+        phase.value = 'itemResult'
+        const plusDefense = Math.round(myDefense.value * 0.3)
+        myDefense.value += plusDefense
+
+        msg.value = plusDefense.toString() + '만큼 방어력 증가!!!'
+        useItem.value = ''
+      } else if (useItem.value == '희생') {
+        phase.value = 'sacrifice'
+        sacrifice.value = true
+        status.value = '공격'
+
+        setTimeout(() => {
+          status.value = '공격'
+        }, 1000)
+
+        msg.value = '희생 주문을 발동했다!!!'
+        useItem.value = ''
+
+        const cost = Math.round(myHp.value * 0.8)
+        myHp.value -= cost
+        if (myHp.value <= 1) {
+          myHp.value = 1
+        }
+        myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
+
+        const instantDeath = Math.random(0, 1)
+
+        setTimeout(() => {
+          if (instantDeath <= 0.1) {
+            msg.value = '성공!!!'
+            sacrifice.value = false
+            setTimeout(() => {
+              enemyHp.value -= 999999
+              enemyHpBar.value = Math.round(
+                (enemyHp.value / enemyMaxHp.value) * 100
+              )
+              showActResult()
+            }, 1600)
+          } else {
+            msg.value = '실패!!!'
+            setTimeout(() => {
+              enemyDamage.value = enemyAttack.value
+
+              if (survive.value == true) {
+                survive.value = false
+
+                if (enemyDamage.value >= myHp.value) {
+                  enemyDamage.value = myHp.value - 1
+                }
+              }
+
+              if (stun.value == true) {
+                stun.value = false
+                // phase.value = 'selectAct'
+                setTimeout(() => {
+                  if (poison.value == true) {
+                    poisonCnt.value += 1
+
+                    if (poisonCnt.value > 10) {
+                      poisonCnt.value = 0
+                      poison.value = false
+                      msg.value = '적이 독으로부터 회복되었다!!!!!!'
+
+                      phase.value = 'ready'
+                    } else {
+                      phase.value = 'poison'
+                      enemyHp.value -= 10
+                      enemyHpBar.value = Math.round(
+                        (enemyHp.value / enemyMaxHp.value) * 100
+                      )
+
+                      msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+
+                      if (enemyHp.value <= 0) {
+                        phase.value = 'end'
+                        status.value = 'win'
+                        winBattle()
+
+                        setTimeout(() => {
+                          emit('changeBattle')
+                        }, 2000)
+                      }
+                    }
+                  } else {
+                    phase.value = 'ready'
+                  }
+                }, 800)
+              } else {
+                enemyShowAct()
+              }
+            }, 1600)
+          }
+        }, 1400)
+      } else if (useItem.value == '생존') {
+        phase.value = 'itemResult'
+        survive.value = true
+
+        msg.value = '무조건 산다!!!!'
+        useItem.value = ''
+      } else if (useItem.value == '기절') {
+        phase.value = 'itemResult'
+        stun.value = true
+
+        msg.value = '상대방 기절!!!!!'
+        useItem.value = ''
+      } else if (useItem.value == '흡혈') {
+        phase.value = 'itemResult'
+        blood.value = true
+
+        msg.value = '다음 공격 데미지의 30% 체력 회복!!!!!'
+        useItem.value = ''
+      } else if (useItem.value == '독극물') {
+        enemyHp.value -= 30
+        enemyHpBar.value = Math.round((enemyHp.value / enemyMaxHp.value) * 100)
+
+        if (enemyHp.value <= 0) {
+          phase.value = 'end'
+          status.value = 'win'
+          winBattle()
+
+          setTimeout(() => {
+            emit('changeBattle')
+          }, 2000)
+        } else {
+          phase.value = 'itemResult'
+          poison.value = true
+          poisonCnt.value = 0
+
+          msg.value = '독!!!!!'
+          useItem.value = ''
+        }
+      } else if (useItem.value == '무력화') {
+        phase.value = 'itemResult'
+        incapacitate.value = true
+
+        msg.value = '다음 적의 데미지 30 감소!!!!!!!'
+        useItem.value = ''
+      }
+    }
+
+    function initValue() {
+      myHpBar.value = '100'
+      enemyHpBar.value = '100'
+      begin.value = 0
+
+      phase.value = 'start'
+      msg.value = '적을 만남!!!!'
+
+      actList.value = ['공격', '방어', '아이템']
+      myAct.value = ''
+      status.value = '대기'
+      enemyAct.value = ''
+      enemyStatus.value = '대기'
+
+      myDamage.value = 0
+      enemyDamage.value = 0
+
+      useItem.value = ''
+
+      absoluteDefense.value = false
+      doubleAttack.value = false
+      sacrifice.value = false
+      survive.value = false
+      stun.value = false
+      blood.value = false
+      poison.value = false
+      poisonCnt.value = 0
+      incapacitate.value = false
+    }
+
+    function itemToSelect() {
+      phase.value = 'selectAct'
+    }
+
+    function getMonsterInfo(monsterId) {
+      axios
+        .get(BASE_URL + '/api/v1/monster/' + monsterId, {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then((res) => {
+          // console.log(res.data)
+          myName.value = res.data.name
+          myMaxHp.value = res.data.hp
+          myHp.value = res.data.hp
+          myAttack.value = res.data.attack
+          myDefense.value = res.data.defence
+        })
+        .catch((err) => console.log(err))
+    }
+
+    function getBossInfo(missionId) {
+      axios
+        .get(BASE_URL + '/api/v1/mission/boss/' + missionId, {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then((res) => {
+          // console.log(res.data)
+          enemyName.value = res.data.name
+          enemyMaxHp.value = res.data.hp
+          enemyHp.value = res.data.hp
+          enemyAttack.value = res.data.attack
+          enemyDefense.value = res.data.defence
+        })
+        .catch((err) => console.log(err))
+    }
+
+    function getItemList() {
+      axios
+        .get(BASE_URL + '/api/v1/item', {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then((res) => {
+          // console.log(res.data)
+          itemList.value = res.data
+        })
+        .catch((err) => console.log(err))
+    }
+
+    function deleteItem(itemId) {
+      axios
+        .delete(BASE_URL + '/api/v1/item/' + itemId, {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+        .then(() => {
+          getItemList()
+        })
+        .catch((err) => console.log(err))
+    }
+
+    function winBattle() {
+      msg.value = '배틀에서 이겼다!!!!'
+
+      axios.put(
+        BASE_URL +
+          '/api/v1/mission/' +
+          userInfo.value.nowMissionId +
+          '?nowStatus=BATTLE_WIN',
+        {
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        }
+      )
+    }
+
+    return {
+      myHpBar,
+      myMaxHp,
+      myHp,
+      enemyHpBar,
+      enemyMaxHp,
+      enemyHp,
+      begin,
+      phase,
+      msg,
+      changePhase,
+      actList,
+      status,
+      doSelectAct,
+      itemList,
+      doSelectItem,
+      poison,
+      itemToSelect,
+      myName,
+      enemyName
     }
   }
 }
 </script>
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-* {
-  outline: none;
-  margin: 0;
+canvas {
+  width: 100vw;
+  height: 100vh;
 }
 
-#battle {
-  width: 100%;
-  height: 100%;
-}
-
-#status {
+#consoleDiv {
   position: absolute;
+  top: 71%;
+  left: 10%;
+
+  width: 80%;
+  height: 20%;
+  background-color: #55e1b0;
   z-index: 1;
+
+  border: 2px solid black;
+  border-radius: 10px;
 }
 
 #console {
   position: absolute;
-  top: 540px;
-  left: 200px;
 
-  width: 1200px;
-  height: 100px;
+  top: 6%;
+  left: 7%;
+  padding: 1%;
+
   background-color: white;
-  z-index: 1;
+  width: 83%;
+  height: 70%;
+  z-index: 2;
+
+  border-radius: 10px;
+}
+
+.triangle {
+  position: absolute;
+  top: 80%;
+  left: 96%;
+
+  display: inline-block;
+  border: 12px solid transparent;
+}
+
+.triangle--top {
+  border-top-color: black;
+  animation: blink-effect 1s step-end infinite;
+}
+
+@keyframes blink-effect {
+  50% {
+    opacity: 0;
+  }
 }
 </style>

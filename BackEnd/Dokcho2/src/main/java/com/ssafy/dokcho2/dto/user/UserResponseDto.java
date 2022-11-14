@@ -23,7 +23,6 @@ public class UserResponseDto {
     private Long representMonster;
     private Role role;
     private String createDate;
-    private UserPositionDto position;
     //현재 진행중인 미션 번호를 알기 위해 미션 번호 담아주기
     private Long nowMissionId;
 
@@ -37,7 +36,6 @@ public class UserResponseDto {
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
                 .representMonster(entity.getRepresentMonster().getMonsterId())
-                .position(UserPositionDto.from(entity))
                 .role(entity.getRole())
                 .createDate(createDate)
                 .nowMissionId(entity.getNowMissionId())

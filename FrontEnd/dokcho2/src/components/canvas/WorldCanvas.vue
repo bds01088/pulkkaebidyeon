@@ -8,6 +8,9 @@
       :isTalk="isTalk"
     />
     <QuizComponent v-if="isQuiz.quiz" @quizClose="quizClose" />
+    <miniGame1 v-if="miniGame1.miniGame1" @miniGame1Close="miniGame1Close" />
+    <miniGame2 v-if="miniGame1.miniGame2" @miniGame2Close="miniGame2Close" />
+    <miniGame3 v-if="miniGame1.miniGame3" @miniGame3Close="miniGame3Close" />
   </div>
 </template>
 
@@ -18,6 +21,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
 import { House } from '../modules/House'
 import { Character } from '../modules/Character'
+import { Building } from '../modules/Building'
+import { Environment } from '../modules/Environment'
+import { Environments } from '../modules/Environments'
+import { FBXLoad } from '../modules/FBXLoader'
+import { myMon } from '../modules/MyMon'
+import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
@@ -27,6 +36,10 @@ import { ref } from 'vue'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 
+import miniGame1 from '@/components/minigame/miniGame1'
+import miniGame2 from '@/components/minigame/miniGame2'
+import miniGame3 from '@/components/minigame/miniGame3'
+
 export default {
   name: 'WorldCanvas',
   props: {
@@ -35,15 +48,23 @@ export default {
   },
   components: {
     TalkComponent: TalkComponent,
-    QuizComponent: QuizComponent
+    QuizComponent: QuizComponent,
+    miniGame1: miniGame1,
+    miniGame2: miniGame2,
+    miniGame3: miniGame3
   },
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
+    const miniGame1 = ref({
+      miniGame1: false,
+      miniGame2: false,
+      miniGame3: false
+    })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
-      const floorTexture = textureLoader.load('/images/grid.png')
+      const floorTexture = textureLoader.load('/images/map17.png')
       floorTexture.wrapS = THREE.RepeatWrapping
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
@@ -74,9 +95,9 @@ export default {
         1000
       )
 
-      const cameraPosition = new THREE.Vector3(1, 5, 5)
+      const cameraPosition = new THREE.Vector3(0, 35, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.2
+      camera.zoom = 0.01
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -107,6 +128,7 @@ export default {
       const cannonWorld = new CANNON.World()
       cannonWorld.gravity.set(0, -10, 0)
 
+      // 안 떨어지게 하기
       const floorShape = new CANNON.Plane()
       const floorBody = new CANNON.Body({
         mass: 0,
@@ -119,18 +141,12 @@ export default {
       )
       cannonWorld.addBody(floorBody)
 
-      const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
-      const boxBody = new CANNON.Body({
-        mass: 0,
-        position: new CANNON.Vec3(0, 0, 0),
-        shape: boxShape
-      })
-      cannonWorld.addBody(boxBody)
-
       // Mesh
       const meshes = []
+
+      // 바닥 만들기
       const floorMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(50, 50),
+        new THREE.PlaneGeometry(150, 150),
         new THREE.MeshStandardMaterial({
           map: floorTexture
         })
@@ -139,21 +155,22 @@ export default {
       floorMesh.rotation.x = -Math.PI / 2
       floorMesh.receiveShadow = true
       scene.add(floorMesh)
-      meshes.push(floorMesh)
 
-      const pointerMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.5, 0.5),
-        new THREE.MeshBasicMaterial({
-          color: 'crimson',
-          transparent: true,
-          opacity: 0.5
-        })
-      )
-      pointerMesh.rotation.x = -Math.PI / 2
-      pointerMesh.position.y = 0.01
-      pointerMesh.receiveShadow = true
-      scene.add(pointerMesh)
+      // 포인터 매쉬 필요없음(삭제 예정)
+      // const pointerMesh = new THREE.Mesh(
+      //   new THREE.PlaneGeometry(0.5, 0.5),
+      //   new THREE.MeshBasicMaterial({
+      //     color: 'crimson',
+      //     transparent: true,
+      //     opacity: 0.5
+      //   })
+      // )
+      // pointerMesh.rotation.x = -Math.PI / 2
+      // pointerMesh.position.y = 0.01
+      // pointerMesh.receiveShadow = true
+      // scene.add(pointerMesh)
 
+      // 집 앞에 있는 노란 박스(삭제 예정)
       const spotMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 3),
         new THREE.MeshStandardMaterial({
@@ -169,6 +186,7 @@ export default {
 
       const gltfLoader = new GLTFLoader()
 
+      // 집(수정 예정)
       const house = new House({
         gltfLoader,
         scene,
@@ -179,13 +197,16 @@ export default {
         z: 2
       })
 
+      // 플레이어
       const player = new Player({
         scene,
         meshes,
         cannonWorld,
         gltfLoader,
-        modelSrc: '/models/bbb.glb'
+        modelSrc: '/models/character.glb'
       })
+
+      // 맵 이동하는 박스 만들기(수정 예정)
 
       const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
       const boxMaterial = new THREE.MeshStandardMaterial({
@@ -197,9 +218,31 @@ export default {
       scene.add(boxMesh)
       meshes.push(boxMesh)
 
+      // 박스에 캐논 씌우기
+      const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
+      const boxBody = new CANNON.Body({
+        mass: 0,
+        position: new CANNON.Vec3(0, 0, 0),
+        shape: boxShape
+      })
+      cannonWorld.addBody(boxBody)
+
+      // 맵 막는 박스 만들기
+      new Wall({
+        cannonWorld,
+        x: 68,
+        z: 68
+      })
+      // 위인들
+
       const Greats = [
-        ['단군', { x: 1, y: 0, z: 1 }],
-        ['장수왕', { x: 9, y: 0, z: 9 }]
+        ['단군', { x: -34, y: 0, z: -50 }],
+        ['장수왕', { x: -56, y: 0, z: -20 }],
+        ['선덕여왕', { x: -5, y: 0, z: -13 }],
+        ['공민왕', { x: 35, y: 0, z: 0 }],
+        ['세종대왕', { x: -44, y: 0, z: 20 }],
+        ['이순신', { x: -15, y: 0, z: 55 }],
+        ['유관순', { x: 50, y: 0, z: 42 }]
       ]
       Greats.forEach((element) => {
         new Character({
@@ -213,9 +256,16 @@ export default {
         })
       })
 
+      // 빌런들
+
       const Villain = [
-        ['지현몬', { x: 2, y: 0, z: 2 }],
-        ['효근몬', { x: 10, y: 0, z: 10 }]
+        ['지현몬', { x: -38, y: 0, z: -45 }],
+        ['효근몬', { x: -58, y: 0, z: -17 }],
+        ['재준몬', { x: 0, y: 0, z: -10 }],
+        ['근희몬', { x: 32, y: 0, z: 5 }],
+        ['상균몬', { x: -41, y: 0, z: 17 }],
+        ['지원몬', { x: -18, y: 0, z: 52 }],
+        ['하민몬', { x: 45, y: 0, z: 40 }]
       ]
       Villain.forEach((element) => {
         new Character({
@@ -227,6 +277,76 @@ export default {
           position: element[1],
           name: element[0]
         })
+      })
+
+      // 빌딩들
+
+      const Buildings = [
+        ['첨성대', { x: 5, y: 0, z: -30 }],
+        ['덕수궁', { x: 45, y: 0, z: -10 }],
+        ['광화문', { x: -40, y: 0, z: 45 }]
+      ]
+      Buildings.forEach((element) => {
+        new Building({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Building/${element[0]}.glb`,
+          position: element[1],
+          name: element[0]
+        })
+      })
+
+      // 나무나 그런거들
+
+      Environments.forEach((element) => {
+        new Environment({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Environment/${element[0]}.glb`,
+          width: element[2] || {},
+          position: element[1],
+          name: element[0]
+        })
+      })
+      // new Environment({
+      //   scene,
+      //   cannonWorld,
+      //   gltfLoader
+      // })
+
+      // 마을
+      const village = [
+        ['house1', { x: -67, y: 0, z: 66 }],
+        ['house2', { x: -62, y: 0, z: 61 }],
+        ['house3', { x: -61, y: 0, z: 63 }],
+        ['house4', { x: -58, y: 0, z: 64 }],
+        ['house5', { x: -59, y: 0, z: 61 }],
+        ['house6', { x: -60, y: 0, z: 68 }]
+      ]
+      village.forEach((element) => {
+        new FBXLoad({
+          scene,
+          meshes,
+          cannonWorld,
+          modelSrc: `/models/Environment/${element[0]}.fbx`,
+          position: element[1],
+          name: element[0]
+        })
+      })
+
+      // 내 풀깨비
+      let myMonsterId = JSON.parse(
+        localStorage.getItem('userInfo')
+      ).representMonster
+      let myMoster = new myMon({
+        scene,
+        meshes,
+        gltfLoader,
+        modelSrc: `/models/Monsters/${myMonsterId}.glb`
       })
 
       const raycaster = new THREE.Raycaster()
@@ -275,18 +395,25 @@ export default {
               destinationPoint.z - player.modelMesh.position.z,
               destinationPoint.x - player.modelMesh.position.x
             )
-            player.modelMesh.position.x += Math.cos(angle) * 0.02
-            player.modelMesh.position.z += Math.sin(angle) * 0.02
-            player.cannonBody.position.x += Math.cos(angle) * 0.02
-            player.cannonBody.position.z += Math.sin(angle) * 0.02
+            player.modelMesh.position.x += Math.cos(angle) * 0.04
+            player.modelMesh.position.z += Math.sin(angle) * 0.04
+            player.cannonBody.position.x += Math.cos(angle) * 0.04
+            player.cannonBody.position.z += Math.sin(angle) * 0.04
 
-            camera.position.x = cameraPosition.x + player.modelMesh.position.x
-            camera.position.z = cameraPosition.z + player.modelMesh.position.z
+            camera.position.x =
+              cameraPosition.x + player.modelMesh.position.x + 25
+            camera.position.z =
+              cameraPosition.z + player.modelMesh.position.z + 55
+
+            player.actions[0].stop()
+            player.actions[2].stop()
+            player.actions[3].stop()
+            player.actions[1].play()
 
             if (
               Math.abs(destinationPoint.x - player.modelMesh.position.x) <
-                0.02 &&
-              Math.abs(destinationPoint.z - player.modelMesh.position.z) < 0.02
+                0.03 &&
+              Math.abs(destinationPoint.z - player.modelMesh.position.z) < 0.03
             ) {
               player.moving = false
             }
@@ -311,7 +438,7 @@ export default {
                 })
                 setTimeout(() => {
                   alert('집에 들어감')
-                  emit('now')
+                  emit('changeCanvas')
                 }, 1000)
               }
             } else if (house.visible) {
@@ -329,6 +456,53 @@ export default {
             }
           } else {
             // 서 있는 상태
+            if (player.rumba) {
+              player.actions[1].stop()
+              player.actions[3].stop()
+              player.actions[2].play()
+            } else if (player.hiphop) {
+              player.actions[1].stop()
+              player.actions[2].stop()
+              player.actions[3].play()
+            } else {
+              player.actions[1].stop()
+              player.actions[0].play()
+            }
+          }
+          if (myMoster.modelMesh) {
+            if (
+              Math.abs(
+                player.modelMesh.position.x - myMoster.modelMesh.position.x
+              ) > 2 ||
+              Math.abs(
+                player.modelMesh.position.z - myMoster.modelMesh.position.z
+              ) > 2
+            ) {
+              myMoster.moving = true
+            }
+          }
+
+          // 대표풀깨비 따라오기
+          if (myMoster.moving) {
+            angle = Math.atan2(
+              player.modelMesh.position.z - myMoster.modelMesh.position.z,
+              player.modelMesh.position.x - myMoster.modelMesh.position.x
+            )
+            myMoster.modelMesh.position.x += Math.cos(angle) * 0.04
+            myMoster.modelMesh.position.z += Math.sin(angle) * 0.04
+
+            myMoster.modelMesh.lookAt(player.modelMesh.position)
+
+            if (
+              Math.abs(
+                player.modelMesh.position.x - myMoster.modelMesh.position.x
+              ) < 1 &&
+              Math.abs(
+                player.modelMesh.position.z - myMoster.modelMesh.position.z
+              ) < 1
+            ) {
+              myMoster.moving = false
+            }
           }
         }
 
@@ -379,6 +553,25 @@ export default {
               }
             }, 100)
           }
+          if (item.object.name.slice(0, 1) === '건') {
+            isPressed = false
+            if (item.object.name.slice(1, 2) === '1') {
+              miniGame1.value.miniGame1 = true
+            } else if (item.object.name.slice(1, 2) === '2') {
+              miniGame1.value.miniGame2 = true
+            } else if (item.object.name.slice(1, 2) === '3') {
+              miniGame1.value.miniGame3 = true
+            }
+            // 건1, 건2, 건3
+
+            // 숫자 따라서 다른 함수 실행 -> 컴포넌트 true값으로 변경
+            // myPage.value.myPage = true
+            // if (item.object.name[1]) {
+            //   miniGame1.value.miniGame1 = true
+            // }
+
+            // 바깥에 컴포넌트 false값으로 바꾸는 함수 따로 만들어서 컴포넌트에 달기
+          }
           break
         }
       }
@@ -409,6 +602,20 @@ export default {
         checkIntersects()
       }
 
+      function onPointerMove(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+        mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObjects(meshes)
+
+        if (intersects && intersects.length > 0) {
+          document.body.style.cursor = 'pointer'
+        } else {
+          document.body.style.cursor = 'default'
+        }
+      }
+
       // 마우스 이벤트
       canvas.addEventListener('mousedown', (e) => {
         isPressed = true
@@ -420,6 +627,9 @@ export default {
       canvas.addEventListener('mousemove', (e) => {
         if (isPressed) {
           calculateMousePosition(e)
+        }
+        if (props.nowPage === 0) {
+          onPointerMove(e)
         }
       })
 
@@ -440,6 +650,7 @@ export default {
       const keyController = new KeyController()
 
       function walk() {
+        destinationPoint.y = 0.25
         if (keyController.keys['KeyW'] || keyController.keys['ArrowUp']) {
           destinationPoint.z = player.modelMesh.position.z - 1
         }
@@ -452,35 +663,67 @@ export default {
         if (keyController.keys['KeyA'] || keyController.keys['ArrowLeft']) {
           destinationPoint.x = player.modelMesh.position.x - 1
         }
-        if (player.modelMesh.position.z) {
-          console.log(destinationPoint.z, player.modelMesh.position.z)
-        }
         player.modelMesh.lookAt(destinationPoint)
       }
       window.addEventListener('keydown', (e) => {
-        if (!keys[e.key]) {
-          keys[e.key] = 1
+        console.log(e.key)
+        if (
+          e.key === 'a' ||
+          e.key === 's' ||
+          e.key === 'd' ||
+          e.key === 'w' ||
+          e.key === 'A' ||
+          e.key === 'S' ||
+          e.key === 'D' ||
+          e.key === 'W' ||
+          e.key === 'ArrowDown' ||
+          e.key === 'ArrowUp' ||
+          e.key === 'ArrowLeft' ||
+          e.key === 'ArrowRight'
+        ) {
+          if (!keys[e.key]) {
+            keys[e.key] = 1
+          }
+          player.moving = true
+          player.rumba = false
+          player.hiphop = false
+        } else if (e.key === 'p') {
+          player.moving = false
+          player.rumba = true
+          player.hiphop = false
+        } else if (e.key === 'o') {
+          player.moving = false
+          player.rumba = false
+          player.hiphop = true
         }
-        console.log(keys)
-        player.moving = true
       })
       window.addEventListener('keyup', (e) => {
         delete keys[e.key]
+        if (!Object.keys(keys).length) {
+          player.moving = false
+          player.rumba = false
+          player.hiphop = false
+        }
         if (e.key === 'a' || e.key === 'd') {
           destinationPoint.x = player.modelMesh.position.x
         }
         if (e.key === 'w' || e.key === 's') {
           destinationPoint.z = player.modelMesh.position.z
         }
-        if (keys === {}) {
-          player.moving = false
-        }
+        localStorage.setItem(
+          'position',
+          JSON.stringify({
+            x: player.modelMesh.position.x,
+            z: player.modelMesh.position.z
+          })
+        )
       })
       draw()
 
       function onClick() {
         alert('aa')
         emit('changeCanvas')
+        // emit('changeBattle')
       }
     }, 100)
 
@@ -514,12 +757,28 @@ export default {
       isQuiz.value.quiz = false
     }
 
+    function miniGame1Close() {
+      miniGame1.value.miniGame1 = false
+    }
+
+    function miniGame2Close() {
+      miniGame1.value.miniGame2 = false
+    }
+
+    function miniGame3Close() {
+      miniGame1.value.miniGame3 = false
+    }
+
     return {
       isTalk,
       isQuiz,
+      miniGame1,
       talkClose,
       quizStart,
-      quizClose
+      quizClose,
+      miniGame1Close,
+      miniGame2Close,
+      miniGame3Close
     }
   }
 }

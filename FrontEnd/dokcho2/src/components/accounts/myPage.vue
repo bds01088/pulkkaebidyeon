@@ -1,35 +1,60 @@
 <template>
-  <div class="myPage_container"></div>
-  <div class="myPage">
-    <div class="myPage_header">
-      <p>{{ this.userInfo.nickname }}님!</p>
-    </div>
-    <br />
-    <div class="myPage_body">
-      <div class="myPage_body_content">
-      <img :src="'/images/pgbs/' + this.monsterDetail.monsterId + '.png'"
-       style="width: 200px; height: 150px;">
-      <div v-if="!password">
-        <p>대표 독초몬 : {{ this.monsterDetail.name }}</p>
-        <p>이메일 : {{ this.userInfo.email }}</p>
-        <p>가입일 : {{ this.userInfo.createDate }}</p>
-        <br />
-        <div class="buttons">
-          <button @click="openPassword()">비밀번호 변경</button>
-          <button @click="deleteUser()">회원 탈퇴</button>
+  <div class="myPage__container">
+    <div class="myPage">
+      <div class="myPage__box">
+        <div class="myPage__header">
+          <img
+            class="my__monster"
+            :src="
+              require(`@/assets/monsters/${this.userInfo.representMonster}.png`)
+            "
+            alt=""
+          />
+
+          <div class="myPage__info">
+            <div class="my__info">
+              <h1>
+                {{ this.userInfo.nickname }} ({{ this.userInfo.username }}) 님
+              </h1>
+              <p>{{ this.userInfo.email }}</p>
+            </div>
+            <div class="my__edit">
+              <button class="password__btn" @click="openPassword()">
+                비밀번호변경
+              </button>
+              <changePassword
+                v-if="this.password"
+                @closePassword="closePassword"
+              />
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <changePassword v-if="password"></changePassword>
-      <br />
+        <div class="myPage__body">
+          <div class="myPage__mission">
+            <!-- <p>1번</p> -->
+            <p>{{ this.userInfo.nowMissionId }}번</p>
+          </div>
+          <div class="myPage__monster">
+            <!-- <p>3마리</p> -->
+            <p>{{ this.userInfo.nowMissionId }}마리</p>
+          </div>
+          <div class="myPage__item">
+            <!-- <p>15개</p> -->
+            <p>{{ this.userInfo.nowMissionId }}개</p>
+          </div>
+        </div>
+        <div class="myPage__footer">
+          <button class="footer__btn" @click="goReset()">초기화</button>
+          <button class="footer__btn" @click="deleteUser()">탈퇴</button>
+        </div>
+        <img
+          class="exit__btn"
+          @click="$emit('mypageClose')"
+          src="@/assets/navbar/ExitButton.png"
+          alt=""
+        />
       </div>
     </div>
-    <img
-      class="exit__btn"
-      @click="$emit('mypageClose')"
-      src="@/assets/navbar/ExitButton.png"
-      alt=""
-    />
   </div>
 </template>
 
@@ -40,6 +65,7 @@ import Swal from 'sweetalert2'
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import changePassword from '../accounts/changePassword.vue'
+import { mapActions } from 'vuex'
 
 const swalWithBootstrapButtons = Swal.mixin({
   customClass: {
@@ -69,6 +95,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['fetchnowUserInfo']),
     openPassword() {
       this.password = true
     },
@@ -199,6 +226,48 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    goReset() {
+      // swal 띄워서 진짜 지울건지 확인
+      swalWithBootstrapButtons
+        .fire({
+          title: '진행도를 초기화하시겠어요?',
+          text: `${this.userInfo.nickname}님의 미션과 아이템이 모두 사라져요😥`,
+          icon: 'danger',
+          showCancelButton: true,
+          confirmButtonText: '예',
+          cancelButtonText: '아니오',
+          reverseButtons: true
+        })
+        .then((res) => {
+          if (res.value) {
+            this.fetchReset()
+          }
+        })
+    },
+
+    fetchReset() {
+      // 확인되면 axios 요청
+      axios({
+        url: BASE_URL + '/api/v1/user/reset',
+        method: 'DELETE',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then(() => {
+          this.fetchnowUserInfo()
+          swal({
+            title: '진행도 초기화가 완료되었어요!',
+            icon: 'success',
+            text: '악당 호랑이를 물리치는 여정을 새롭게 시작하세요!',
+            buttons: false,
+            timer: 1500
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
   created() {
@@ -210,15 +279,23 @@ export default {
 </script>
 
 <style scoped>
-.myPage_container{
-  width: 100%;
-  height: 100%;
+button {
+  height: 4vh;
+  border-radius: 50px;
+  border: none;
+  width: 12vw;
+}
+.myPage__container {
+  width: 100vw;
+  height: 100vh;
   /* backdrop-filter: blur(4px); */
   z-index: 30;
+  top: 0;
+  left: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: fixed;
+  position: absolute;
 }
 
 .myPage {
@@ -228,11 +305,11 @@ export default {
   justify-content: center;
   position: fixed;
   z-index: 40;
-  top: 10%;
+  top: 4%;
   left: 25%;
   width: 50%;
-  height: 80%;
-  background: rgba(169, 170, 150, 0.714);
+  height: 90%;
+  background: rgba(225, 225, 225, 0.714);
   /* background-image: url('@/assets/Paper.png'); */
   background-size: cover;
   background-repeat: no-repeat;
@@ -242,26 +319,126 @@ export default {
   overflow: visible;
 }
 
-.myPage_header{
-  font-weight: bolder;
-  font-size: 2rem;
-  /* margin-bottom: 5vh; */
-  margin-bottom: 3vh;
-  margin-top: 0;
-}
-
-.myPage_body{
-  /* margin: 2vh; */
-  border: 1px solid white;
-  background-color: #ffffff;
+.myPage__box {
+  margin-top: 10vh;
+  background: white;
+  padding-top: 5vh;
+  padding-bottom: 3vh;
   width: 80%;
-  height: 60%;
-  top: 30%;
-  padding: 1vh;
   border-radius: 10px;
-  box-shadow: 1px 1px 5px 1px gray;
 }
 
+.myPage__header {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  margin-bottom: 2vh;
+}
+
+.myPage__info {
+  width: 100%;
+}
+
+.my__monster {
+  width: 50%;
+  border-radius: 20px;
+}
+
+.my__info {
+  background-color: white;
+  width: 100%;
+  height: 40%;
+  padding: 1vh;
+  /* border: 1px solid black; */
+  text-align: end;
+  margin-bottom: 2vh;
+  margin-top: 1vh;
+}
+
+.my__edit {
+  width: 100%;
+  padding: 1vh;
+  text-align: end;
+}
+
+.password__btn {
+  width: 8vw;
+  cursor: pointer;
+}
+
+.password__btn:hover {
+  background-color: #6bfa8d;
+}
+
+.myPage__body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  /* background-color: rgb(255, 223, 228); */
+  border-radius: 10px;
+  padding: 2vw;
+}
+
+.myPage__body p {
+  padding-top: 30%;
+  font-size: 1.5vw;
+  font-weight: bold;
+}
+
+.myPage__mission,
+.myPage__item,
+.myPage__monster {
+  width: 8vw;
+  height: 8vw;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.myPage__mission {
+  /* background-image: url(https://www.mozilla.org/media/img/logos/firefox/logo-quantum.9c5e96634f92.png); */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url('@/assets/mypage/mission.png');
+  text-align: center;
+}
+
+.myPage__item {
+  background: url('@/assets/mypage/item.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.myPage__monster {
+  background: url('@/assets/mypage/monster.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.myPage__footer {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  justify-content: center;
+}
+
+.footer__btn {
+  width: 8vw;
+  cursor: pointer;
+  margin-left: 1vw;
+}
+
+.footer__btn:hover {
+  background-color: #ff6a60;
+}
 .exit__btn {
   width: 4vw;
   display: flex;
@@ -272,17 +449,4 @@ export default {
   right: 4vw;
   cursor: pointer;
 }
-
-.myPage_body_content{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  width: 80%;
-  height: 60%;
-}
-
-
-
 </style>

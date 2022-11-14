@@ -45,7 +45,7 @@ export default {
       // Texture
 
       const textureLoader = new THREE.TextureLoader()
-      const floorTexture = textureLoader.load('/images/grid.png')
+      const floorTexture = textureLoader.load('/images/floor.png')
       floorTexture.wrapS = THREE.RepeatWrapping
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
@@ -78,7 +78,7 @@ export default {
 
       const cameraPosition = new THREE.Vector3(1, 5, 5)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.2
+      camera.zoom = 0.3
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -132,7 +132,7 @@ export default {
       // Mesh
       const meshes = []
       const floorMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(50, 50),
+        new THREE.PlaneGeometry(15, 15),
         new THREE.MeshStandardMaterial({
           map: floorTexture
         })

@@ -1,18 +1,63 @@
 <template>
-  <div class="monsterDetail">
-    <h3>
-      {{ this.monsterDetail.name }} <br />
-      ({{ this.monsterDetail.level }}레벨)
-    </h3>
-    <p>경험치 {{ this.monsterDetail.exp }}</p>
-    <p>
-      hp : {{ this.monsterDetail.hp }} attack : {{ this.monsterDetail.attack }}
-    </p>
-    <p>스킬 : {{ this.monsterDetail.skill }}</p>
-    <br />
-    <div>
-      <button @click="setrepresentMonster()">대표 풀깨비로 설정</button>
-      <button @click="$emit('monsterClose')">닫기</button>
+  <div class="monsterDetail__container">
+    <div class="monsterDetail">
+      <div class="monster__img">
+        <img class="banner__img" src="@/assets/monsters/Banner.png" alt="" />
+        <img
+          class="my__monster"
+          :src="
+            require(`@/assets/monsters/${this.monsterDetail.monsterId}.png`)
+          "
+          alt=""
+        />
+      </div>
+
+      <div class="monster__data">
+        <div class="monster__name">
+          <p>{{ this.monsterDetail.name }}</p>
+        </div>
+
+        <div class="monster__detail">
+          <div class="detail">
+            <p>속성</p>
+            <p>봄</p>
+          </div>
+          <div class="detail">
+            <p>Lv</p>
+            <p>{{ this.monsterDetail.level }}</p>
+          </div>
+          <div class="detail">
+            <p>Exp</p>
+            <p>{{ this.monsterDetail.exp }}</p>
+          </div>
+          <div class="detail">
+            <p>Hp</p>
+            <p>{{ this.monsterDetail.hp }}</p>
+          </div>
+          <div class="detail">
+            <p>공격력</p>
+            <p>{{ this.monsterDetail.attack }}</p>
+          </div>
+          <div class="detail">
+            <p>방어력</p>
+            <p>{{ this.monsterDetail.defence }}</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button class="monster__btn" @click="setrepresentMonster()">
+          대표 풀깨비로 설정
+        </button>
+        <!-- <button @click="$emit('monsterClose')">닫기</button> -->
+      </div>
+
+      <p class="exit__btn" @click="$emit('monsterClose')"><b>X</b></p>
+      <!-- <img
+        class="exit__btn"
+        @click="$emit('monsterClose')"
+        src="@/assets/navbar/ExitButton.png"
+        alt=""
+      /> -->
     </div>
   </div>
 </template>
@@ -55,6 +100,18 @@ export default {
 </script>
 
 <style scoped>
+.monsterDetail__container {
+  width: 100vw;
+  height: 100vh;
+  /* backdrop-filter: blur(4px); */
+  z-index: 30;
+  top: 0;
+  left: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+}
 .monsterDetail {
   display: flex;
   flex-direction: column;
@@ -62,15 +119,81 @@ export default {
   justify-content: center;
   position: fixed;
   z-index: 30;
-  top: 30%;
-  left: 30%;
-  width: 30%;
-  height: 30%;
+  top: 20%;
+  left: 35%;
+  width: 25%;
+  height: 70%;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(4px);
+  border-radius: 20px;
 }
 
-.p {
-  size: 1vh;
+.monster__img {
+  margin-bottom: 2vh;
+  text-align: center;
+}
+
+.banner__img {
+  position: absolute;
+  width: 18vw;
+  z-index: 40;
+  left: 13.5%;
+  top: 3%;
+}
+
+.my__monster {
+  margin-top: 5vh;
+  width: 15vw;
+  border-radius: 20px;
+}
+
+.monster__data {
+  background-color: #fffdbf;
+  width: 50%;
+  height: 30%;
+  /* border: 3px solid black; */
+  border-radius: 10px;
+  padding: 5%;
+  text-align: center;
+  margin-bottom: 2vh;
+}
+
+.monster__name {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 2vh;
+}
+
+.detail {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 0.3vh;
+}
+
+.monster__btn {
+  height: 4vh;
+  border-radius: 50px;
+  border: none;
+  width: 12vw;
+  cursor: pointer;
+}
+
+.monster__btn:hover {
+  background-color: #6bfa8d;
+}
+p {
+  margin: 0;
+}
+
+.exit__btn {
+  width: 2.5vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 3vh;
+  right: 1vw;
+  cursor: pointer;
 }
 </style>

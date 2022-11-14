@@ -6,7 +6,6 @@ import com.ssafy.dokcho2.domain.mission.UserMission;
 import com.ssafy.dokcho2.domain.monster.Monster;
 import com.ssafy.dokcho2.domain.userItem.UserItem;
 import com.ssafy.dokcho2.domain.userMonster.UserMonster;
-import com.ssafy.dokcho2.dto.user.UserPositionDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,12 +34,6 @@ public class User extends BaseTime {
     private String nickname;
     @Column(name = "email")
     private String email;
-    @Column(name = "x")
-    private Double x;
-    @Column(name = "y")
-    private Double y;
-    @Column(name = "z")
-    private Double z;
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -71,15 +64,11 @@ public class User extends BaseTime {
     public void setNickname(String nickname){this.nickname = nickname;}
 
     public void changeRepresentMonster(Monster monster){this.representMonster = monster;}
-    public void savePosition(UserPositionDto dto){
-        this.x = dto.getX();
-        this.y = dto.getY();
-        this.z = dto.getZ();
-    }
 
     public void changeNowMissionId(Long missionId) {this.nowMissionId = missionId;}
     @PrePersist
     public void prePersist(){
         this.role = this.role == null ? Role.ROLE_USER : this.role;
+        this.nowMissionId = this.nowMissionId == null ? 1 : this.nowMissionId;
     }
 }

@@ -2,17 +2,21 @@
   <div class="talk">
     <div class="talk__box">
       <div class="box" v-if="this.isTalk.content.line">
-        <div class="name">{{ this.isTalk.name }}</div>
-        <div class="content">
-          {{ this.isTalk.content.line[nowPage.nowPage] }}
+        <div class="content__box">
+          <div class="name">{{ this.isTalk.name }}</div>
+          <div class="content">
+            {{ this.isTalk.content.line[nowPage.nowPage] }}
+          </div>
         </div>
-        <button
-          @click="nextTalk()"
-          v-if="this.isTalk.content.line.length !== nowPage.nowPage + 1"
-        >
-          다음
-        </button>
-        <button @click="endTalk()" v-else>나가기</button>
+        <div class="btn__box">
+          <button
+            @click="nextTalk()"
+            v-if="this.isTalk.content.line.length !== nowPage.nowPage + 1"
+          >
+            다음
+          </button>
+          <button @click="endTalk()" v-else>대화종료</button>
+        </div>
       </div>
     </div>
   </div>
@@ -94,6 +98,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  cursor: auto;
 }
 .talk__box {
   display: flex;
@@ -104,8 +109,57 @@ export default {
   height: 50%;
 }
 .box {
-  width: 80%;
-  height: 70%;
-  background-color: rgb(167, 105, 105);
+  border-top-right-radius: 9vw;
+  border-top-left-radius: 9vw;
+  border-bottom-right-radius: 6vw;
+  border-bottom-left-radius: 6vw;
+  width: 60%;
+  height: 50%;
+  padding: 2vw 7vw;
+  box-shadow: 0 0 1px 1px gray;
+  background-color: rgb(231, 227, 186);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.content__box {
+  position: relative;
+}
+.name {
+  width: 12vw;
+  height: 6vh;
+  border-radius: 3vh;
+  border: 2px gray solid;
+  background-color: rgb(242, 241, 235);
+  top: -7vh;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3vh;
+  font-weight: bold;
+}
+.content {
+  margin-top: 3vh;
+  font-size: 1.5vw;
+}
+.btn__box {
+  display: flex;
+  justify-content: flex-end;
+}
+
+button {
+  border-radius: 2vh;
+  border: 2px gray solid;
+  width: 7vw;
+  height: 4vh;
+  font-size: 1vw;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+button:hover {
+  scale: 1.05;
+  background-color: rgb(171, 174, 240);
 }
 </style>

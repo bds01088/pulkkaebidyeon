@@ -34,6 +34,8 @@ public class Mission {
     private String characters;
     @Column(name = "description")
     private String description; // 미션 설명
+    @Column(name = "next")
+    private String next;
     @Column(name = "relic")
     private Long relic;
     @Column(name = "item")
