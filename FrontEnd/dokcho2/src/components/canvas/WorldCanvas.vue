@@ -98,7 +98,7 @@ export default {
 
       const cameraPosition = new THREE.Vector3(0, 35, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.01
+      camera.zoom = 0.3
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -374,7 +374,7 @@ export default {
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
         }
 
-        if (isLoading === 0 && scene.children.length === 160) {
+        if (isLoading === 0 && scene.children.length === 155) {
           isLoading = 1
           console.log('로딩 끝1')
           emit('loadingEnd')
@@ -711,10 +711,24 @@ export default {
           player.rumba = false
           player.hiphop = false
         }
-        if (e.key === 'a' || e.key === 'd') {
+        if (
+          e.key === 'a' ||
+          e.key === 'd' ||
+          e.key === 'A' ||
+          e.key === 'D' ||
+          e.key === 'ArrowLeft' ||
+          e.key === 'ArrowRight'
+        ) {
           destinationPoint.x = player.modelMesh.position.x
         }
-        if (e.key === 'w' || e.key === 's') {
+        if (
+          e.key === 'w' ||
+          e.key === 's' ||
+          e.key === 'W' ||
+          e.key === 'S' ||
+          e.key === 'ArrowUp' ||
+          e.key === 'ArrowDown'
+        ) {
           destinationPoint.z = player.modelMesh.position.z
         }
         localStorage.setItem(
