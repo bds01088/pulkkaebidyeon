@@ -61,6 +61,7 @@ export default {
       miniGame2: false,
       miniGame3: false
     })
+    const isMinigame = ref({ isMinigame: false })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
@@ -389,7 +390,8 @@ export default {
           player.modelMesh &&
           props.nowPage === 0 &&
           !props.nowNavbar &&
-          !isTalk.value.talk
+          !isTalk.value.talk &&
+          !isMinigame.value.isMinigame
         ) {
           if (isPressed) {
             raycasting()
@@ -562,6 +564,7 @@ export default {
           }
           if (item.object.name.slice(0, 1) === '건') {
             isPressed = false
+
             if (item.object.name.slice(1, 2) === '1') {
               miniGame1.value.miniGame1 = true
             } else if (item.object.name.slice(1, 2) === '2') {
@@ -569,6 +572,8 @@ export default {
             } else if (item.object.name.slice(1, 2) === '3') {
               miniGame1.value.miniGame3 = true
             }
+
+            isMinigame.value.isMinigame = true
             // 건1, 건2, 건3
 
             // 숫자 따라서 다른 함수 실행 -> 컴포넌트 true값으로 변경
