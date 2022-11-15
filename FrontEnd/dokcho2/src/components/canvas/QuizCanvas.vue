@@ -27,14 +27,21 @@
       <li v-for="user in this.nowRoomUser.nowRoomUser" v-bind:key="user">
         {{ user.nickname }}
       </li>
+      <div v-if="this.quizing.quizing === true && this.nextQuiz.nextQuiz">
+        퀴즈
+        <div>
+          문제 : {{ this.nextQuiz.nextQuiz.question }} 힌트 :
+          {{ this.nextQuiz.nextQuiz.description }}
+        </div>
+      </div>
+      <div v-else>퀴즈 안 진행중</div>
+
       <li v-for="msg in this.allMsg.allMsg" v-bind:key="msg">
         <p v-if="this.userSocketId.userSocketId === msg.socketId">
           내가 한 말 : {{ msg.content }}
         </p>
 
-        <p v-else>
-          {{ msg.nickname }}{{ msg.socketId }}가 한 말 : {{ msg.content }}
-        </p>
+        <p v-else>{{ msg.nickname }}가 한 말 : {{ msg.content }}</p>
       </li>
       <!-- <li
         v-for="quiz in this.nowRoomInfo.nowRoomInfo.roomQuiz"
@@ -85,6 +92,8 @@ export default {
     let allMsg = ref({ allMsg: [] })
     let userSocketId = ref({ userSocketId: '' })
     let msgSocketId = ref({ msgSocketId: '' })
+    let quizing = ref({ quizing: false })
+    let nextQuiz = ref({ nextQuiz: '' })
 
     const socket = io('http://localhost:3000/')
 
@@ -142,9 +151,14 @@ export default {
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
     })
 
+    socket.on('deleteMsg', () => {
+      allMsg.value.allMsg = []
+    })
+
     function sendMsg(roomId, socketId, nickname, msg) {
       let payload = [roomId, socketId, nickname, msg]
       socket.emit('msg', payload)
+      inputMsg.value.inputMsg = null
     }
 
     socket.on('msg', (msgpayload) => {
@@ -161,13 +175,84 @@ export default {
       // console.log(allMsg.value.allMsg)
     })
 
+    socket.on('nextQuiz', (data) => {
+      nextQuiz.value.nextQuiz = data
+      quizing.value.quizing = true
+    })
+
     socket.on('correct', (data) => {
       for (let user of nowRoomUser.value.nowRoomUser) {
         if (user.socketId == data) {
           console.log(`${user.nickname} 가 정답을 맞췄넹`)
+          allMsg.value.allMsg.push({
+            socketId: '',
+            nickname: 'server',
+            content: `${user.nickname}가 정답을 맞췄습니다!`
+          })
         }
       }
-      // console.log(`${user[data].nickname} 가 정답을 맞췄넹`)
+    })
+
+    socket.on('endQuiz', () => {
+      console.log('end quiz!!!!')
+      quizing.value.quizing = false
+      allMsg.value.allMsg.push({
+        socketId: '',
+        nickname: 'server',
+        content: `퀴즈 끝났으니까 이제 다 나가라 그냥`
+      })
+    })
+
+    socket.on('fuckoff', () => {
+      allMsg.value.allMsg.push({
+        socketId: '',
+        nickname: 'server',
+        content: `이 방은 5초뒤에 폭파됩니다.`
+      })
+      allMsg.value.allMsg.push({
+        socketId: '',
+        nickname: 'server',
+        content: `5..`
+      })
+
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: 'server',
+          content: `4..`
+        })
+      }, 1000)
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: 'server',
+          content: `3..`
+        })
+      }, 2000)
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: 'server',
+          content: `2..`
+        })
+      }, 3000)
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: 'server',
+          content: `1..`
+        })
+      }, 4000)
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: 'server',
+          content: `폭발은 예술이다!`
+        })
+      }, 5000)
+      setTimeout(() => {
+        leaveRoom()
+      }, 5500)
     })
 
     return {
@@ -184,6 +269,8 @@ export default {
       allMsg,
       userSocketId,
       msgSocketId,
+      quizing,
+      nextQuiz,
       disconnect,
       enterRoom,
       leaveRoom,
