@@ -10,9 +10,9 @@ export class House {
       this.modelMesh = glb.scene.children[0]
       this.modelMesh.castShadow = true
       this.modelMesh.position.set(this.x, this.y, this.z)
-      this.modelMesh.scale.x = 0.023
-      this.modelMesh.scale.y = 0.023
-      this.modelMesh.scale.z = 0.023
+      this.modelMesh.scale.x = 1
+      this.modelMesh.scale.y = 1
+      this.modelMesh.scale.z = 1
       this.modelMesh.name = 'house'
       info.scene.add(this.modelMesh)
       info.meshes.push(this.modelMesh)

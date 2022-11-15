@@ -47,7 +47,8 @@ export default {
   name: 'WorldCanvas',
   props: {
     nowPage: Number,
-    nowNavbar: Boolean
+    nowNavbar: Boolean,
+    isGameStart: Number
   },
   components: {
     TalkComponent: TalkComponent,
@@ -59,6 +60,7 @@ export default {
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
+    let neerTiger = false
 
     const store = useStore()
 
@@ -70,13 +72,20 @@ export default {
     const isMinigame = ref({ isMinigame: false })
     setTimeout(() => {
       // Texture
-
       const textureLoader = new THREE.TextureLoader()
+
+      // 바닥
       const floorTexture = textureLoader.load('/images/map17.png')
       floorTexture.wrapS = THREE.RepeatWrapping
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
+      // 집 불러오는 바닥
+      const houseFloorTexture = textureLoader.load('/images/housefloor2.png')
+      houseFloorTexture.wrapS = THREE.RepeatWrapping
+      houseFloorTexture.wrapT = THREE.RepeatWrapping
+      houseFloorTexture.repeat.x = 1
+      houseFloorTexture.repeat.y = 1
       let isLoading = 0
 
       // Renderer
@@ -103,9 +112,9 @@ export default {
         1000
       )
 
-      const cameraPosition = new THREE.Vector3(-10, 30, 0)
+      const cameraPosition = new THREE.Vector3(-15, 40, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.25
+      camera.zoom = 0.15
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -178,16 +187,15 @@ export default {
       // pointerMesh.receiveShadow = true
       // scene.add(pointerMesh)
 
-      // 집 앞에 있는 노란 박스(삭제 예정)
+      // 집 앞에 있는 노란 박스
       const spotMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 3),
         new THREE.MeshStandardMaterial({
-          color: 'yellow',
-          transparent: true,
-          opacity: 0.5
+          map: houseFloorTexture,
+          opacity: 0.2
         })
       )
-      spotMesh.position.set(5, 0.005, 5)
+      spotMesh.position.set(-23, 0.005, -57)
       spotMesh.rotation.x = -Math.PI / 2
       spotMesh.receiveShadow = true
       scene.add(spotMesh)
@@ -199,9 +207,9 @@ export default {
         gltfLoader,
         scene,
         meshes,
-        modelSrc: '/models/Environment/house4.glb',
+        modelSrc: '/models/house.glb',
         x: -23,
-        y: 0,
+        y: -1.3,
         z: -60
       })
 
@@ -249,12 +257,12 @@ export default {
       // 빌런들
 
       const Villain = [
-        ['지현몬', { x: -63, y: 0, z: -48 }],
+        ['지현몬', { x: -61, y: 0, z: -48 }],
         ['효근몬', { x: -56, y: 0, z: 3 }],
         ['재준몬', { x: 8, y: 0, z: -30 }],
         ['근희몬', { x: 43, y: 0, z: 20 }],
         ['상균몬', { x: -58, y: 0, z: 60 }],
-        ['지원몬', { x: 10, y: 0, z: 60 }],
+        ['지원몬', { x: 8, y: 0, z: 60 }],
         ['하민몬', { x: 57, y: 0, z: 65 }],
         ['성빈몬', { x: 62, y: 0, z: -40 }]
       ]
@@ -416,16 +424,13 @@ export default {
             ) {
               player.moving = false
             }
-
             if (
               Math.abs(spotMesh.position.x - player.modelMesh.position.x) <
                 1.5 &&
               Math.abs(spotMesh.position.z - player.modelMesh.position.z) < 1.5
             ) {
               if (!house.visible) {
-                console.log('나와')
                 house.visible = true
-                spotMesh.material.color.set('seagreen')
                 gsap.to(house.modelMesh.position, {
                   duration: 1,
                   y: 1,
@@ -433,24 +438,64 @@ export default {
                 })
                 gsap.to(camera.position, {
                   duration: 1,
-                  y: 3
+                  y: 20
                 })
-                setTimeout(() => {
-                  alert('집에 들어감')
-                  emit('changeCanvas')
-                }, 1000)
+                gsap.to(camera, {
+                  duration: 1,
+                  zoom: 0.35,
+                  onUpdate: function () {
+                    camera.updateProjectionMatrix()
+                  }
+                })
               }
             } else if (house.visible) {
-              console.log('들어가')
               house.visible = false
-              spotMesh.material.color.set('yellow')
               gsap.to(house.modelMesh.position, {
                 duration: 0.5,
                 y: -1.3
               })
               gsap.to(camera.position, {
                 duration: 1,
-                y: 5
+                y: 30
+              })
+              gsap.to(camera, {
+                duration: 1,
+                zoom: 0.25,
+                onUpdate: function () {
+                  camera.updateProjectionMatrix()
+                }
+              })
+            }
+            if (
+              Math.abs(62 - player.modelMesh.position.x) < 5 &&
+              Math.abs(-33 - player.modelMesh.position.z) < 10
+            ) {
+              if (!neerTiger) {
+                neerTiger = true
+                gsap.to(camera.position, {
+                  duration: 5,
+                  y: 8
+                })
+                gsap.to(camera, {
+                  duration: 5,
+                  zoom: 0.3,
+                  onUpdate: function () {
+                    camera.updateProjectionMatrix()
+                  }
+                })
+              }
+            } else if (neerTiger) {
+              neerTiger = false
+              gsap.to(camera.position, {
+                duration: 3,
+                y: 30
+              })
+              gsap.to(camera, {
+                duration: 3,
+                zoom: 0.25,
+                onUpdate: function () {
+                  camera.updateProjectionMatrix()
+                }
               })
             }
           } else {
@@ -743,6 +788,7 @@ export default {
       }
       // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
       watchEffect(() => {
+        console.log(props.nowPage)
         if (myMoster.modelMesh) {
           const id = JSON.parse(
             localStorage.getItem('userInfo')
@@ -756,6 +802,22 @@ export default {
             x: -24,
             y: 0.25,
             z: -55
+          })
+        }
+      })
+      watchEffect(() => {
+        console.log(props.isGameStart)
+        if (props.isGameStart === 1) {
+          gsap.to(camera.position, {
+            duration: 3,
+            y: 30
+          })
+          gsap.to(camera, {
+            duration: 3,
+            zoom: 0.25,
+            onUpdate: function () {
+              camera.updateProjectionMatrix()
+            }
           })
         }
       })
