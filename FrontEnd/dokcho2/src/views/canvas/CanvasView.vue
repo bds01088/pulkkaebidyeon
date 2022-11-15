@@ -47,7 +47,8 @@ export default {
       nowNavbar: false,
       startSignal: 0,
       isloading: 0,
-      isGameStart: 0
+      isGameStart: 0,
+      audio: new Audio('audio/oursound.mp3')
     }
   },
   components: {
@@ -56,6 +57,14 @@ export default {
     NavBar: NavBar,
     BattleCanvas: BattleCanvas,
     LoadingPage: LoadingPage
+  },
+  mounted() {
+    this.audio.loop = true
+    this.audio.volume = 0.9
+    this.audio.play()
+  },
+  beforeUnmount() {
+    this.audio.pause()
   },
   methods: {
     changeCanvas() {
