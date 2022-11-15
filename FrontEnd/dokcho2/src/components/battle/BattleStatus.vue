@@ -10,7 +10,7 @@
           id="enemyHp"
           style="
             background-color: green;
-            height: 21px;
+            height: 31px;
             width: 100%;
             margin-left: 0;
           "
@@ -30,7 +30,7 @@
           id="myHp"
           style="
             background-color: green;
-            height: 21px;
+            height: 31px;
             width: 100%;
             margin-left: 0;
           "
