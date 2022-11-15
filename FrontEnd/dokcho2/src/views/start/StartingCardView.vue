@@ -2,9 +2,9 @@
   <div class="introCard">
     <div class="introCard__top">
       <!-- <p v-if="this.userInfo" class="TITLE">
-        {{ this.userInfo }} 님과 여정을 함께 할 풀깨비가 찾아왔어요!
+        {{ this.userInfo.nickname }} 님과 여정을 함께 할 풀깨비가 찾아왔어요!
       </p> -->
-      <p class="TITLE">여정을 함께 할 풀깨비가 찾아왔어요!</p>
+      <p class="TITLE">섬을 함께 탐험할 풀깨비가 찾아왔어요!</p>
     </div>
 
     <div class="introCard__body">
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   data() {
     return {
@@ -42,6 +44,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['fetchnowUserInfo']),
     goToMain() {
       this.$router.push({ path: '/main' })
     }

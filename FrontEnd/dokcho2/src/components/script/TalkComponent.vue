@@ -101,21 +101,22 @@ export default {
             }).then(() => {
               store.dispatch('fetchnowUserInfo')
               // mission complete alert 그 외에는 다음 설명
-
-              const itemImg = require(`@/assets/item/${content.item}.png`)
-              const expImg = require('@/assets/mission/exp.png')
               Swal.fire({
                 title: `${content.characters}의 고민 해결 완료 ✨`,
                 html:
                   `<div style="display:flex; flex-direction: row; justify-content:center">
 
                   <div style="margin: 1vw">
-                    <img  style="height:60px;width:60px;text-align:center;" src=${expImg}/>
-                    <p style="font-size:0.9rem;">경험치 <b>${content.exp}</b></p>
+                    <img  style="height:60px;width:60px;text-align:center;" src=${require('@/assets/mission/exp.png')}/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
                   </div>
 
                   <div style="margin: 1vw">
-                  <img  style="height:60px;width:60px;text-align:center;" src=${itemImg}/>
+                  <img  style="height:60px;width:60px;text-align:center;" src=${require('@/assets/item/' +
+                    content.item +
+                    '.png')}/>
                     <p style="font-size:0.9rem;">${content.itemName}</p>
                   </div>
                     
