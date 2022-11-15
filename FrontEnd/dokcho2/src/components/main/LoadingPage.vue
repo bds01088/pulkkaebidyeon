@@ -79,9 +79,10 @@ export default {
 .loading__true {
   width: 100%;
   height: 100%;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+  /* background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('../../assets/startimg.png');
-  background-size: cover;
+  background-size: cover; */
+  background-color: rgba(0, 0, 0, 0.785);
   text-align: center;
 }
 
