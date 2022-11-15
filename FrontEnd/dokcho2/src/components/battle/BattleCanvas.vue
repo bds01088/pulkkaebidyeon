@@ -645,6 +645,9 @@ export default {
         }
       } else if (myAct.value == '방어') {
         enemyDamage.value = enemyAttack.value - myDefense.value
+        if (enemyDamage.value < 0) {
+          enemyDamage.value = 0
+        }
 
         msg.value = item + ' 사용!!!'
         phase.value = 'showAct'
@@ -1019,7 +1022,7 @@ export default {
               msg.value = '배틀에서 졌다... 재시작합니다...'
 
               setTimeout(() => {
-                emit('startBattle')
+                emit('changeBattle')
               }, 2000)
             } else if (poison.value == true) {
               poisonCnt.value += 1
@@ -1085,7 +1088,7 @@ export default {
               msg.value = '배틀에서 졌다... 재시작합니다...'
 
               setTimeout(() => {
-                emit('startBattle')
+                emit('changeBattle')
               }, 2000)
             } else if (poison.value == true) {
               poisonCnt.value += 1
