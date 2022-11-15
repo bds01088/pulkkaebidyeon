@@ -138,6 +138,7 @@ export default {
     }
 
     socket.on('goaway', () => {
+      console.log('꺼져랑')
       swal({
         title: '풀방이네요~',
         text: ' 꺼져',
@@ -204,14 +205,25 @@ export default {
       }
     })
 
-    socket.on('endQuiz', () => {
-      console.log('end quiz!!!!')
+    socket.on('endQuiz', (data) => {
       quizing.value.quizing = false
+      console.log(data)
+      for (let winner of data) {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: 'server',
+          content: `${winner.nickname}님이 이겼습니다!`
+        })
+      }
       allMsg.value.allMsg.push({
         socketId: '',
         nickname: 'server',
         content: `퀴즈 끝났으니까 이제 다 나가라 그냥`
       })
+    })
+
+    socket.on('winnerwinnerchickendinner', () => {
+      console.log('내가이겨따~')
     })
 
     socket.on('fuckoff', () => {
