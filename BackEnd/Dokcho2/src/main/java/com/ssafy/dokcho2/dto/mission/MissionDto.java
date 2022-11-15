@@ -1,6 +1,8 @@
 package com.ssafy.dokcho2.dto.mission;
 
 import com.ssafy.dokcho2.domain.enums.MissionStatus;
+import com.ssafy.dokcho2.domain.item.Item;
+import com.ssafy.dokcho2.domain.item.ItemRepository;
 import com.ssafy.dokcho2.domain.mission.Mission;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
@@ -23,8 +25,11 @@ public class MissionDto {
     private MissionStatus status;
     private Long relic;
     private Long item;
+    private String relicName;
+    private String itemName;
+    private int exp;
 
-    public static MissionDto from(Mission entity, MissionStatus status){
+    public static MissionDto from(Mission entity, MissionStatus status, Item item, Item relic){
         String line = "";
         String next = "";
         String prev = "";
@@ -65,6 +70,9 @@ public class MissionDto {
                 .prev(prev)
                 .relic(entity.getRelic())
                 .item(entity.getItem())
+                .itemName(item.getName())
+                .relicName(relic.getName())
+                .exp(entity.getExp())
                 .build();
     }
 }
