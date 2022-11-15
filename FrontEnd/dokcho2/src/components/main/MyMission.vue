@@ -47,9 +47,10 @@
 
         <div v-else class="mission__box tooltip">
           <div class="mission__text">
-            <span class="tooltiptext">
-              <br />✨설명 <br />{{ mission.prev }}</span
-            >
+            <div class="tooltiptext">
+              <img src="@/assets/mission/next.png" /><br />
+              <p>{{ mission.prev }}</p>
+            </div>
             <p class="mission__id">🔑 {{ mission.missionId }}번째 미션</p>
             <p class="mission__name" v-if="mission.characters === '단군'">
               <b>{{ mission.characters }}</b> : 고조선의 보물을 찾아라!
@@ -291,24 +292,37 @@ export default {
 
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 150px;
-  height: 150px;
-  background-color: rgba(255, 255, 255, 0.808);
+  width: 10vw;
+  height: auto;
+  background-color: rgba(255, 255, 255);
   color: black;
   text-align: center;
   border-radius: 30px;
-  padding: 7px 0;
-  font-size: 0.8rem;
+  /* padding: 7px 0; */
+  font-size: 1rem;
 
   /* Position the tooltip */
   position: absolute;
   z-index: 1;
-  /* top: -200%; */
+  right: 110%;
+  /* left: -70%; */
   bottom: -100%;
   left: -20%;
   margin-left: -5vw;
   transition: opacity 1s;
   line-height: 1.5rem;
+}
+
+.tooltiptext img {
+  width: 7vw;
+  margin-top: 2vh;
+}
+
+.tooltiptext p {
+  margin-right: 2vw;
+  word-break: keep-all;
+  /* word-wrap: break-word; */
+  margin-bottom: 1vw;
 }
 
 .tooltip:hover .tooltiptext {
@@ -325,6 +339,6 @@ export default {
   /* margin-left: -10px; */
   border-width: 10px;
   border-style: solid;
-  border-color: transparent transparent transparent rgba(255, 255, 255, 0.808);
+  border-color: transparent transparent transparent rgba(255, 255, 255);
 }
 </style>
