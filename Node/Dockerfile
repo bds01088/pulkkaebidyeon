@@ -3,5 +3,5 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --silent
 COPY . .
-CMD [ "npm", "start"]
+CMD [ "node", ".\quiz_server.js"]
 EXPOSE 3001
