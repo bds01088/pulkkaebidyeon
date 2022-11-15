@@ -250,7 +250,7 @@ export default {
       // 빌런들
 
       const Villain = [
-        ['지현몬', { x: -62, y: 0, z: -50 }],
+        ['지현몬', { x: -63, y: 0, z: -48 }],
         ['효근몬', { x: -56, y: 0, z: 3 }],
         ['재준몬', { x: 8, y: 0, z: -30 }],
         ['근희몬', { x: 43, y: 0, z: 20 }],
@@ -275,7 +275,7 @@ export default {
       const Buildings = [
         ['첨성대', { x: 5, y: 0, z: -30 }],
         ['덕수궁', { x: 45, y: 0, z: -10 }],
-        ['광화문', { x: -40, y: 0, z: 45 }]
+        ['광화문', { x: -33, y: 0, z: 45 }]
       ]
       Buildings.forEach((element) => {
         new Building({

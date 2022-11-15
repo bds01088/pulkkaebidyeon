@@ -15,6 +15,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
 import { House } from '../modules/House'
+import { Wall } from '../modules/Wall'
 import gsap from 'gsap'
 import { KeyController } from '../modules/CharacterControl'
 import * as CANNON from 'cannon-es'
@@ -203,6 +204,14 @@ export default {
         gltfLoader,
         modelSrc: '/models/character.glb'
       })
+
+      // 맵 막는 박스 만들기
+      new Wall({
+        cannonWorld,
+        x: 8,
+        z: 8
+      })
+
       console.log(player)
       const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
       const boxMaterial = new THREE.MeshStandardMaterial({
