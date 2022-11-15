@@ -107,9 +107,9 @@ export default {
   outline: none;
   margin: 0;
 }
-canvas {
-  position: relative;
-  height: 600px;
-  width: 600px;
+.wholeCanvas {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 </style>
