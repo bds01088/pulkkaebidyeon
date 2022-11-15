@@ -176,13 +176,18 @@
               v-if="
                 this.password !== this.password2 &&
                 this.password2 !== undefined &&
-                this.password2 !== ''
+                this.password2 !== '' &&
+                this.isPasswordChecked
               "
               >비밀번호를 확인해주세요 🙏</span
             >
             <span
               class="allowedtext"
-              v-else-if="this.password === this.password2"
+              v-else-if="
+                this.password === this.password2 &&
+                this.password !== undefined &&
+                this.password !== ''
+              "
               >비밀번호 확인이 완료되었습니다 👌</span
             >
           </div>
