@@ -76,7 +76,10 @@ export default {
               emit('talkClose')
               Toast.fire({
                 icon: 'success',
-                title: `유물 도둑을 찾아라! ${content.next}`
+                html:
+                  `<p><b>유물 도둑을 찾아라!</b></p>` +
+                  '<br />' +
+                  `<p>${content.next}</p>`
               })
             })
           } else if (content.status === 'QUIZ_PASSED') {
@@ -100,20 +103,32 @@ export default {
               // mission complete alert 그 외에는 다음 설명
 
               const itemImg = require(`@/assets/item/${content.item}.png`)
+              const expImg = require('@/assets/mission/exp.png')
               Swal.fire({
                 title: `${content.characters}의 고민 해결 완료 ✨`,
                 html:
-                  '<b> 미션 획득 보상 </b> ' +
+                  `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src=${expImg}/>
+                    <p style="font-size:0.9rem;">경험치 <b>${content.exp}</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src=${itemImg}/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+                    
+                  </div>` +
                   '<br />' +
-                  `<img  style="height:60px;width:60px;" src=${itemImg}/> ` +
-                  `<span>${content.itemName}</span>`,
+                  `<p>🔍 ${content.next}</p>`,
                 imageUrl: clearImg,
                 imageWidth: 300,
                 imageHeight: 100,
                 imageAlt: 'Custom image',
-                showConfirmButton: false,
-                timer: 2500,
-                background: 'rgba(255, 255, 255, 0.7)'
+                // showConfirmButton: false,
+                // timer: 2500,
+                background: 'rgba(255, 255, 255)'
               })
               emit('talkClose')
             })

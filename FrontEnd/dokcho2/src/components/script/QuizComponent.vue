@@ -78,7 +78,10 @@ export default {
     function endQuiz() {
       Toast.fire({
         icon: 'success',
-        title: `보스에게 유물을 돌려 받으러 가요 🚀`
+        html:
+          '<p style="text-align:center;"><b>퀴즈를 통과했어요! </b></p>' +
+          '<br />' +
+          `<p style="text-align:center;">보스에게 유물을 돌려 받으러 가요 🚀</p>`
       })
       axios({
         url: BASE_URL + '/api/v1/mission/',
@@ -94,14 +97,17 @@ export default {
 
     function nextQuiz(answer) {
       if (answer === quiz.value.content[quiz.value.nowPage].right_answer) {
-        swal({
-          title: '정답!!!',
-          icon: 'success',
-          text: '다음 문제도 풀어볼까요?',
-          buttons: false,
-          timer: 800
-        })
-        quiz.value.nowPage += 1
+        if (quiz.value.nowPage !== quiz.value.content.length) {
+          swal({
+            title: '정답!!!',
+            icon: 'success',
+            text: '다음 문제도 풀어볼까요?',
+            buttons: false,
+            timer: 800
+          })
+          quiz.value.nowPage += 1
+        }
+
         if (quiz.value.nowPage === quiz.value.content.length) {
           endQuiz()
         }
@@ -109,7 +115,7 @@ export default {
         swal({
           title: '틀렸습니다. 더 공부하고 도전하세요!',
           icon: 'error',
-          text: '🤔',
+          text: '   ',
           buttons: false,
           timer: 2000
         })
