@@ -121,6 +121,7 @@ import { CreateText } from '../modules/CreateText'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'BattleCanvas',
@@ -134,6 +135,14 @@ export default {
 
   setup(props, { emit }) {
     // console.log(JSON.parse(localStorage.getItem('userInfo')))
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    })
 
     const myHpBar = ref('100')
     const enemyHpBar = ref('100')
@@ -623,6 +632,11 @@ export default {
 
                       winBattle()
 
+                      Toast.fire({
+                        icon: 'success',
+                        title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                      })
+
                       setTimeout(() => {
                         emit('changeBattle')
                       }, 2000)
@@ -741,6 +755,11 @@ export default {
                 status.value = 'win'
                 winBattle()
 
+                Toast.fire({
+                  icon: 'success',
+                  title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                })
+
                 setTimeout(() => {
                   emit('changeBattle')
                 }, 2000)
@@ -758,6 +777,11 @@ export default {
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
+
+                Toast.fire({
+                  icon: 'success',
+                  title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                })
 
                 setTimeout(() => {
                   emit('changeBattle')
@@ -796,6 +820,11 @@ export default {
                 status.value = 'win'
                 winBattle()
 
+                Toast.fire({
+                  icon: 'success',
+                  title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                })
+
                 setTimeout(() => {
                   emit('changeBattle')
                 }, 2000)
@@ -813,6 +842,11 @@ export default {
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
+
+                Toast.fire({
+                  icon: 'success',
+                  title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                })
 
                 setTimeout(() => {
                   emit('changeBattle')
@@ -845,6 +879,11 @@ export default {
                           status.value = 'win'
                           winBattle()
 
+                          Toast.fire({
+                            icon: 'success',
+                            title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                          })
+
                           setTimeout(() => {
                             emit('changeBattle')
                           }, 2000)
@@ -866,6 +905,11 @@ export default {
           phase.value = 'end'
           status.value = 'win'
           winBattle()
+
+          Toast.fire({
+            icon: 'success',
+            title: '배틀에서 이겨 유물을 획득했어요 🏆'
+          })
 
           setTimeout(() => {
             emit('changeBattle')
@@ -909,6 +953,11 @@ export default {
                     phase.value = 'end'
                     status.value = 'win'
                     winBattle()
+
+                    Toast.fire({
+                      icon: 'success',
+                      title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                    })
 
                     setTimeout(() => {
                       emit('changeBattle')
@@ -976,6 +1025,11 @@ export default {
                   status.value = 'win'
                   winBattle()
 
+                  Toast.fire({
+                    icon: 'success',
+                    title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                  })
+
                   setTimeout(() => {
                     emit('changeBattle')
                   }, 2000)
@@ -1021,6 +1075,11 @@ export default {
               status.value = 'lose'
               msg.value = '배틀에서 졌다... 재시작합니다...'
 
+              Toast.fire({
+                icon: 'error',
+                title: '유물을 획득하지 못했어요 💦 다시 도전!'
+              })
+
               setTimeout(() => {
                 emit('changeBattle')
               }, 2000)
@@ -1046,6 +1105,11 @@ export default {
                   phase.value = 'end'
                   status.value = 'win'
                   winBattle()
+
+                  Toast.fire({
+                    icon: 'success',
+                    title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                  })
 
                   setTimeout(() => {
                     emit('changeBattle')
@@ -1087,6 +1151,11 @@ export default {
               status.value = 'lose'
               msg.value = '배틀에서 졌다... 재시작합니다...'
 
+              Toast.fire({
+                icon: 'error',
+                title: '유물을 획득하지 못했어요 💦 다시 도전!'
+              })
+
               setTimeout(() => {
                 emit('changeBattle')
               }, 2000)
@@ -1112,6 +1181,11 @@ export default {
                   phase.value = 'end'
                   status.value = 'win'
                   winBattle()
+
+                  Toast.fire({
+                    icon: 'success',
+                    title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                  })
 
                   setTimeout(() => {
                     emit('changeBattle')
@@ -1153,6 +1227,11 @@ export default {
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
+
+                Toast.fire({
+                  icon: 'success',
+                  title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                })
 
                 setTimeout(() => {
                   emit('changeBattle')
@@ -1310,6 +1389,11 @@ export default {
                         status.value = 'win'
                         winBattle()
 
+                        Toast.fire({
+                          icon: 'success',
+                          title: '배틀에서 이겨 유물을 획득했어요 🏆'
+                        })
+
                         setTimeout(() => {
                           emit('changeBattle')
                         }, 2000)
@@ -1351,6 +1435,11 @@ export default {
           phase.value = 'end'
           status.value = 'win'
           winBattle()
+
+          Toast.fire({
+            icon: 'success',
+            title: '배틀에서 이겨 유물을 획득했어요 🏆'
+          })
 
           setTimeout(() => {
             emit('changeBattle')
