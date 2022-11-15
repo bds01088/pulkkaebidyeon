@@ -47,7 +47,8 @@ export default {
       nowNavbar: false,
       startSignal: 0,
       isloading: 0,
-      isGameStart: 0
+      isGameStart: 0,
+      audio: new Audio('audio/oursound.mp3')
     }
   },
   components: {
@@ -56,6 +57,14 @@ export default {
     NavBar: NavBar,
     BattleCanvas: BattleCanvas,
     LoadingPage: LoadingPage
+  },
+  mounted() {
+    this.audio.loop = true
+    this.audio.volume = 0.9
+    this.audio.play()
+  },
+  beforeUnmount() {
+    this.audio.pause()
   },
   methods: {
     changeCanvas() {
@@ -107,9 +116,9 @@ export default {
   outline: none;
   margin: 0;
 }
-canvas {
-  position: relative;
-  height: 600px;
-  width: 600px;
+.wholeCanvas {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 </style>
