@@ -267,7 +267,8 @@ export default {
                     monster.level - 1
                   } 👉 Lv.${monster.level}</b>로 성장했어요!</p>
                   </div>`,
-                  timer: 5000
+                  timer: 5000,
+                  showConfirmButton: false
                 })
               })
               .catch((err) => console.log(err))
