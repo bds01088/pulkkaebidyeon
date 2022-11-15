@@ -13,6 +13,7 @@ export class Environment {
     this.x = info.position.x
     this.y = info.position.y
     this.z = info.position.z
+
     info.gltfLoader.load(info.modelSrc, (glb) => {
       glb.scene.traverse((child) => {
         if (child.isMesh) {
