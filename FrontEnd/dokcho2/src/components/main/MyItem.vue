@@ -195,6 +195,10 @@ h3 {
   text-align: center;
 }
 
+.item__nomission p {
+  margin-top: 10vh;
+}
+
 .item__body2 {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
