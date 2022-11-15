@@ -190,6 +190,37 @@ export default {
             .then((res) => {
               console.log(res.data)
               reward.value.item = res.data.itemDto
+
+              // levelup이 true로 들어오면 현재 representMonster -> detail 받아서 레벨업 alert 띄우기
+              if (res.data.levelup === true) {
+                const user = JSON.parse(localStorage.getItem('userInfo'))
+                const monsterId = user.representMonster
+                let monster = []
+                const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
+
+                axios({
+                  url: BASE_URL + '/api/v1/monster/' + monsterId,
+                  method: 'GET',
+                  headers: {
+                    AUTHORIZATION:
+                      'Bearer ' + localStorage.getItem('accessToken')
+                  }
+                })
+                  .then((res) => {
+                    monster = res.data
+                    Swal.fire({
+                      title: 'Level Up!!🎉',
+                      html: `<div style="text-align:center;">
+                  <img  style="height:100px;width:100px;text-align:center;" src=${monsterImg}/>
+                  <p><b>${monster.name}</b>이</p><br /> <p> <b>Lv.${
+                        monster.level - 1
+                      } 👉 Lv.${monster.level}</b>로 성장했어요!</p>
+                  </div>`,
+                      timer: 5000
+                    })
+                  })
+                  .catch((err) => console.log(err))
+              }
             })
             .catch((err) => console.log(err))
         }, 1000)
