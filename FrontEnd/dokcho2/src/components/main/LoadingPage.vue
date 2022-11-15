@@ -1,7 +1,7 @@
 <template>
   <div class="loadingPage">
     <div class="loading__false" v-if="this.isloading !== 1">
-      <div class="story">
+      <!-- <div class="story">
         옛날 옛날 어느 마을에 허준이라는 의원이 살고 있었어요. <br />
         허준은 백성들을 위해 온갖 병과 치료법을 밤낮으로 연구한 끝에 동의보감을
         편찬했어요. <br />
@@ -11,7 +11,8 @@
         허준의 제자인 여러분은 허준이 기르던 풀깨비들과 함께 동의보감을 찾기
         위해 모험을 떠나기로 했어요. <br />
         호랑이의 흔적을 찾아 동의보감을 되찾아주세요!
-      </div>
+      </div> -->
+      <!-- <img class="loading__img" src="@/assets/loading/loading.png" /> -->
       <div class="loading__box">
         <div class="loading">
           <img class="img1" src="@/assets/loading/1.png" alt="1" />
@@ -21,7 +22,7 @@
         </div>
       </div>
       <p class="entering" v-if="this.isloading !== 1">
-        풀깨비뎐으로 들어가는 중...
+        호랑이의 흔적을 찾아 동의보감을 되찾아주세요!
       </p>
     </div>
 
@@ -57,6 +58,12 @@ export default {
   /* background-color: white; */
 }
 
+.loading__img {
+  margin-top: 5vh;
+  width: 40%;
+  border-radius: 30px;
+}
+
 .loading__false {
   width: 100%;
   height: 100%;
@@ -72,9 +79,10 @@ export default {
 .loading__true {
   width: 100%;
   height: 100%;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+  /* background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('../../assets/startimg.png');
-  background-size: cover;
+  background-size: cover; */
+  background-color: rgba(0, 0, 0, 0.785);
   text-align: center;
 }
 

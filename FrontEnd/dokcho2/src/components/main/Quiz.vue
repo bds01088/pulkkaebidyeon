@@ -1,48 +1,113 @@
 <template>
-  <div>
-    <div v-if="this.QuizRoomEntered.QuizRoomEntered === false">
-      <button @click="disconnect()">디스커넥트</button>
-      <button @click="createRoom()">방생성</button>
-      <input
-        type="text"
-        v-model="inputRoomName.inputRoomName"
-        placeholder="방 이름"
-      />
-      <div>
-        <li
+  <div class="quizComponent">
+    <div
+      v-if="this.QuizRoomEntered.QuizRoomEntered === false"
+      class="waitingRoom"
+    >
+      <div class="title">Quiz!</div>
+      <div class="makeRoom">
+        <p>방 만들기</p>
+        <input
+          type="text"
+          v-model="inputRoomName.inputRoomName"
+          placeholder="방 이름"
+        />
+        <div>
+          <button @click="createRoom()">방생성</button>
+        </div>
+
+        <!-- <p>유저닉네임목록{{ this.nowRoomUserNickname.nowRoomUserNickname }}</p> -->
+      </div>
+      <div class="roomList">
+        <div
           @click="enterRoom(room.roomId)"
           v-for="room in this.rooms.rooms"
           v-bind:key="room"
+          class="room"
         >
-          {{ room.roomName }}
-        </li>
-      </div>
-
-      <!-- <p>유저닉네임목록{{ this.nowRoomUserNickname.nowRoomUserNickname }}</p> -->
-    </div>
-    <div v-else>
-      <button @click="leaveRoom()">방나가기</button>
-      <p>{{ this.nowRoomInfo.nowRoomInfo.roomId }}번 방</p>
-      <p>방제 : {{ this.nowRoomInfo.nowRoomInfo.roomName }}</p>
-      <li v-for="user in this.nowRoomUser.nowRoomUser" v-bind:key="user">
-        {{ user.nickname }}
-      </li>
-      <div v-if="this.quizing.quizing === true && this.nextQuiz.nextQuiz">
-        퀴즈
-        <div>
-          문제 : {{ this.nextQuiz.nextQuiz.question }} 힌트 :
-          {{ this.nextQuiz.nextQuiz.description }}
+          <div class="roomNum">
+            {{ room.roomId }}
+          </div>
+          <div class="roomName">
+            {{ room.roomName }}
+          </div>
+          <div class="roomPerson">{{ room.currentUser.length }} / 4</div>
         </div>
       </div>
-      <div v-else>퀴즈 안 진행중</div>
+      <img
+        class="exit__btn"
+        @click="closeQuiz()"
+        src="@/assets/navbar/ExitButton.png"
+        alt=""
+      />
+    </div>
 
-      <li v-for="msg in this.allMsg.allMsg" v-bind:key="msg">
-        <p v-if="this.userSocketId.userSocketId === msg.socketId">
-          내가 한 말 : {{ msg.content }}
-        </p>
+    <div v-else>
+      <div class="inGame">
+        <div class="inGame__header">
+          <div class="inGame__roomNum">
+            <p>{{ this.nowRoomInfo.nowRoomInfo.roomId }}번 방</p>
+          </div>
+          <div class="inGame__roomName">
+            <p>{{ this.nowRoomInfo.nowRoomInfo.roomName }}</p>
+          </div>
+          <div class="inGame__exit">
+            <button @click="leaveRoom()">방나가기</button>
+          </div>
+        </div>
+        <div class="inGame__quizBox">
+          <div v-if="this.quizing.quizing === true && this.nextQuiz.nextQuiz">
+            <div>문제 : {{ this.nextQuiz.nextQuiz.question }}</div>
+            <div>
+              힌트 :
+              {{ this.nextQuiz.nextQuiz.description }}
+            </div>
+          </div>
+          <div v-else>퀴즈 안 진행중</div>
+        </div>
+        <div class="inGame__body">
+          <div class="chatting">
+            <div class="chatBox">
+              <div v-for="msg in this.allMsg.allMsg" :key="msg" class="texts">
+                <div
+                  class="myText"
+                  v-if="this.userSocketId.userSocketId === msg.socketId"
+                >
+                  {{ msg.content }}
+                </div>
+                <div class="yourText" v-else>
+                  {{ msg.nickname }} : {{ msg.content }}
+                </div>
+              </div>
+            </div>
+            <div class="inputBox">
+              <input
+                type="text"
+                v-model="inputMsg.inputMsg"
+                placeholder="메세지"
+                @keyup.enter="
+                  sendMsg(
+                    this.nowRoomInfo.nowRoomInfo.roomId,
+                    this.userSocketId.userSocketId,
+                    this.userNickName.userNickName,
+                    this.inputMsg.inputMsg
+                  )
+                "
+              />
+            </div>
+          </div>
+          <div class="players">
+            <div
+              v-for="user in this.nowRoomUser.nowRoomUser"
+              v-bind:key="user"
+              class="player"
+            >
+              {{ user.nickname }}
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <p v-else>{{ msg.nickname }}가 한 말 : {{ msg.content }}</p>
-      </li>
       <!-- <li
         v-for="quiz in this.nowRoomInfo.nowRoomInfo.roomQuiz"
         v-bind:key="quiz"
@@ -51,19 +116,6 @@
         {{ quiz.description }}
         {{ quiz.right_answer }}
       </li> -->
-      <input
-        type="text"
-        v-model="inputMsg.inputMsg"
-        placeholder="메세지"
-        @keyup.enter="
-          sendMsg(
-            this.nowRoomInfo.nowRoomInfo.roomId,
-            this.userSocketId.userSocketId,
-            this.userNickName.userNickName,
-            this.inputMsg.inputMsg
-          )
-        "
-      />
     </div>
   </div>
 </template>
@@ -82,7 +134,7 @@ export default {
   props: {
     nowPage: Number
   },
-  setup() {
+  setup(props, { emit }) {
     let inputRoomName = ref({ inputRoomName: '' })
     let nowRoomInfo = ref({ nowRoomInfo: [] })
     let roomName = ref({ roomName: '' })
@@ -307,6 +359,11 @@ export default {
       }, 5500)
     })
 
+    function closeQuiz() {
+      disconnect()
+      emit('closeQuiz')
+    }
+
     return {
       inputRoomName,
       roomName,
@@ -327,10 +384,232 @@ export default {
       enterRoom,
       leaveRoom,
       createRoom,
-      sendMsg
+      sendMsg,
+      closeQuiz
     }
   }
 }
 </script>
 
-<style></style>
+<style scoped>
+.quizComponent {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+}
+
+.waitingRoom {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  width: 100%;
+  height: 10%;
+  text-align: center;
+  font-size: 60px;
+}
+
+.makeRoom {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.makeRoom > p {
+  margin: 0 5px 0 0;
+}
+
+input {
+  margin: 0;
+  height: 35px;
+}
+
+.roomList {
+  width: 80vw;
+  height: 60%;
+  border-radius: 20px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: antiquewhite;
+  padding: 15px;
+}
+
+.room {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 20px;
+  margin: 15px 10vw;
+  width: 60vw;
+  height: 15%;
+  background-color: burlywood;
+}
+
+.room > div {
+  font-size: 20px;
+}
+
+.roomNum {
+  text-align: center;
+  width: 15%;
+}
+
+.roomName {
+  width: 60%;
+}
+
+.roomPerson {
+  text-align: center;
+  width: 15%;
+}
+
+.exit__btn {
+  width: 4vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 4vh;
+  right: 4vw;
+  cursor: pointer;
+}
+
+.inGame {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.inGame__header {
+  width: 80%;
+  height: 10%;
+  margin: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inGame__header > div {
+  text-align: center;
+}
+
+.inGame__roomName {
+  font-size: 35px;
+}
+
+.inGame__quizBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  margin: 15px 0;
+  width: 80%;
+  height: 10%;
+  background-color: burlywood;
+}
+
+.inGame__quizBox > div {
+  font-size: 20px;
+  text-align: center;
+  margin: 7px 0;
+}
+
+.inGame__body {
+  width: 100%;
+  height: 80%;
+}
+
+.inGame__roomNum {
+  width: 20%;
+}
+
+.inGame__roomName {
+  width: 60%;
+}
+
+.inGame__exit {
+  width: 20%;
+}
+
+.inGame__body {
+  height: 75%;
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatting {
+  height: 100%;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chatBox {
+  height: 75%;
+  width: 100%;
+  border-radius: 20px;
+  padding: 30px;
+  background-color: antiquewhite;
+  overflow: auto;
+}
+
+.texts > div {
+  margin: 5px 0;
+  font-size: 20px;
+}
+
+.myText {
+  text-align: end;
+}
+.yourText {
+  text-align: start;
+}
+
+.inputBox {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+}
+
+.inputBox > input {
+  width: 80%;
+}
+
+.players {
+  height: 60%;
+  width: 20%;
+  border-radius: 20px;
+  padding: 40px;
+  background-color: antiquewhite;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.player {
+  width: 100%;
+  font-size: 25px;
+  text-align: center;
+  margin: 20px 0;
+}
+</style>

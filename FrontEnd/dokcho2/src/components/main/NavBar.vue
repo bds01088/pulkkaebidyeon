@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="navbar">
+    <nav class="navbar" v-if="!this.quiz.quiz">
       <div>
         <ul>
           <li>
@@ -24,14 +24,14 @@
           </li>
           <li>
             <div class="navbar__item">
-              <p>로그아웃</p>
-              <img @click="logout" src="@/assets/navbar/007.png" alt="" />
+              <p>퀴즈</p>
+              <img @click="openQuiz" src="@/assets/navbar/008.png" alt="" />
             </div>
           </li>
           <li>
             <div class="navbar__item">
-              <p>쿠이즈</p>
-              <img @click="openQuiz" src="@/assets/navbar/007.png" alt="" />
+              <p>로그아웃</p>
+              <img @click="logout" src="@/assets/navbar/007.png" alt="" />
             </div>
           </li>
         </ul>
