@@ -58,16 +58,16 @@
       <!-- 게임 내용 >.<  -->
 
       <div v-else class="game__play">
-        <div class="play__header">
+        <div class="play__header" :class="{ yes__time: chosung.time <= 10 }">
           <p>⏱ {{ chosung.time }}</p>
         </div>
 
         <div class="play__body">
           <div class="question" v-if="chosung.time <= 10">
-            <h2>{{ chosung.quiz[chosung.nowPage][2] }}</h2>
+            <h2>{{ chosung.quiz[chosung.nowPage].hint }}</h2>
           </div>
           <div class="question" v-else>
-            <h2>{{ chosung.quiz[chosung.nowPage][0] }}</h2>
+            <h2>{{ chosung.quiz[chosung.nowPage].question }}</h2>
           </div>
 
           <div class="answer">
@@ -93,25 +93,38 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import _ from 'lodash'
 import swal from 'sweetalert'
+import Swal from 'sweetalert2'
 
-import { chosungs } from '../modules/Chosung'
 import { BASE_URL } from '@/constant/BASE_URL'
+import { useStore } from 'vuex'
 
 export default {
   components: {},
   setup(props, { emit }) {
+    const store = useStore()
     const game = ref({ game: false })
     let chosung = ref({ quiz: [], nowPage: 0, time: 20, input: '' })
     let reward = ref({ exp: 15, item: {} })
 
-    // 퀴즈 데이터 받아와서 셔플하기
-    const tmp_chosungs = _.shuffle(chosungs)
-    // 퀴즈 3개 뽑아오기!
-    chosung.value.quiz = tmp_chosungs.slice(0, 4)
+    // 퀴즈 데이터 받아오기
+
+    async function fetchQuiz() {
+      if (store.getters.isAccessTokenExpired) {
+        await store.dispatch('doRefreshToken')
+      }
+      axios({
+        url: BASE_URL + '/api/v1/game/consonant/auth/3',
+        method: 'GET'
+      })
+        .then((res) => {
+          chosung.value.quiz = res.data
+        })
+        .catch((err) => console.log(err))
+    }
+
     function changeGame() {
       startTimer()
       game.value.game = true
@@ -121,14 +134,18 @@ export default {
       let gameTimer = setInterval(() => {
         chosung.value.time -= 1
         if (chosung.value.time === -1) {
-          swal({
-            title: '다시 도전해주세요! 😕',
+          Swal.fire({
+            title: '다시 도전해주세요!',
             icon: 'error',
-            text: `정답은 바로 ${
-              chosung.value.quiz[chosung.value.nowPage][1]
-            }!`,
-            buttons: false,
-            timer: 1800
+            html:
+              '<p>정답은 바로 ...</p>' +
+              '<br />' +
+              `<h3><b>${
+                chosung.value.quiz[chosung.value.nowPage].answer
+              }!</b></h3>` +
+              '<br />' +
+              `<p>${chosung.value.quiz[chosung.value.nowPage].description}</p>`
+            // timer: 2000
           })
           clearInterval(gameTimer)
           setTimeout(() => {
@@ -144,7 +161,7 @@ export default {
     function submitInput() {
       console.log(chosung.value.quiz)
       if (
-        chosung.value.input === chosung.value.quiz[chosung.value.nowPage][1]
+        chosung.value.input === chosung.value.quiz[chosung.value.nowPage].answer
       ) {
         chosung.value.time = 20
         chosung.value.input = ''
@@ -178,10 +195,14 @@ export default {
         }, 1000)
       }
     }
+    onMounted(() => fetchQuiz())
+
     return {
+      store,
       game,
       chosung,
       reward,
+      fetchQuiz,
       changeGame,
       submitInput
     }
@@ -418,5 +439,9 @@ input[type='text'] {
   top: 15vh;
   right: 25vw;
   cursor: pointer;
+}
+
+.yes__time {
+  color: red;
 }
 </style>
