@@ -28,12 +28,19 @@
               <img @click="logout" src="@/assets/navbar/007.png" alt="" />
             </div>
           </li>
+          <li>
+            <div class="navbar__item">
+              <p>쿠이즈</p>
+              <img @click="openQuiz" src="@/assets/navbar/007.png" alt="" />
+            </div>
+          </li>
         </ul>
       </div>
     </nav>
     <MyModal1 v-if="modal1.modal1" @closeModal1="closeModal1" />
     <MyModal2 v-if="modal2.modal2" @closeModal2="closeModal2" />
     <MyModal3 v-if="modal3.modal3" @closeModal3="closeModal3" />
+    <Quiz v-if="quiz.quiz" @closeQuiz="closeQuiz" />
   </div>
 </template>
 
@@ -43,6 +50,7 @@ import { BASE_URL } from '@/constant/BASE_URL'
 import MyModal1 from './MyMission.vue'
 import MyModal2 from './MyItem.vue'
 import MyModal3 from './MyMap.vue'
+import Quiz from './Quiz.vue'
 import swal from 'sweetalert'
 import Swal from 'sweetalert2'
 import { ref } from 'vue'
@@ -56,17 +64,31 @@ const swalWithBootstrapButtons = Swal.mixin({
   }
 })
 export default {
-  components: { MyModal1: MyModal1, MyModal2: MyModal2, MyModal3: MyModal3 },
+  components: {
+    MyModal1: MyModal1,
+    MyModal2: MyModal2,
+    MyModal3: MyModal3,
+    Quiz: Quiz
+  },
   setup(props, { emit }) {
     const router = useRouter()
 
     const modal1 = ref({ modal1: false })
     const modal2 = ref({ modal2: false })
     const modal3 = ref({ modal3: false })
+    const quiz = ref({ quiz: false })
     const message1 = ref({ message1: '' })
     const message2 = ref({ message2: '' })
     const message3 = ref({ message3: '' })
 
+    function openQuiz() {
+      quiz.value.quiz = true
+      emit('changeNavbar')
+    }
+    function closeQuiz() {
+      quiz.value.quiz = false
+      emit('changeNavbar')
+    }
     function openModal1() {
       modal1.value.modal1 = true
       emit('changeNavbar')
@@ -139,9 +161,12 @@ export default {
       modal1,
       modal2,
       modal3,
+      quiz,
       message1,
       message2,
       message3,
+      openQuiz,
+      closeQuiz,
       openModal1,
       closeModal1,
       openModal2,
