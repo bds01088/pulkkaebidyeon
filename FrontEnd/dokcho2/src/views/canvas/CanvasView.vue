@@ -82,11 +82,13 @@ export default {
         this.startBattle()
       } else {
         this.nowPage = 0
+        this.audio.play()
       }
     },
 
     startBattle() {
       this.startSignal += 1
+      this.audio.pause()
     },
 
     changeNavbar() {
