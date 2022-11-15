@@ -81,7 +81,6 @@ export default {
 
       // Renderer
       let canvas = document.querySelector('#WorldCanvas')
-      console.log(canvas)
       const renderer = new THREE.WebGLRenderer({
         canvas,
         antialias: true
@@ -250,7 +249,7 @@ export default {
       // 빌런들
 
       const Villain = [
-        ['지현몬', { x: -62, y: 0, z: -50 }],
+        ['지현몬', { x: -63, y: 0, z: -48 }],
         ['효근몬', { x: -56, y: 0, z: 3 }],
         ['재준몬', { x: 8, y: 0, z: -30 }],
         ['근희몬', { x: 43, y: 0, z: 20 }],
@@ -275,7 +274,7 @@ export default {
       const Buildings = [
         ['첨성대', { x: 5, y: 0, z: -30 }],
         ['덕수궁', { x: 45, y: 0, z: -10 }],
-        ['광화문', { x: -40, y: 0, z: 45 }]
+        ['광화문', { x: -33, y: 0, z: 45 }]
       ]
       Buildings.forEach((element) => {
         new Building({
@@ -512,9 +511,7 @@ export default {
       }
       function checkIntersects() {
         raycaster.setFromCamera(mouse, camera)
-        console.log(meshes)
         const intersects = raycaster.intersectObjects(meshes)
-        console.log(intersects)
         for (const item of intersects) {
           // if (item.object.name === 'floor') {
           //   destinationPoint.x = item.point.x
@@ -670,7 +667,6 @@ export default {
         player.modelMesh.lookAt(destinationPoint)
       }
       window.addEventListener('keydown', (e) => {
-        console.log(e.key)
         if (
           e.key === 'a' ||
           e.key === 's' ||
@@ -746,12 +742,10 @@ export default {
       }
       // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
       watchEffect(() => {
-        console.log(props.nowPage)
         if (myMoster.modelMesh) {
           const id = JSON.parse(
             localStorage.getItem('userInfo')
           ).representMonster
-          console.log('바뀌나??', myMoster)
           scene.remove(myMoster.modelMesh)
           myMoster = new myMon({
             scene,
