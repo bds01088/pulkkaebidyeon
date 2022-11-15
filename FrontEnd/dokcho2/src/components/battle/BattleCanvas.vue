@@ -108,8 +108,11 @@
 <script>
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+
 import { Monster } from '../modules/Monster'
 import { Boss } from '../modules/Boss'
+// import { FbxBoss } from '../modules/FbxBoss'
 
 // import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
@@ -162,7 +165,7 @@ export default {
     const enemyAttack = ref(20)
     const enemyDefense = ref(10)
 
-    const msg = ref(`${enemyName.value}과의 싸움이 시작된다!!!!`)
+    const msg = ref(`${enemyName.value}과(와) 만났다!`)
 
     const actList = ref(['공격', '방어', '아이템'])
     const myAct = ref('')
@@ -227,17 +230,30 @@ export default {
       color: '#ffcc00'
     })
 
+    const battleAudio = new Audio('audio/Kung-Fu Temple.mp3')
+    battleAudio.loop = true
+    battleAudio.volume = 0.8
+
+    const attackAudio = new Audio('audio/punch.mp3')
+    attackAudio.volume = 1
+
+    const defenseAudio = new Audio('audio/moove.mp3')
+    defenseAudio.volume = 1
+
     watch(
       () => props.startSignal,
       () => {
         setTimeout(() => {
+          battleAudio.load()
+          battleAudio.play()
+
           const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
 
           begin.value += 1
-          initValue()
           getItemList()
           getMonsterInfo(userInfo.value.representMonster)
           getBossInfo(userInfo.value.nowMissionId)
+          initValue()
 
           // Texture
           const textureLoader = new THREE.TextureLoader()
@@ -335,6 +351,8 @@ export default {
 
           const gltfLoader = new GLTFLoader()
 
+          // const fbxLoader = new FBXLoader()
+
           const player = new Monster({
             scene,
             meshes,
@@ -377,15 +395,35 @@ export default {
             z: -0.75
           })
 
-          // const enemy = new Character({
-          //   scene,
-          //   meshes,
-          //   cannonWorld,
-          //   gltfLoader,
-          //   modelSrc: `/models/Villain/${villain[0][0]}.glb`,
-          //   position: villain[0][1],
-          //   name: villain[0][0]
-          // })
+          // const noMotion = [0, 1, 4]
+
+          // let enemy
+
+          // if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
+          //   enemy = new Boss({
+          //     scene,
+          //     meshes,
+          //     cannonWorld,
+          //     gltfLoader,
+          //     modelSrc: `/models/Villain/${
+          //       villain[userInfo.value.nowMissionId - 1]
+          //     }.glb`,
+          //     x: -0.125,
+          //     y: 2,
+          //     z: -0.75
+          //   })
+          // } else {
+          //   enemy = new FbxBoss({
+          //     scene,
+          //     meshes,
+          //     cannonWorld,
+          //     fbxLoader,
+          //     name: villain[userInfo.value.nowMissionId - 1],
+          //     x: -0.125,
+          //     y: 2,
+          //     z: -0.75
+          //   })
+          // }
 
           // const defenseEnemyText = new CreateText({
           //   content: '방어',
@@ -424,6 +462,7 @@ export default {
 
                 if (player.cannonBody.position.y >= 0.9) {
                   status.value = '대기'
+                  attackAudio.play()
                 }
               }
 
@@ -432,6 +471,7 @@ export default {
                 defensePlayerText.modelMesh.position.y =
                   player.modelMesh.position.y + 1
                 status.value = '대기'
+                defenseAudio.play()
               }
 
               if (defensePlayerText.modelMesh) {
@@ -481,6 +521,8 @@ export default {
                 enemy.cannonBody.position.y += 0.03
 
                 if (enemy.cannonBody.position.y >= 0.9) {
+                  attackAudio.play()
+
                   enemyStatus.value = '대기'
                 }
               }
@@ -490,6 +532,7 @@ export default {
                 defenseEnemyText.modelMesh.position.y =
                   enemy.modelMesh.position.y + 1.48
                 enemyStatus.value = '대기'
+                defenseAudio.play()
               }
 
               if (defenseEnemyText.modelMesh) {
@@ -505,10 +548,11 @@ export default {
               }
 
               if (enemyStatus.value == '버프') {
-                console.log(buffEnemyText.modelMesh.position)
+                // console.log(buffEnemyText.modelMesh.position)
                 buffEnemyText.modelMesh.position.y =
                   enemy.modelMesh.position.y + 1.48
                 enemyStatus.value = '대기'
+                defenseAudio.play()
               }
 
               if (buffEnemyText.modelMesh) {
@@ -572,7 +616,7 @@ export default {
     function changePhase() {
       if (phase.value == 'start') {
         setTimeout(() => {
-          msg.value = '기술을 선택해!!!'
+          msg.value = '행동을 선택해주세요...'
           phase.value = 'ready'
         }, 100)
       }
@@ -596,7 +640,7 @@ export default {
       if (myAct.value == '공격') {
         enemyDamage.value = enemyAttack.value
 
-        msg.value = item + ' 사용!!!'
+        msg.value = item + '을 선택했습니다.'
         phase.value = 'showAct'
 
         if (enemyAct.value == '방어') {
@@ -614,7 +658,7 @@ export default {
                   if (poisonCnt.value > 10) {
                     poisonCnt.value = 0
                     poison.value = false
-                    msg.value = '적이 독으로부터 회복되었다!!!!!!'
+                    msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
                     phase.value = 'ready'
                   } else {
@@ -624,9 +668,11 @@ export default {
                       (enemyHp.value / enemyMaxHp.value) * 100
                     )
 
-                    msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+                    msg.value = '독으로 인하여 10의 피해를 주었다!'
 
                     if (enemyHp.value <= 0) {
+                      battleAudio.pause()
+
                       phase.value = 'end'
                       status.value = 'win'
 
@@ -663,7 +709,7 @@ export default {
           enemyDamage.value = 0
         }
 
-        msg.value = item + ' 사용!!!'
+        msg.value = item + '를 선택했습니다.'
         phase.value = 'showAct'
 
         setTimeout(() => {
@@ -677,7 +723,7 @@ export default {
                 if (poisonCnt.value > 10) {
                   poisonCnt.value = 0
                   poison.value = false
-                  msg.value = '적이 독으로부터 회복되었다!!!!!!'
+                  msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
                   phase.value = 'ready'
                 } else {
@@ -687,7 +733,7 @@ export default {
                     (enemyHp.value / enemyMaxHp.value) * 100
                   )
 
-                  msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+                  msg.value = '독으로 인하여 10의 피해를 주었다!'
 
                   if (enemyHp.value <= 0) {
                     phase.value = 'end'
@@ -725,9 +771,9 @@ export default {
       if (myAct.value == '공격') {
         if (enemyAct.value == '방어') {
           msg.value =
-            '적의 방어태세로 ' +
+            `${enemyName.value}의 방어태세로 ` +
             myDamage.value.toString() +
-            '의 피해를 주었다!!!'
+            '의 피해를 주었다!'
           phase.value = 'actResult'
 
           enemyHp.value -= myDamage.value
@@ -751,6 +797,7 @@ export default {
           if (doubleAttack.value == true) {
             setTimeout(() => {
               if (enemyHp.value <= 0) {
+                battleAudio.pause()
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
@@ -774,6 +821,7 @@ export default {
           } else {
             setTimeout(() => {
               if (enemyHp.value <= 0) {
+                battleAudio.pause()
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
@@ -792,7 +840,7 @@ export default {
             }, 1000)
           }
         } else {
-          msg.value = myDamage.value.toString() + '의 피해를 주었다!!!'
+          msg.value = myDamage.value.toString() + '의 피해를 주었다!'
           phase.value = 'actResult'
 
           enemyHp.value -= myDamage.value
@@ -816,6 +864,8 @@ export default {
           if (doubleAttack.value == true) {
             setTimeout(() => {
               if (enemyHp.value <= 0) {
+                battleAudio.pause()
+
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
@@ -839,6 +889,8 @@ export default {
           } else {
             setTimeout(() => {
               if (enemyHp.value <= 0) {
+                battleAudio.pause()
+
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
@@ -862,7 +914,7 @@ export default {
                       if (poisonCnt.value > 10) {
                         poisonCnt.value = 0
                         poison.value = false
-                        msg.value = '적이 독으로부터 회복되었다!!!!!!'
+                        msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
                         phase.value = 'ready'
                       } else {
@@ -872,9 +924,11 @@ export default {
                           (enemyHp.value / enemyMaxHp.value) * 100
                         )
 
-                        msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+                        msg.value = '독으로 인하여 10의 피해를 주었다!'
 
                         if (enemyHp.value <= 0) {
+                          battleAudio.pause()
+
                           phase.value = 'end'
                           status.value = 'win'
                           winBattle()
@@ -902,6 +956,8 @@ export default {
         }
       } else {
         if (enemyHp.value <= 0) {
+          battleAudio.pause()
+
           phase.value = 'end'
           status.value = 'win'
           winBattle()
@@ -919,7 +975,8 @@ export default {
     }
 
     function enemyShowAct() {
-      msg.value = '적은 ' + enemyAct.value + ' 사용!!!'
+      msg.value =
+        `${enemyName.value}은(는) ` + enemyAct.value + '을(를) 선택했습니다.'
       enemyStatus.value = enemyAct.value
       phase.value = 'showEnemyAct'
 
@@ -937,7 +994,7 @@ export default {
                 if (poisonCnt.value > 10) {
                   poisonCnt.value = 0
                   poison.value = false
-                  msg.value = '적이 독으로부터 회복되었다!!!!!!'
+                  msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
                   phase.value = 'ready'
                 } else {
@@ -947,9 +1004,11 @@ export default {
                     (enemyHp.value / enemyMaxHp.value) * 100
                   )
 
-                  msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+                  msg.value = '독으로 인하여 10의 피해를 주었다!'
 
                   if (enemyHp.value <= 0) {
+                    battleAudio.pause()
+
                     phase.value = 'end'
                     status.value = 'win'
                     winBattle()
@@ -996,7 +1055,7 @@ export default {
 
       if (enemyAct.value == '공격') {
         if (absoluteDefense.value == true) {
-          msg.value = '적의 공격이 무효화 되었다!!!'
+          msg.value = `${enemyName.value}의 공격이 무효화되었다!`
           phase.value = 'enemyActResult'
 
           absoluteDefense.value = false
@@ -1008,7 +1067,7 @@ export default {
               if (poisonCnt.value > 10) {
                 poisonCnt.value = 0
                 poison.value = false
-                msg.value = '적이 독으로부터 회복되었다!!!!!!'
+                msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
                 phase.value = 'ready'
               } else {
@@ -1018,9 +1077,11 @@ export default {
                   (enemyHp.value / enemyMaxHp.value) * 100
                 )
 
-                msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+                msg.value = '독으로 인하여 10의 피해를 주었다!'
 
                 if (enemyHp.value <= 0) {
+                  battleAudio.pause()
+
                   phase.value = 'end'
                   status.value = 'win'
                   winBattle()
@@ -1050,9 +1111,9 @@ export default {
           }
 
           msg.value =
-            '나의 방어태세로 ' +
+            `${myName.value}의 방어태세로 ` +
             enemyDamage.value.toString() +
-            '의 피해를 받았다!!!'
+            '의 피해를 받았다!'
           phase.value = 'enemyActResult'
 
           myHp.value -= enemyDamage.value
@@ -1071,9 +1132,11 @@ export default {
 
           setTimeout(() => {
             if (myHp.value <= 0) {
+              battleAudio.pause()
+
               phase.value = 'end'
               status.value = 'lose'
-              msg.value = '배틀에서 졌다... 재시작합니다...'
+              msg.value = '배틀에서 졌다...'
 
               Toast.fire({
                 icon: 'error',
@@ -1089,7 +1152,7 @@ export default {
               if (poisonCnt.value > 10) {
                 poisonCnt.value = 0
                 poison.value = false
-                msg.value = '적이 독으로부터 회복되었다!!!!!!'
+                msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
                 phase.value = 'ready'
               } else {
@@ -1099,9 +1162,11 @@ export default {
                   (enemyHp.value / enemyMaxHp.value) * 100
                 )
 
-                msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+                msg.value = '독으로 인하여 10의 피해를 주었다!'
 
                 if (enemyHp.value <= 0) {
+                  battleAudio.pause()
+
                   phase.value = 'end'
                   status.value = 'win'
                   winBattle()
@@ -1130,7 +1195,7 @@ export default {
             }
           }
 
-          msg.value = enemyDamage.value.toString() + '의 피해를 받았다!!!'
+          msg.value = enemyDamage.value.toString() + '의 피해를 받았다!'
           phase.value = 'enemyActResult'
 
           myHp.value -= enemyDamage.value
@@ -1147,9 +1212,11 @@ export default {
 
           setTimeout(() => {
             if (myHp.value <= 0) {
+              battleAudio.pause()
+
               phase.value = 'end'
               status.value = 'lose'
-              msg.value = '배틀에서 졌다... 재시작합니다...'
+              msg.value = '배틀에서 졌다...'
 
               Toast.fire({
                 icon: 'error',
@@ -1165,7 +1232,7 @@ export default {
               if (poisonCnt.value > 10) {
                 poisonCnt.value = 0
                 poison.value = false
-                msg.value = '적이 독으로부터 회복되었다!!!!!!'
+                msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
                 phase.value = 'ready'
               } else {
@@ -1175,9 +1242,11 @@ export default {
                   (enemyHp.value / enemyMaxHp.value) * 100
                 )
 
-                msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+                msg.value = '독으로 인하여 10의 피해를 주었다!'
 
                 if (enemyHp.value <= 0) {
+                  battleAudio.pause()
+
                   phase.value = 'end'
                   status.value = 'win'
                   winBattle()
@@ -1201,7 +1270,7 @@ export default {
         const buff = Math.round(enemyAttack.value * 0.2)
         enemyAttack.value += buff
 
-        msg.value = buff.toString() + '만큼 공격력 상승!!!'
+        msg.value = buff.toString() + '만큼 공격력 상승!'
         phase.value = 'enemyActResult'
 
         setTimeout(() => {
@@ -1211,7 +1280,7 @@ export default {
             if (poisonCnt.value > 10) {
               poisonCnt.value = 0
               poison.value = false
-              msg.value = '적이 독으로부터 회복되었다!!!!!!'
+              msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
               phase.value = 'ready'
             } else {
@@ -1221,9 +1290,11 @@ export default {
                 (enemyHp.value / enemyMaxHp.value) * 100
               )
 
-              msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+              msg.value = '독으로 인하여 10의 피해를 주었다!'
 
               if (enemyHp.value <= 0) {
+                battleAudio.pause()
+
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
@@ -1257,7 +1328,7 @@ export default {
           heal = Math.round(myMaxHp.value - myHp.value)
         }
 
-        msg.value = heal.toString() + ' 체력을 회복했다!!!'
+        msg.value = heal.toString() + ' 체력을 회복했다!'
 
         myHp.value += heal
         myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
@@ -1271,7 +1342,7 @@ export default {
           heal = Math.round(myMaxHp.value - myHp.value)
         }
 
-        msg.value = heal.toString() + ' 체력을 회복했다!!!'
+        msg.value = heal.toString() + ' 체력을 회복했다!'
 
         myHp.value += heal
         myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
@@ -1285,7 +1356,7 @@ export default {
           heal = Math.round(myMaxHp.value - myHp.value)
         }
 
-        msg.value = heal.toString() + ' 체력을 회복했다!!!'
+        msg.value = heal.toString() + ' 체력을 회복했다!'
 
         myHp.value += heal
         myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
@@ -1295,27 +1366,27 @@ export default {
         phase.value = 'itemResult'
         absoluteDefense.value = true
 
-        msg.value = '다음 적의 공격은 무효화된다!!!'
+        msg.value = '다음 적의 공격은 무효화된다!'
         useItem.value = ''
       } else if (useItem.value == '더블 어택') {
         phase.value = 'itemResult'
         doubleAttack.value = true
 
-        msg.value = '다음 나의 공격은 2번 연속!!!'
+        msg.value = '다음 나의 공격은 2번 연속!'
         useItem.value = ''
       } else if (useItem.value == '공격력 증가') {
         phase.value = 'itemResult'
         const plusAttack = Math.round(myAttack.value * 0.2)
         myAttack.value += plusAttack
 
-        msg.value = plusAttack.toString() + '만큼 공격력 증가!!!'
+        msg.value = plusAttack.toString() + '만큼 공격력 증가!'
         useItem.value = ''
       } else if (useItem.value == '방어력 증가') {
         phase.value = 'itemResult'
         const plusDefense = Math.round(myDefense.value * 0.3)
         myDefense.value += plusDefense
 
-        msg.value = plusDefense.toString() + '만큼 방어력 증가!!!'
+        msg.value = plusDefense.toString() + '만큼 방어력 증가!'
         useItem.value = ''
       } else if (useItem.value == '희생') {
         phase.value = 'sacrifice'
@@ -1326,7 +1397,7 @@ export default {
           status.value = '공격'
         }, 1000)
 
-        msg.value = '희생 주문을 발동했다!!!'
+        msg.value = '희생 주문을 발동했다!'
         useItem.value = ''
 
         const cost = Math.round(myHp.value * 0.8)
@@ -1340,7 +1411,7 @@ export default {
 
         setTimeout(() => {
           if (instantDeath <= 0.1) {
-            msg.value = '성공!!!'
+            msg.value = '성공!'
             sacrifice.value = false
             setTimeout(() => {
               enemyHp.value -= 999999
@@ -1350,7 +1421,7 @@ export default {
               showActResult()
             }, 1600)
           } else {
-            msg.value = '실패!!!'
+            msg.value = '실패!'
             setTimeout(() => {
               enemyDamage.value = enemyAttack.value
 
@@ -1372,7 +1443,7 @@ export default {
                     if (poisonCnt.value > 10) {
                       poisonCnt.value = 0
                       poison.value = false
-                      msg.value = '적이 독으로부터 회복되었다!!!!!!'
+                      msg.value = `${enemyName.value}이(가) 독으로부터 회복되었다!`
 
                       phase.value = 'ready'
                     } else {
@@ -1382,9 +1453,11 @@ export default {
                         (enemyHp.value / enemyMaxHp.value) * 100
                       )
 
-                      msg.value = '독으로 인하여 10의 피해를 주었다!!!!'
+                      msg.value = '독으로 인하여 10의 피해를 주었다!'
 
                       if (enemyHp.value <= 0) {
+                        battleAudio.pause()
+
                         phase.value = 'end'
                         status.value = 'win'
                         winBattle()
@@ -1432,6 +1505,8 @@ export default {
         enemyHpBar.value = Math.round((enemyHp.value / enemyMaxHp.value) * 100)
 
         if (enemyHp.value <= 0) {
+          battleAudio.pause()
+
           phase.value = 'end'
           status.value = 'win'
           winBattle()
@@ -1467,7 +1542,7 @@ export default {
       begin.value = 0
 
       phase.value = 'start'
-      msg.value = '적을 만남!!!!'
+      msg.value = `${enemyName.value}과(와) 만났다!`
 
       actList.value = ['공격', '방어', '아이템']
       myAct.value = ''
