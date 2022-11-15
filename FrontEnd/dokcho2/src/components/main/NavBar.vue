@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="navbar">
+    <nav class="navbar" v-if="!this.quiz.quiz">
       <div>
         <ul>
           <li>
