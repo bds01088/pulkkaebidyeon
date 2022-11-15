@@ -24,6 +24,7 @@ import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import monsterDetail from '@/components/monster/monsterDetail.vue'
 import myPage from '@/components/accounts/myPage.vue'
+import { Furniture } from '../modules/Furniture'
 
 export default {
   name: 'HouseCanvas',
@@ -205,6 +206,25 @@ export default {
         modelSrc: '/models/character.glb'
       })
 
+      const Furnitures = [
+        ['bed', { x: 2, y: 0.2, z: 2 }],
+        ['closet', { x: -3, y: 0.2, z: -3 }],
+        ['desk', { x: 3, y: 0.2, z: -3 }]
+      ]
+
+      Furnitures.forEach((element) => {
+        new Furniture({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/House/${element[0]}.glb`,
+          width: element[2] || {},
+          position: element[1],
+          name: element[0]
+        })
+      })
+
       // 맵 막는 박스 만들기
       new Wall({
         cannonWorld,
@@ -364,6 +384,7 @@ export default {
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
         for (const item of intersects) {
+          console.log(item)
           // if (item.object.name === 'floor') {
           //   destinationPoint.x = item.point.x
           //   destinationPoint.z = item.point.z
@@ -375,7 +396,7 @@ export default {
           //   pointerMesh.position.z = destinationPoint.z
           // }
 
-          if (item.object.name === 'mypage') {
+          if (item.object.name === 'furniture_and_household_assets001_4') {
             isPressed = false
             myPage.value.myPage = true
           }
