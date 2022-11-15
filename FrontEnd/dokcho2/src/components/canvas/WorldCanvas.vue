@@ -103,7 +103,7 @@ export default {
         1000
       )
 
-      const cameraPosition = new THREE.Vector3(0, 35, 0)
+      const cameraPosition = new THREE.Vector3(-10, 30, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
       camera.zoom = 0.25
       camera.updateProjectionMatrix()
@@ -255,7 +255,8 @@ export default {
         ['근희몬', { x: 43, y: 0, z: 20 }],
         ['상균몬', { x: -58, y: 0, z: 60 }],
         ['지원몬', { x: 10, y: 0, z: 60 }],
-        ['하민몬', { x: 57, y: 0, z: 65 }]
+        ['하민몬', { x: 57, y: 0, z: 65 }],
+        ['성빈몬', { x: 62, y: 0, z: -40 }]
       ]
       Villain.forEach((element) => {
         new Character({
@@ -364,7 +365,7 @@ export default {
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
         }
 
-        if (isLoading === 0 && scene.children.length >= 159) {
+        if (isLoading === 0 && scene.children.length >= 160) {
           isLoading = 1
           console.log('로딩 끝1')
           emit('loadingEnd')
