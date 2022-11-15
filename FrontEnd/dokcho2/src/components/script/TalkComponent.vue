@@ -39,16 +39,32 @@ export default {
 
     const store = useStore()
     // store.dispatch('fetchnowUserInfo')
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    })
 
     function endTalk() {
       const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
       console.log(content)
       console.log(userInfo)
+
+      const clearImg = require('@/assets/mission/clear.png')
+
+      // started : 미션 시작한 상태 -> 보스 찾아가 문제 풀기 / 대화 끝나고 바로 퀴즈 시작
       if (content.status === 'STARTED') {
+        Toast.fire({
+          icon: 'success',
+          title: `${props.isTalk.name}이 내는 퀴즈를 통과해라!`
+        })
         emit('quizStart')
       } else {
         if (userInfo.nowMissionId === content.missionId) {
+          // ready : 미션 수행 가능한 상태 -> 위인이 도움 요청
           if (content.status === 'READY') {
             axios({
               url: BASE_URL + '/api/v1/mission/',
@@ -58,11 +74,21 @@ export default {
               }
             }).then(() => {
               emit('talkClose')
+              Toast.fire({
+                icon: 'success',
+                title: `유물 도둑을 찾아라! ${content.next}`
+              })
             })
           } else if (content.status === 'QUIZ_PASSED') {
+            // quiz_passed : 퀴즈 다 맞힌 상태 -> 시비거는 보스와 배틀 시작
             emit('talkClose')
+            Toast.fire({
+              icon: 'success',
+              title: `${props.isTalk.name}과의 배틀에서 승리하라!`
+            })
             emit('enterBattle')
           } else if (content.status === 'BATTLE_WIN') {
+            // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
             axios({
               url: BASE_URL + '/api/v1/mission/',
               method: 'PUT',
@@ -71,14 +97,23 @@ export default {
               }
             }).then(() => {
               store.dispatch('fetchnowUserInfo')
-              // 미션 아예 다른 미션으로 넘어갈때 mission complete alert 그 외에는 다음 설명
+              // mission complete alert 그 외에는 다음 설명
+
+              const itemImg = require(`@/assets/item/${content.item}.png`)
               Swal.fire({
-                title: `${props.isTalk.content.next}`,
-                text: '  ',
-                imageUrl: 'https://unsplash.it/400/200',
-                imageWidth: 400,
-                imageHeight: 200,
-                imageAlt: 'Custom image'
+                title: `${content.characters}의 고민 해결 완료 ✨`,
+                html:
+                  '<b> 미션 획득 보상 </b> ' +
+                  '<br />' +
+                  `<img  style="height:60px;width:60px;" src=${itemImg}/> ` +
+                  `<span>${content.itemName}</span>`,
+                imageUrl: clearImg,
+                imageWidth: 300,
+                imageHeight: 100,
+                imageAlt: 'Custom image',
+                showConfirmButton: false,
+                timer: 2500,
+                background: 'rgba(255, 255, 255, 0.7)'
               })
               emit('talkClose')
             })

@@ -42,6 +42,7 @@
 <script>
 import axios from 'axios'
 import swal from 'sweetalert'
+import Swal from 'sweetalert2'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { onMounted } from '@vue/runtime-core'
 import { ref } from 'vue'
@@ -50,6 +51,14 @@ export default {
   setup(props, { emit }) {
     let quiz = ref({ content: [], nowPage: 0 })
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    })
 
     function getQuiz() {
       axios({
@@ -67,12 +76,9 @@ export default {
     }
 
     function endQuiz() {
-      swal({
-        title: '모든 문제를 다 맞췄습니다!!',
+      Toast.fire({
         icon: 'success',
-        text: '축하축하~',
-        buttons: false,
-        timer: 1500
+        title: `보스에게 유물을 돌려 받으러 가요 🚀`
       })
       axios({
         url: BASE_URL + '/api/v1/mission/',
@@ -81,7 +87,9 @@ export default {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
         }
       })
-      emit('quizClose')
+      setTimeout(() => {
+        emit('quizClose')
+      }, 1000)
     }
 
     function nextQuiz(answer) {
