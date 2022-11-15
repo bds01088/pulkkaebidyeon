@@ -27,6 +27,7 @@ public class MissionDto {
     private Long item;
     private String relicName;
     private String itemName;
+    private int exp;
 
     public static MissionDto from(Mission entity, MissionStatus status, Item item, Item relic){
         String line = "";
@@ -71,6 +72,7 @@ public class MissionDto {
                 .item(entity.getItem())
                 .itemName(item.getName())
                 .relicName(relic.getName())
+                .exp(entity.getExp())
                 .build();
     }
 }
