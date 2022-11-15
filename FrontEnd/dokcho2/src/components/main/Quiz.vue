@@ -123,7 +123,10 @@
 <script>
 import { io } from 'socket.io-client'
 import { ref } from 'vue'
+import axios from 'axios'
 import swal from 'sweetalert'
+import Swal from 'sweetalert2'
+import { BASE_URL } from '@/constant/BASE_URL'
 // import QuizRoomCanvas from './QuizRoomCanvas.vue'
 
 export default {
@@ -147,8 +150,9 @@ export default {
     let msgSocketId = ref({ msgSocketId: '' })
     let quizing = ref({ quizing: false })
     let nextQuiz = ref({ nextQuiz: '' })
+    const item = ref({ item: {} })
 
-    const socket = io('http://localhost:3000/')
+    const socket = io('http://k7e203.p.ssafy.io:3001/')
 
     function disconnect() {
       socket.disconnect()
@@ -259,7 +263,6 @@ export default {
 
     socket.on('endQuiz', (data) => {
       quizing.value.quizing = false
-      console.log(data)
       for (let winner of data) {
         allMsg.value.allMsg.push({
           socketId: '',
@@ -267,15 +270,41 @@ export default {
           content: `${winner.nickname}님이 이겼습니다!`
         })
       }
-      allMsg.value.allMsg.push({
-        socketId: '',
-        nickname: 'server',
-        content: `퀴즈 끝났으니까 이제 다 나가라 그냥`
-      })
     })
 
     socket.on('winnerwinnerchickendinner', () => {
-      console.log('내가이겨따~')
+      axios({
+        url: BASE_URL + '/api/v1/mission/mini?rewardExp=0',
+        method: 'PUT',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          // console.log(res.data)
+          item.value.item = res.data.itemDto
+          const content = item.value.item
+          console.log(item.value.item)
+          Swal.fire({
+            title: `🎊축하합니다🎊`,
+            html: `<div style="display:flex; flex-direction: column; justify-content:center">
+
+                  <p>퀴즈 우승 보상으로 아이템을 드립니다</p>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.itemId +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+                    
+              </div>`,
+            // showConfirmButton: false,
+            // timer: 2500,
+            background: 'rgba(255, 255, 255)'
+          })
+        })
+        .catch((err) => console.log(err))
     })
 
     socket.on('fuckoff', () => {
