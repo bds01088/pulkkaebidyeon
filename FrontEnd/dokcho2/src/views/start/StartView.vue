@@ -63,11 +63,20 @@ export default {
       username: '',
       password: '',
       kakaoLoginURL: BASE_URL + '/oauth2/authorization/kakao',
-      howToGame: false
+      howToGame: false,
+      audio: new Audio('audio/dokchoTitle.mp3')
     }
   },
   components: {
     howToGame: howToGame
+  },
+  mounted() {
+    this.audio.loop = true
+    this.audio.volume = 0.5
+    this.audio.play()
+  },
+  beforeUnmount() {
+    this.audio.pause()
   },
   methods: {
     ...mapActions(['doRefreshToken', 'fetchUserInfo', 'fetchUserDeck']),
