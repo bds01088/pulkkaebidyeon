@@ -364,7 +364,7 @@ button {
 
 .password__btn {
   width: 8vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .password__btn:hover {
@@ -432,7 +432,7 @@ button {
 
 .footer__btn {
   width: 8vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   margin-left: 1vw;
 }
 
@@ -447,6 +447,6 @@ button {
   position: absolute;
   top: 4vh;
   right: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 </style>

@@ -462,7 +462,8 @@ export default {
         const intersects = raycaster.intersectObjects(meshes)
 
         if (intersects && intersects.length > 0) {
-          document.body.style.cursor = 'pointer'
+          document.body.style.cursor =
+            "cursor: url('@/assets/selector.cur'), pointer;"
         } else {
           document.body.style.cursor = 'default'
         }

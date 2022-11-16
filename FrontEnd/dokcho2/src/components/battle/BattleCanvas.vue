@@ -21,7 +21,7 @@
         id="console"
         @click="changePhase()"
         v-show="phase === 'start'"
-        style="cursor: pointer"
+        style="cursor: url('@/assets/selector.cur'), pointer"
       >
         <p>{{ msg }}</p>
         <div class="triangle triangle--top"></div>
@@ -31,7 +31,7 @@
         id="console"
         @click="changePhase()"
         v-show="phase === 'ready'"
-        style="cursor: pointer"
+        style="cursor: url('@/assets/selector.cur'), pointer"
       >
         <p>{{ msg }}</p>
         <div class="triangle triangle--top"></div>
@@ -40,7 +40,10 @@
       <div id="console" v-show="phase === 'selectAct'">
         <p>
           <span v-for="(act, idx) in actList" :key="idx">
-            <button @click="doSelectAct(act)" style="cursor: pointer">
+            <button
+              @click="doSelectAct(act)"
+              style="cursor: url('@/assets/selector.cur'), pointer"
+            >
               {{ act }}
             </button>
           </span>
@@ -71,15 +74,26 @@
         <p>{{ msg }}</p>
       </div>
 
-      <div id="console" v-show="phase === 'selectItem'" style="cursor: pointer">
+      <div
+        id="console"
+        v-show="phase === 'selectItem'"
+        style="cursor: url('@/assets/selector.cur'), pointer"
+      >
         <span v-for="(item, idx) in itemList" :key="idx">
           <button @click="doSelectItem(item)">
             {{ item.itemName }} x {{ item.count }}
           </button>
         </span>
         <br />
-        <div style="float: right; cursor: pointer">
-          <button @click="itemToSelect()" style="cursor: pointer">뒤로</button>
+        <div
+          style="float: right; cursor: url('@/assets/selector.cur'), pointer"
+        >
+          <button
+            @click="itemToSelect()"
+            style="cursor: url('@/assets/selector.cur'), pointer"
+          >
+            뒤로
+          </button>
         </div>
       </div>
 
@@ -87,7 +101,7 @@
         id="console"
         v-show="phase === 'itemResult'"
         @click="changePhase()"
-        style="cursor: pointer"
+        style="cursor: url('@/assets/selector.cur'), pointer"
       >
         <p>{{ msg }}</p>
         <div class="triangle triangle--top"></div>
