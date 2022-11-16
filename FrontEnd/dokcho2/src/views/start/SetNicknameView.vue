@@ -144,6 +144,7 @@ button {
   border: none;
   width: 15vw;
   margin: 10px;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 .setnickname__button:hover {
   background-color: #467302;

@@ -443,7 +443,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 10vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   font-weight: bold;
 }
@@ -460,7 +460,7 @@ export default {
   position: absolute;
   top: 15vh;
   right: 25vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 .input__answer {
   margin-top: 12vh;
@@ -489,7 +489,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 5vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   background-color: #d5d5d5; /* margin-left: 20px; */
 }
@@ -589,7 +589,7 @@ tr {
 
 .item__image {
   width: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .item__item p {

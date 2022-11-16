@@ -211,7 +211,7 @@ h3 {
   /* background-color: #ffffff; */
   border-radius: 10px;
   margin-bottom: 3vh;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   /* margin-left: 0.5vh;
   margin-right: 0.5vh; */
 }
@@ -261,7 +261,7 @@ h3 {
   position: absolute;
   top: 4vh;
   right: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .tooltip {

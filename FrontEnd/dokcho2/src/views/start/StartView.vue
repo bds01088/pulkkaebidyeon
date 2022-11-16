@@ -199,7 +199,7 @@ input:focus {
 }
 
 .login__btn:hover {
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 .kakao__button {
   display: flex;
@@ -213,7 +213,7 @@ input:focus {
 }
 
 .kakaologin__btn:hover {
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 .other__btn {
   display: flex;
@@ -230,7 +230,7 @@ input:focus {
 
 .howto__btn:hover,
 .signup__btn:hover {
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   /* box-shadow: 0px 0px 2px 5px yellow; */
   border-radius: 100%;
 }
