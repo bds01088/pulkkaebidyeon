@@ -465,7 +465,8 @@ export default {
           document.body.style.cursor =
             "cursor: url('@/assets/selector.cur'), pointer;"
         } else {
-          document.body.style.cursor = 'default'
+          document.body.style.cursor =
+            "cursor: url('@/assets/pointer.cur'), auto;"
         }
       }
 
