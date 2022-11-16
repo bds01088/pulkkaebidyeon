@@ -81,7 +81,7 @@ export default {
         html:
           '<p style="text-align:center;"><b>퀴즈를 통과했어요! </b></p>' +
           '<br />' +
-          `<p style="text-align:center;">보스에게 유물을 돌려 받으러 가요 🚀</p>`
+          `<p style="text-align:center;">유물을 돌려 받으러 가요 🚀</p>`
       })
       axios({
         url: BASE_URL + '/api/v1/mission/',
