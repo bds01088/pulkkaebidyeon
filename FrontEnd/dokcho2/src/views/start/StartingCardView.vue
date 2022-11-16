@@ -121,7 +121,7 @@ export default {
   width: 12vw;
 }
 .main__btn:hover {
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   background-color: green;
   color: white;
 }

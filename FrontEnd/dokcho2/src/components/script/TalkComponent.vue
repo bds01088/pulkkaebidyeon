@@ -222,7 +222,7 @@ button {
   width: 7vw;
   height: 4vh;
   font-size: 1vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   transition: 0.5s;
 }
 

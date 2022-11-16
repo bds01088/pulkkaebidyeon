@@ -268,7 +268,7 @@ export default {
   position: absolute;
   top: 4vh;
   right: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .mission__now {
@@ -286,7 +286,7 @@ export default {
 
 .tooltip {
   position: relative;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   /* display: inline-block; */
 }
 

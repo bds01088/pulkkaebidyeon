@@ -99,6 +99,7 @@ button {
   width: 15vw;
   margin: 10px;
   background-color: #bfbfbf;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 .findpassword__button:hover {
   background-color: #467302;

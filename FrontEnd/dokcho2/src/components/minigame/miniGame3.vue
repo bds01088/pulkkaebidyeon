@@ -312,7 +312,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 10vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   font-weight: bold;
 }
@@ -358,7 +358,7 @@ export default {
 
 .item__image {
   width: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .item__item p {
@@ -451,7 +451,7 @@ input[type='text'] {
   border-radius: 10px;
   border: none;
   width: 7vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1rem;
   background-color: #d5d5d5;
   /* font-weight: bold; */
@@ -470,7 +470,7 @@ input[type='text'] {
   position: absolute;
   top: 15vh;
   right: 25vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .yes__time {

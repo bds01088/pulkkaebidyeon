@@ -134,7 +134,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 10vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   font-weight: bold;
 }
@@ -154,6 +154,6 @@ export default {
   position: absolute;
   top: 15vh;
   right: 25vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 </style>

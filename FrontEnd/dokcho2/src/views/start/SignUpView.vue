@@ -461,6 +461,7 @@ button {
   width: 10vw;
   margin: 10px;
   transition: 0.3s;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 .duplicate__button:hover {
   background-color: #467302;

@@ -46,6 +46,9 @@ export default {}
 </script>
 
 <style scoped>
+button {
+  cursor: url('@/assets/selector.cur'), pointer;
+}
 .howTo__container {
   width: 100vw;
   height: 100vh;
@@ -89,7 +92,7 @@ export default {}
   position: absolute;
   top: 4vh;
   right: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .title {
