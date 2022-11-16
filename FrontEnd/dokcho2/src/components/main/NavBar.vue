@@ -117,8 +117,8 @@ export default {
     function logout() {
       swalWithBootstrapButtons
         .fire({
-          title: '도감을 덮으시겠어요?',
-          text: '풀깨비들이 도감에서 웅성거리고 있어요 😥',
+          title: '휴식을 취하시겠어요?',
+          text: '풀깨비도 쉴 준비를 하고 있네요 .. 🌚',
           icon: 'question',
           showCancelButton: true,
           confirmButtonText: '예',
@@ -142,7 +142,7 @@ export default {
           console.log(res)
           swal({
             title: '로그아웃이 완료되었습니다!',
-            text: ' 다시 도감을 펼치는 날을 기다릴게요 🌻 ',
+            text: ' 다시 탐험 하는 날을 기다릴게요 🌻 ',
             icon: 'success',
             buttons: false,
             timer: 1500
