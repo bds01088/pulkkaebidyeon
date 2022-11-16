@@ -98,20 +98,133 @@ export default {
             })
             emit('enterBattle')
           } else if (content.status === 'BATTLE_WIN') {
-            // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
-            axios({
-              url: BASE_URL + '/api/v1/mission/',
-              method: 'PUT',
-              headers: {
-                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-              }
-            }).then(() => {
-              store.dispatch('fetchnowUserInfo')
-              // mission complete alert 그 외에는 다음 설명
-              Swal.fire({
-                title: `${content.characters}의 고민 해결 완료 ✨`,
-                html:
-                  `<div style="display:flex; flex-direction: row; justify-content:center">
+            if (content.missionId === 2 || content.missionId === 5) {
+              // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
+              axios({
+                url: BASE_URL + '/api/v1/mission/',
+                method: 'PUT',
+                headers: {
+                  AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+                }
+              }).then(() => {
+                store.dispatch('fetchnowUserInfo')
+                // mission complete alert 그 외에는 다음 설명
+                if (content.missionId === 2) {
+                  const monster1 = { id: 2, name: '도꼬마리몬' }
+                  axios({
+                    url: BASE_URL + '/api/v1/monster/' + monster1.id,
+                    method: 'POST',
+                    headers: {
+                      AUTHORIZATION:
+                        'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                  }).catch((err) => console.log(err))
+
+                  Swal.fire({
+                    title: `${content.characters}의 고민 해결 완료 ✨`,
+                    html:
+                      `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.item +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/' +
+                      monster1.id +
+                      '.png')}"/>
+                    <p style="font-size:0.9rem;"><b>${monster1.name}</b></p>
+                  </div>
+                    
+                  </div>` +
+                      '<br />' +
+                      `<p>🔍 ${content.next}</p>`,
+                    imageUrl: clearImg,
+                    imageWidth: 300,
+                    imageHeight: 100,
+                    imageAlt: 'Custom image',
+                    // showConfirmButton: false,
+                    // timer: 2500,
+                    background: 'rgba(255, 255, 255)'
+                  })
+                } else if (content.missionId === 5) {
+                  const monster2 = { id: 3, name: '마늘몬' }
+
+                  axios({
+                    url: BASE_URL + '/api/v1/monster/' + monster2.id,
+                    method: 'POST',
+                    headers: {
+                      AUTHORIZATION:
+                        'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                  }).catch((err) => console.log(err))
+
+                  Swal.fire({
+                    title: `${content.characters}의 고민 해결 완료 ✨`,
+                    html:
+                      `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.item +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/' +
+                      monster2.id +
+                      '.png')}"/>
+                    <p style="font-size:0.9rem;">${monster2.name}</p>
+                  </div>
+                    
+                  </div>` +
+                      '<br />' +
+                      `<p>🔍 ${content.next}</p>`,
+                    imageUrl: clearImg,
+                    imageWidth: 300,
+                    imageHeight: 100,
+                    imageAlt: 'Custom image',
+                    // showConfirmButton: false,
+                    // timer: 2500,
+                    background: 'rgba(255, 255, 255)'
+                  })
+                }
+
+                emit('talkClose')
+              })
+            } else {
+              // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
+              axios({
+                url: BASE_URL + '/api/v1/mission/',
+                method: 'PUT',
+                headers: {
+                  AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+                }
+              }).then(() => {
+                store.dispatch('fetchnowUserInfo')
+                // mission complete alert 그 외에는 다음 설명
+                Swal.fire({
+                  title: `${content.characters}의 고민 해결 완료 ✨`,
+                  html:
+                    `<div style="display:flex; flex-direction: row; justify-content:center">
 
                   <div style="margin: 1vw">
                     <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/exp.png')}"/>
@@ -128,18 +241,19 @@ export default {
                   </div>
                     
                   </div>` +
-                  '<br />' +
-                  `<p>🔍 ${content.next}</p>`,
-                imageUrl: clearImg,
-                imageWidth: 300,
-                imageHeight: 100,
-                imageAlt: 'Custom image',
-                // showConfirmButton: false,
-                // timer: 2500,
-                background: 'rgba(255, 255, 255)'
+                    '<br />' +
+                    `<p>🔍 ${content.next}</p>`,
+                  imageUrl: clearImg,
+                  imageWidth: 300,
+                  imageHeight: 100,
+                  imageAlt: 'Custom image',
+                  // showConfirmButton: false,
+                  // timer: 2500,
+                  background: 'rgba(255, 255, 255)'
+                })
+                emit('talkClose')
               })
-              emit('talkClose')
-            })
+            }
           } else {
             emit('talkClose')
           }
