@@ -27,7 +27,7 @@ let roomNum = 0;
 let rooms = [];
 
 axios({
-  url: BASE_URL + "/api/v1/game/words/auth/10",
+  url: BASE_URL + "/api/v1/game/words/auth/30",
   method: "GET",
 })
   .then((res) => {
