@@ -807,10 +807,10 @@ export default {
 
       function onClick() {
         store.dispatch('fetchnowUserInfo')
-        alert('aa')
+        // alert('aa')
         emit('changeCanvas')
-        // emit('changeBattle')
       }
+
       // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
       watchEffect(() => {
         console.log(props.nowPage)
