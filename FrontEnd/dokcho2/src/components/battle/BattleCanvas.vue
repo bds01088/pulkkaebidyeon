@@ -268,7 +268,7 @@ export default {
       () => {
         setTimeout(() => {
           battleAudio.load()
-          // battleAudio.play()
+          battleAudio.play()
 
           const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
 
@@ -280,7 +280,7 @@ export default {
 
           // Texture
           const textureLoader = new THREE.TextureLoader()
-          const floorTexture = textureLoader.load('/images/map13.png')
+          const floorTexture = textureLoader.load('/images/map18.png')
           floorTexture.wrapS = THREE.RepeatWrapping
           floorTexture.wrapT = THREE.RepeatWrapping
           floorTexture.repeat.x = 1
