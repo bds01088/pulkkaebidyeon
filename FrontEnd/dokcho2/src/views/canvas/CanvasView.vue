@@ -12,6 +12,7 @@
       @changeBattle="changeBattle"
       @talkStart="talkStart"
       @loadingEnd="loadingEnd"
+      :isGameStart="this.isGameStart"
       :nowPage="this.nowPage"
       :nowNavbar="this.nowNavbar"
     />
