@@ -478,7 +478,7 @@ export default {
                 })
                 gsap.to(camera, {
                   duration: 5,
-                  zoom: 0.3,
+                  zoom: 0.4,
                   onUpdate: function () {
                     camera.updateProjectionMatrix()
                   }
