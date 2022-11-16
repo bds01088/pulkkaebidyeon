@@ -157,7 +157,8 @@ router.beforeEach(async (to, from, next) => {
     to.path === '/set/nickname' ||
     to.path === '/404'
   ) {
-    if (localStorage.getItem('accessToken')) {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    if (localStorage.getItem('accessToken') && userInfo.nickname !== '') {
       return router.push({ path: '/main' })
       // if (!JSON.parse(localStorage.getItem('userInfo')).newbie) {
       //   return router.push({ path: '/main' })
