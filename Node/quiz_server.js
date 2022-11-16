@@ -73,7 +73,7 @@ io.on("connection", (socket) => {
       quizing: false,
     });
     let roomInfo = rooms.find((room) => room.roomId == roomNum);
-    if (roomInfo.currentUser) {
+    if (roomInfo) {
       roomInfo.currentUser.push({
         socketId: socket.id,
         nickname: players[socket.id].object.nickname,
@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
 
   socket.on("enterRoom", (data) => {
     let roomInfo = rooms.find((room) => room.roomId == data);
-    if (roomInfo.currentUser) {
+    if (roomInfo) {
       if (roomInfo.currentUser.length > 3) {
         io.to(socket.id).emit("goaway");
       } else {
@@ -110,85 +110,86 @@ io.on("connection", (socket) => {
   socket.on("leaveRoom", (nowRoom) => {
     socket.leave(`${nowRoom}`);
     let roomInfo = rooms.find((room) => room.roomId == nowRoom);
-    if (roomInfo.currentUser) {
+    if (roomInfo) {
       roomInfo.currentUser = roomInfo.currentUser.filter(
         (user) => user.socketId !== socket.id
       );
 
       io.to(`${socket.id}`).emit("deleteMsg");
-    }
-    let payload = [roomInfo, players[socket.id].object];
+      let payload = [roomInfo, players[socket.id].object];
 
-    if (roomInfo.currentUser.length > 0) {
-      for (user of roomInfo.currentUser) {
-        io.to(`${user.socketId}`).emit("leaveRoomOK", payload);
+      if (roomInfo.currentUser.length > 0) {
+        for (user of roomInfo.currentUser) {
+          io.to(`${user.socketId}`).emit("leaveRoomOK", payload);
+        }
+      } else {
+        rooms = rooms.filter((room) => room.roomId !== roomInfo.roomId);
       }
-    } else {
-      rooms = rooms.filter((room) => room.roomId !== roomInfo.roomId);
     }
   });
 
   socket.on("msg", (data) => {
     // 받은 메세지를 다시 해당 룸의 모든 사용자에게 보내줌
     let roomInfo = rooms.find((room) => room.roomId == data[0]);
-    if (roomInfo.currentUser) {
+    if (roomInfo) {
       for (user of roomInfo.currentUser) {
         io.to(`${user.socketId}`).emit("msg", data);
       }
-    }
-
-    if (roomInfo.nowQuizNumber >= 10) {
-      io.to(`${roomInfo.roomId}`).emit("endQuiz");
-      roomInfo.quizing = false;
-    } else {
-      // 퀴즈시작
-      roomInfo.quizing = true;
-      if (data[3] === "독초야사랑해") {
-        io.to(`${roomInfo.roomId}`).emit(
-          "nextQuiz",
-          roomInfo.roomQuiz[roomInfo.nowQuizNumber]
-        );
-      }
-      // 받은 메세지 정답 검사
-      if (data[3] === roomInfo.roomQuiz[roomInfo.nowQuizNumber].right_answer) {
-        roomInfo.currentUser.find(
-          (user) => user.socketId == socket.id
-        ).score += 1;
-
-        let payload = [socket.id, roomInfo.currentUser];
-
-        io.to(`${roomInfo.roomId}`).emit("correct", payload);
-        // 다음 퀴즈 전달
-
-        rooms.find((room) => room.roomId == data[0]).nowQuizNumber += 1;
-        if (roomInfo.nowQuizNumber >= 10) {
-          let userScores = [];
-
-          for (let user of roomInfo.currentUser) {
-            userScores.push(user.score);
-          }
-
-          const maxScore = Math.max(...userScores);
-
-          let winners = [];
-
-          for (let user of roomInfo.currentUser) {
-            if (user.score === maxScore) {
-              winners.push(user);
-            }
-          }
-
-          io.to(`${roomInfo.roomId}`).emit("endQuiz", winners);
-          roomInfo.quizing = false;
-          for (let winner of winners) {
-            io.to(`${winner.socketId}`).emit("winnerwinnerchickendinner");
-          }
-          io.to(`${roomInfo.roomId}`).emit("fuckoff");
-        } else {
+      if (roomInfo.nowQuizNumber >= 10) {
+        io.to(`${roomInfo.roomId}`).emit("endQuiz");
+        roomInfo.quizing = false;
+      } else {
+        // 퀴즈시작
+        roomInfo.quizing = true;
+        if (data[3] === "독초야사랑해") {
           io.to(`${roomInfo.roomId}`).emit(
             "nextQuiz",
             roomInfo.roomQuiz[roomInfo.nowQuizNumber]
           );
+        }
+        // 받은 메세지 정답 검사
+        if (
+          data[3] === roomInfo.roomQuiz[roomInfo.nowQuizNumber].right_answer
+        ) {
+          roomInfo.currentUser.find(
+            (user) => user.socketId == socket.id
+          ).score += 1;
+
+          let payload = [socket.id, roomInfo.currentUser];
+
+          io.to(`${roomInfo.roomId}`).emit("correct", payload);
+          // 다음 퀴즈 전달
+
+          rooms.find((room) => room.roomId == data[0]).nowQuizNumber += 1;
+          if (roomInfo.nowQuizNumber >= 10) {
+            let userScores = [];
+
+            for (let user of roomInfo.currentUser) {
+              userScores.push(user.score);
+            }
+
+            const maxScore = Math.max(...userScores);
+
+            let winners = [];
+
+            for (let user of roomInfo.currentUser) {
+              if (user.score === maxScore) {
+                winners.push(user);
+              }
+            }
+
+            io.to(`${roomInfo.roomId}`).emit("endQuiz", winners);
+            roomInfo.quizing = false;
+            for (let winner of winners) {
+              io.to(`${winner.socketId}`).emit("winnerwinnerchickendinner");
+            }
+            io.to(`${roomInfo.roomId}`).emit("fuckoff");
+          } else {
+            io.to(`${roomInfo.roomId}`).emit(
+              "nextQuiz",
+              roomInfo.roomQuiz[roomInfo.nowQuizNumber]
+            );
+          }
         }
       }
     }
