@@ -110,7 +110,9 @@
               {{ this.nextQuiz.nextQuiz.description }}
             </div>
           </div>
-          <div v-else>퀴즈 안 진행중</div>
+          <div v-else>
+            퀴즈를 시작하려면 독초는 퀴즈를 뿌려라 라고 입력하세요!
+          </div>
         </div>
         <div class="inGame__body">
           <div class="chatting">
@@ -233,7 +235,8 @@ export default {
 
     function createRoom() {
       roomName.value.roomName = inputRoomName.value.inputRoomName
-      socket.emit('createRoom', roomName.value.roomName)
+      let payload = [roomName.value.roomName, inputGameType.value.inputGameType]
+      socket.emit('createRoom', payload)
       QuizRoomEntered.value.QuizRoomEntered = true
     }
 
@@ -272,6 +275,8 @@ export default {
     function leaveRoom() {
       socket.emit('leaveRoom', nowRoomInfo.value.nowRoomInfo.roomId)
       QuizRoomEntered.value.QuizRoomEntered = false
+      correctUser.value.correctUser = '정답자'
+      nextQuiz.value.nextQuiz = ''
     }
 
     socket.on('leaveRoomOK', (payload) => {
