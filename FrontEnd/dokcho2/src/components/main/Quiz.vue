@@ -161,8 +161,8 @@ export default {
     const item = ref({ item: {} })
     let correctUser = ref({ correctUser: '정답자' })
 
-    // const socket = io('https://k7e203.p.ssafy.io/')
-    const socket = io('http://localhost:3001/')
+    const socket = io('https://k7e203.p.ssafy.io/')
+    // const socket = io('http://localhost:3001/')
 
     function disconnect() {
       socket.disconnect()
