@@ -1,5 +1,19 @@
 <template>
   <div class="wholeCanvas">
+    <div class="fullPage">
+      <img
+        class="fullPage__btn"
+        src="@/assets/open.png"
+        @click="fullPageChange"
+        v-if="fullPage === false"
+      />
+      <img
+        class="fullPage__btn"
+        src="@/assets/close.png"
+        @click="fullPageChange"
+        v-if="fullPage === true"
+      />
+    </div>
     <NavBar @changeNavbar="changeNavbar" />
     <LoadingPage
       v-if="this.isGameStart === 0"
@@ -49,7 +63,8 @@ export default {
       startSignal: 0,
       isloading: 0,
       isGameStart: 0,
-      audio: new Audio('audio/oursound.mp3')
+      audio: new Audio('audio/oursound.mp3'),
+      fullPage: false
     }
   },
   components: {
@@ -68,6 +83,20 @@ export default {
     this.audio.pause()
   },
   methods: {
+    // 전체화면 변경
+    fullPageChange() {
+      const documentElement = document.documentElement
+      if (document.fullscreenElement === null) {
+        //전체화면 아닌 상태
+        documentElement.requestFullscreen()
+        this.fullPage = true
+      } else {
+        //전체화면 상태
+        document.exitFullscreen()
+        this.fullPage = false
+      }
+    },
+
     changeCanvas() {
       if (this.nowPage === 0) {
         this.nowPage = 1
@@ -123,5 +152,22 @@ export default {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+
+.fullPage {
+  position: fixed;
+  display: inline;
+  z-index: 20;
+  bottom: 5%;
+  left: 93%;
+}
+
+.fullPage__btn {
+  cursor: url('@/assets/selector.cur'), pointer;
+  transition: 0.5s;
+}
+
+.fullPage__btn:hover {
+  scale: 1.2;
 }
 </style>
