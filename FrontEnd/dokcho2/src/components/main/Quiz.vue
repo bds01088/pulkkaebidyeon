@@ -240,7 +240,6 @@ export default {
     }
 
     socket.on('msg', (msgpayload) => {
-      console.log('메세지 왔당')
       // msgSocketId.value.msgSocketId = msgpayload[1]
       msgNickname.value.msgNickname = msgpayload[2]
       msgContent.value.msgContent = msgpayload[3]
@@ -253,9 +252,59 @@ export default {
       // console.log(allMsg.value.allMsg)
     })
 
+    socket.on('startQuiz', (data) => {
+      allMsg.value.allMsg.push({
+        socketId: '',
+        nickname: '김구현(교수)',
+        content: `퀴즈가 5초뒤에 시작된다.`
+      })
+      allMsg.value.allMsg.push({
+        socketId: '',
+        nickname: '김구현(교수)',
+        content: `5..`
+      })
+
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: '김구현(교수)',
+          content: `4..`
+        })
+      }, 1000)
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: '김구현(교수)',
+          content: `3..`
+        })
+      }, 2000)
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: '김구현(교수)',
+          content: `2..`
+        })
+      }, 3000)
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: '김구현(교수)',
+          content: `1..`
+        })
+      }, 4000)
+      setTimeout(() => {
+        allMsg.value.allMsg.push({
+          socketId: '',
+          nickname: '김구현(교수)',
+          content: `퀴즈시작!`
+        })
+        quizing.value.quizing = true
+        nextQuiz.value.nextQuiz = data
+      }, 5000)
+    })
+
     socket.on('nextQuiz', (data) => {
       nextQuiz.value.nextQuiz = data
-      quizing.value.quizing = true
     })
 
     socket.on('correct', (payload) => {
