@@ -12,7 +12,7 @@
 
           <li>
             <div class="navbar__item">
-              <p>아이템</p>
+              <p>가방</p>
               <img @click="openModal2" src="@/assets/navbar/005.png" alt="" />
             </div>
           </li>
