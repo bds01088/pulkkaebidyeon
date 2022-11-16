@@ -8,12 +8,7 @@
       >
         <div
           id="enemyHp"
-          style="
-            background-color: green;
-            height: 31px;
-            width: 100%;
-            margin-left: 0;
-          "
+          style="background-color: green; height: 31px; width: 100%"
         ></div>
       </div>
       <p style="margin-top: 5px; margin-left: 75%">
@@ -28,12 +23,7 @@
       >
         <div
           id="myHp"
-          style="
-            background-color: green;
-            height: 31px;
-            width: 100%;
-            margin-left: 0;
-          "
+          style="background-color: green; height: 31px; width: 100%"
         ></div>
       </div>
       <p style="margin-top: 5px; margin-left: 75%">

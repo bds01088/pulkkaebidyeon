@@ -14,9 +14,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
-import { House } from '../modules/House'
 import { Wall } from '../modules/Wall'
-import gsap from 'gsap'
 import { KeyController } from '../modules/CharacterControl'
 import * as CANNON from 'cannon-es'
 import { onMounted, ref } from 'vue'
@@ -124,14 +122,6 @@ export default {
       )
       cannonWorld.addBody(floorBody)
 
-      const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
-      const boxBody = new CANNON.Body({
-        mass: 1,
-        position: new CANNON.Vec3(0, 10, 0),
-        shape: boxShape
-      })
-      cannonWorld.addBody(boxBody)
-
       // Mesh
       const meshes = []
       const floorMesh = new THREE.Mesh(
@@ -144,33 +134,7 @@ export default {
       floorMesh.rotation.x = -Math.PI / 2
       floorMesh.receiveShadow = true
       scene.add(floorMesh)
-      // meshes.push(floorMesh)
-
-      // const pointerMesh = new THREE.Mesh(
-      //   new THREE.PlaneGeometry(0.5, 0.5),
-      //   new THREE.MeshBasicMaterial({
-      //     color: 'crimson',
-      //     transparent: true,
-      //     opacity: 0.5
-      //   })
-      // )
-      // pointerMesh.rotation.x = -Math.PI / 2
-      // pointerMesh.position.y = 0.01
-      // pointerMesh.receiveShadow = true
-      // scene.add(pointerMesh)
-
-      const spotMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(3, 3),
-        new THREE.MeshStandardMaterial({
-          color: 'yellow',
-          transparent: true,
-          opacity: 0.5
-        })
-      )
-      spotMesh.position.set(5, 0.005, 5)
-      spotMesh.rotation.x = -Math.PI / 2
-      spotMesh.receiveShadow = true
-      scene.add(spotMesh)
+      meshes.push(floorMesh)
 
       const gltfLoader = new GLTFLoader()
 
@@ -188,16 +152,6 @@ export default {
           meshes.push(monster)
         })
       }
-
-      const house = new House({
-        gltfLoader,
-        scene,
-        meshes,
-        modelSrc: '/models/house.glb',
-        x: 5,
-        y: 0,
-        z: 2
-      })
 
       const player = new Player({
         scene,
@@ -233,7 +187,7 @@ export default {
         gltfLoader,
         width: {},
         modelSrc: `/models/House/door.glb`,
-        position: { x: 4, y: 0.2, z: -7 },
+        position: { x: 4, y: 0.2, z: 7.5 },
         name: 'door'
       })
 
@@ -245,29 +199,6 @@ export default {
         x: 8,
         z: 8
       })
-
-      // console.log(player)
-      // const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
-      // const boxMaterial = new THREE.MeshStandardMaterial({
-      //   color: 'seagreen'
-      // })
-      // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
-      // boxMesh.position.y = 0.5
-      // boxMesh.name = 'box'
-      // scene.add(boxMesh)
-      // meshes.push(boxMesh)
-
-      // const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
-      // const material = new THREE.MeshBasicMaterial({
-      //   color: 'blue',
-      //   side: THREE.DoubleSide
-      // })
-      // const plane = new THREE.Mesh(geometry, material)
-      // plane.name = 'mypage'
-      // plane.position.x = -2
-
-      // scene.add(plane)
-      // meshes.push(plane)
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -286,8 +217,6 @@ export default {
         if (delta < 0.01) cannonStepTime = 1 / 120
         cannonWorld.step(cannonStepTime, delta, 3)
 
-        // boxMesh.position.copy(boxBody.position) // 위치
-        // boxMesh.quaternion.copy(boxBody.quaternion) // 회전
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
@@ -336,43 +265,6 @@ export default {
             ) {
               player.moving = false
               console.log('멈춤')
-            }
-
-            if (
-              Math.abs(spotMesh.position.x - player.modelMesh.position.x) <
-                1.5 &&
-              Math.abs(spotMesh.position.z - player.modelMesh.position.z) < 1.5
-            ) {
-              if (!house.visible) {
-                console.log('나와')
-                house.visible = true
-                spotMesh.material.color.set('seagreen')
-                gsap.to(house.modelMesh.position, {
-                  duration: 1,
-                  y: 1,
-                  ease: 'Bounce.easeOut'
-                })
-                gsap.to(camera.position, {
-                  duration: 1,
-                  y: 3
-                })
-                setTimeout(() => {
-                  alert('집에 들어감')
-                  emit('now')
-                }, 1000)
-              }
-            } else if (house.visible) {
-              console.log('들어가')
-              house.visible = false
-              spotMesh.material.color.set('yellow')
-              gsap.to(house.modelMesh.position, {
-                duration: 0.5,
-                y: -1.3
-              })
-              gsap.to(camera.position, {
-                duration: 1,
-                y: 5
-              })
             }
           } else {
             // 서 있는 상태
@@ -601,7 +493,7 @@ export default {
       draw()
 
       function onClick() {
-        alert('aa')
+        // alert('aa')
         emit('changeCanvas')
       }
     }, 100)

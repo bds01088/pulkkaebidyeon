@@ -1,5 +1,7 @@
 <template>
   <div>
+    <loading-page v-show="isloading === true"></loading-page>
+
     <battle-status
       id="status"
       :myHpBar="myHpBar"
@@ -133,6 +135,7 @@ import * as CANNON from 'cannon-es'
 
 import BattleStatus from './BattleStatus.vue'
 import { ref, watch } from 'vue'
+import LoadingPage from './LoadingPage.vue'
 
 import { CreateText } from '../modules/CreateText'
 
@@ -148,7 +151,7 @@ export default {
     startSignal: Number
   },
 
-  components: { BattleStatus },
+  components: { BattleStatus, LoadingPage },
 
   setup(props, { emit }) {
     // console.log(JSON.parse(localStorage.getItem('userInfo')))
@@ -160,6 +163,8 @@ export default {
       timer: 3000,
       timerProgressBar: true
     })
+
+    const isloading = ref(true)
 
     const myHpBar = ref('100')
     const enemyHpBar = ref('100')
@@ -246,7 +251,7 @@ export default {
 
     const battleAudio = new Audio('audio/Kung-Fu Temple.mp3')
     battleAudio.loop = true
-    battleAudio.volume = 0.8
+    battleAudio.volume = 0.7
 
     const attackAudio = new Audio('audio/punch.mp3')
     battleAudio.loop = false
@@ -268,6 +273,12 @@ export default {
       () => props.startSignal,
       () => {
         setTimeout(() => {
+          isloading.value = true
+
+          setTimeout(() => {
+            isloading.value = false
+          }, 500)
+
           battleAudio.load()
           battleAudio.play()
 
@@ -374,8 +385,6 @@ export default {
           meshes.push(floorMesh)
 
           const gltfLoader = new GLTFLoader()
-
-          // const fbxLoader = new FBXLoader()
 
           const player = new Monster({
             scene,
@@ -744,6 +753,7 @@ export default {
 
                       setTimeout(() => {
                         emit('changeBattle')
+                        isloading.value = true
                       }, 2000)
                     }
                   }
@@ -868,6 +878,7 @@ export default {
 
                 setTimeout(() => {
                   emit('changeBattle')
+                  isloading.value = true
                 }, 2000)
               } else {
                 status.value = '공격'
@@ -892,6 +903,7 @@ export default {
 
                 setTimeout(() => {
                   emit('changeBattle')
+                  isloading.value = true
                 }, 2000)
               } else {
                 phase.value = 'ready'
@@ -936,6 +948,7 @@ export default {
 
                 setTimeout(() => {
                   emit('changeBattle')
+                  isloading.value = true
                 }, 2000)
               } else {
                 status.value = '공격'
@@ -961,6 +974,7 @@ export default {
 
                 setTimeout(() => {
                   emit('changeBattle')
+                  isloading.value = true
                 }, 2000)
               } else {
                 if (stun.value == true) {
@@ -999,6 +1013,7 @@ export default {
 
                           setTimeout(() => {
                             emit('changeBattle')
+                            isloading.value = true
                           }, 2000)
                         }
                       }
@@ -1028,6 +1043,7 @@ export default {
 
           setTimeout(() => {
             emit('changeBattle')
+            isloading.value = true
           }, 2000)
         }
       }
@@ -1079,6 +1095,7 @@ export default {
 
                     setTimeout(() => {
                       emit('changeBattle')
+                      isloading.value = true
                     }, 2000)
                   }
                 }
@@ -1152,6 +1169,7 @@ export default {
 
                   setTimeout(() => {
                     emit('changeBattle')
+                    isloading.value = true
                   }, 2000)
                 }
               }
@@ -1204,6 +1222,7 @@ export default {
 
               setTimeout(() => {
                 emit('changeBattle')
+                isloading.value = true
               }, 2000)
             } else if (poison.value == true) {
               poisonCnt.value += 1
@@ -1237,6 +1256,7 @@ export default {
 
                   setTimeout(() => {
                     emit('changeBattle')
+                    isloading.value = true
                   }, 2000)
                 }
               }
@@ -1284,6 +1304,7 @@ export default {
 
               setTimeout(() => {
                 emit('changeBattle')
+                isloading.value = true
               }, 2000)
             } else if (poison.value == true) {
               poisonCnt.value += 1
@@ -1317,6 +1338,7 @@ export default {
 
                   setTimeout(() => {
                     emit('changeBattle')
+                    isloading.value = true
                   }, 2000)
                 }
               }
@@ -1365,6 +1387,7 @@ export default {
 
                 setTimeout(() => {
                   emit('changeBattle')
+                  isloading.value = true
                 }, 2000)
               }
             }
@@ -1528,6 +1551,7 @@ export default {
 
                         setTimeout(() => {
                           emit('changeBattle')
+                          isloading.value = true
                         }, 2000)
                       }
                     }
@@ -1577,6 +1601,7 @@ export default {
 
           setTimeout(() => {
             emit('changeBattle')
+            isloading.value = true
           }, 2000)
         } else {
           phase.value = 'itemResult'
@@ -1735,7 +1760,8 @@ export default {
       poison,
       itemToSelect,
       myName,
-      enemyName
+      enemyName,
+      isloading
     }
   }
 }
