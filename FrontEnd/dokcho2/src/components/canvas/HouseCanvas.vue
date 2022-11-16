@@ -138,6 +138,13 @@ export default {
 
       const gltfLoader = new GLTFLoader()
 
+      const monsterPos = [
+        { x: 0, z: 0 },
+        { x: 1, z: 1 },
+        { x: 2, z: 2 },
+        { x: -2, z: -2 }
+      ]
+
       // 내가 가진 풀깨비 넣기
       for (let monsterID in userMonster.value.userMonster) {
         let id = Number(monsterID) + 1
@@ -145,8 +152,8 @@ export default {
         gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
           const monster = item.scene
           monster.name = ['monster', `${id}`]
-          monster.position.x = (Math.random() - 0.5) * 5
-          monster.position.z = (Math.random() - 0.5) * 5
+          monster.position.x = monsterPos[id].x
+          monster.position.z = monsterPos[id].z
           monster.scale.set(0.5, 0.5, 0.5)
           scene.add(monster)
           meshes.push(monster)

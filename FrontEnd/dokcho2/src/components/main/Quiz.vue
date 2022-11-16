@@ -4,42 +4,89 @@
       v-if="this.QuizRoomEntered.QuizRoomEntered === false"
       class="waitingRoom"
     >
-      <div class="title">Quiz!</div>
-      <div class="makeRoom">
-        <p>방 만들기</p>
-        <input
-          type="text"
-          v-model="inputRoomName.inputRoomName"
-          placeholder="방 이름"
+      <div class="waitingRoom__body">
+        <div class="waitingRoom__left">
+          <div class="myProfile">
+            <img
+              :src="
+                require('@/assets/monsters/' +
+                  userInfo.representMonster +
+                  '.png')
+              "
+              alt=""
+            />
+            <div class="myName">
+              {{ userInfo.nickname }}
+            </div>
+          </div>
+          <div class="makeRoom">
+            <div class="makeRoomTitle">
+              <p>방 만들기</p>
+            </div>
+            <div class="makeRoomDetail">
+              <div class="radio">
+                <input
+                  type="radio"
+                  v-model="inputGameType.inputGameType"
+                  value="saja"
+                  id="saja"
+                />
+                <label for="saja">사자성어</label>
+                <input
+                  type="radio"
+                  v-model="inputGameType.inputGameType"
+                  value="chosung"
+                  id="chosung"
+                />
+                <label for="chosung">초성퀴즈</label>
+              </div>
+              <input
+                type="text"
+                v-model="inputRoomName.inputRoomName"
+                placeholder="방 이름"
+              />
+            </div>
+            <div class="makeRoomBtnBox">
+              <button class="makeRoomBtn" @click="createRoom()">방생성</button>
+            </div>
+          </div>
+        </div>
+        <div class="waitingRoom__right">
+          <div class="roomList">
+            <div
+              @click="enterRoom(room.roomId)"
+              v-for="room in this.rooms.rooms"
+              v-bind:key="room"
+              class="room"
+            >
+              <div class="roomLeft">
+                <div class="roomPic"></div>
+              </div>
+              <div class="roomRight">
+                <div class="roomRight__top">
+                  <div class="roomName">
+                    {{ room.roomName }}
+                  </div>
+                </div>
+                <div class="roomRight__bottom">
+                  <div class="roomPerson">
+                    {{ room.currentUser.length }} / 4
+                  </div>
+                  <div class="roomStartBtn">
+                    <button>참여</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <img
+          class="exit__btn"
+          @click="closeQuiz()"
+          src="@/assets/navbar/ExitButton.png"
+          alt=""
         />
-        <div>
-          <button @click="createRoom()">방생성</button>
-        </div>
-
-        <!-- <p>유저닉네임목록{{ this.nowRoomUserNickname.nowRoomUserNickname }}</p> -->
       </div>
-      <div class="roomList">
-        <div
-          @click="enterRoom(room.roomId)"
-          v-for="room in this.rooms.rooms"
-          v-bind:key="room"
-          class="room"
-        >
-          <div class="roomNum">
-            {{ room.roomId }}
-          </div>
-          <div class="roomName">
-            {{ room.roomName }}
-          </div>
-          <div class="roomPerson">{{ room.currentUser.length }} / 4</div>
-        </div>
-      </div>
-      <img
-        class="exit__btn"
-        @click="closeQuiz()"
-        src="@/assets/navbar/ExitButton.png"
-        alt=""
-      />
     </div>
 
     <div v-else>
@@ -63,7 +110,9 @@
               {{ this.nextQuiz.nextQuiz.description }}
             </div>
           </div>
-          <div v-else>퀴즈 안 진행중</div>
+          <div v-else>
+            퀴즈를 시작하려면 독초는 퀴즈를 뿌려라 라고 입력하세요!
+          </div>
         </div>
         <div class="inGame__body">
           <div class="chatting">
@@ -144,6 +193,7 @@ export default {
   },
   setup(props, { emit }) {
     let inputRoomName = ref({ inputRoomName: '' })
+    let inputGameType = ref({ inputGameType: '' })
     let nowRoomInfo = ref({ nowRoomInfo: [] })
     let roomName = ref({ roomName: '' })
     let nowRoomUser = ref({ nowRoomUser: '' })
@@ -161,6 +211,7 @@ export default {
     const item = ref({ item: {} })
     let correctUser = ref({ correctUser: '정답자' })
 
+    let userInfo = JSON.parse(localStorage.getItem('userInfo'))
     const socket = io('https://k7e203.p.ssafy.io/')
     // const socket = io('http://localhost:3001/')
 
@@ -184,7 +235,8 @@ export default {
 
     function createRoom() {
       roomName.value.roomName = inputRoomName.value.inputRoomName
-      socket.emit('createRoom', roomName.value.roomName)
+      let payload = [roomName.value.roomName, inputGameType.value.inputGameType]
+      socket.emit('createRoom', payload)
       QuizRoomEntered.value.QuizRoomEntered = true
     }
 
@@ -223,6 +275,8 @@ export default {
     function leaveRoom() {
       socket.emit('leaveRoom', nowRoomInfo.value.nowRoomInfo.roomId)
       QuizRoomEntered.value.QuizRoomEntered = false
+      correctUser.value.correctUser = '정답자'
+      nextQuiz.value.nextQuiz = ''
     }
 
     socket.on('leaveRoomOK', (payload) => {
@@ -426,6 +480,7 @@ export default {
 
     return {
       inputRoomName,
+      inputGameType,
       roomName,
       nowRoomInfo,
       nowRoomUser,
@@ -441,6 +496,7 @@ export default {
       quizing,
       nextQuiz,
       correctUser,
+      userInfo,
       disconnect,
       enterRoom,
       leaveRoom,
@@ -469,42 +525,141 @@ export default {
   align-items: center;
 }
 
-.title {
-  width: 100%;
-  height: 10%;
-  text-align: center;
-  font-size: 60px;
+.waitingRoom__body {
+  margin-top: 10vh;
+  width: 80vw;
+  height: 75vh;
+  display: flex;
+  justify-content: space-around;
+}
+
+.waitingRoom__left {
+  width: 35%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  border-radius: 20px;
+  background-color: antiquewhite;
+}
+
+.myProfile {
+  height: 40%;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px black solid;
+}
+
+.myProfile > img {
+  width: 80%;
+  height: 80%;
+}
+
+.myName {
+  height: 20%;
+  display: flex;
+  align-items: center;
+  font-size: 25px;
+  font-weight: bold;
 }
 
 .makeRoom {
-  width: 100%;
-  height: 10%;
+  height: 40%;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px black solid;
+}
+
+.makeRoomTitle {
+  height: 30%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
 }
 
-.makeRoom > p {
+.makeRoomTitle > p {
+  font-size: 25px;
   margin: 0 5px 0 0;
+  font-weight: bold;
+}
+
+.makeRoomDetail {
+  height: 40%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.radio input[type='radio'] {
+  display: none;
+}
+
+.radio input[type='radio'] + label {
+  display: inline-block;
+  cursor: url(http://localhost:8080/da0004d92b7c37a7.cur), pointer;
+  height: 24px;
+  width: 90px;
+  border: 1px solid #333;
+  line-height: 24px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.radio input[type='radio'] + label {
+  background-color: #fff;
+  color: #333;
+}
+
+.radio input[type='radio']:checked + label {
+  background-color: #333;
+  color: #fff;
 }
 
 input {
   margin: 0;
   height: 35px;
+  width: 80%;
+}
+
+.makeRoomBtnBox {
+  height: 30%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.makeRoomBtn {
+  width: 60%;
+  height: 50%;
+  font-size: 18px;
+}
+
+.waitingRoom__right {
+  width: 55%;
+  height: 100%;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: antiquewhite;
 }
 
 .roomList {
-  width: 80vw;
-  height: 60%;
-  border-radius: 20px;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  width: 70%;
+  height: 90%;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: antiquewhite;
-  padding: 15px;
 }
 
 .room {
@@ -512,23 +667,56 @@ input {
   justify-content: space-between;
   align-items: center;
   border-radius: 20px;
-  margin: 15px 10vw;
-  width: 60vw;
-  height: 15%;
+  margin: 15px 0;
+  width: 100%;
+  height: 25%;
   background-color: burlywood;
 }
 
-.room > div {
-  font-size: 20px;
+.roomLeft {
+  width: 35%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.roomNum {
-  text-align: center;
-  width: 15%;
+.roomPic {
+  width: 70%;
+  height: 70%;
+  border: 1px black solid;
+}
+
+.roomRight {
+  width: 65%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.roomRight__top {
+  width: 80%;
+  height: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .roomName {
-  width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px black solid;
+  height: 50%;
+  width: 100%;
+}
+
+.roomRight__bottom {
+  width: 80%;
+  height: 40%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .roomPerson {
