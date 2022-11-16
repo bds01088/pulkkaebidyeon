@@ -25,6 +25,7 @@ import { BASE_URL } from '@/constant/BASE_URL'
 import monsterDetail from '@/components/monster/monsterDetail.vue'
 import myPage from '@/components/accounts/myPage.vue'
 import { Furniture } from '../modules/Furniture'
+import { Door } from '../modules/Door'
 
 export default {
   name: 'HouseCanvas',
@@ -225,6 +226,19 @@ export default {
         })
       })
 
+      const door = new Door({
+        scene,
+        meshes,
+        cannonWorld,
+        gltfLoader,
+        width: {},
+        modelSrc: `/models/House/door.glb`,
+        position: { x: 4, y: 0.2, z: -7 },
+        name: 'door'
+      })
+
+      console.log(door)
+
       // 맵 막는 박스 만들기
       new Wall({
         cannonWorld,
@@ -232,16 +246,16 @@ export default {
         z: 8
       })
 
-      console.log(player)
-      const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
-      const boxMaterial = new THREE.MeshStandardMaterial({
-        color: 'seagreen'
-      })
-      const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
-      boxMesh.position.y = 0.5
-      boxMesh.name = 'box'
-      scene.add(boxMesh)
-      meshes.push(boxMesh)
+      // console.log(player)
+      // const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
+      // const boxMaterial = new THREE.MeshStandardMaterial({
+      //   color: 'seagreen'
+      // })
+      // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
+      // boxMesh.position.y = 0.5
+      // boxMesh.name = 'box'
+      // scene.add(boxMesh)
+      // meshes.push(boxMesh)
 
       // const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
       // const material = new THREE.MeshBasicMaterial({
@@ -272,8 +286,8 @@ export default {
         if (delta < 0.01) cannonStepTime = 1 / 120
         cannonWorld.step(cannonStepTime, delta, 3)
 
-        boxMesh.position.copy(boxBody.position) // 위치
-        boxMesh.quaternion.copy(boxBody.quaternion) // 회전
+        // boxMesh.position.copy(boxBody.position) // 위치
+        // boxMesh.quaternion.copy(boxBody.quaternion) // 회전
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
@@ -400,7 +414,7 @@ export default {
             isPressed = false
             myPage.value.myPage = true
           }
-          if (item.object.name === 'box') {
+          if (item.object.name === 'Box230') {
             onClick()
             isPressed = false
           }
