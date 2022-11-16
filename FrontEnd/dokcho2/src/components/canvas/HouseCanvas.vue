@@ -207,9 +207,9 @@ export default {
       })
 
       const Furnitures = [
-        ['bed', { x: 2, y: 0.2, z: 2 }],
-        ['closet', { x: -3, y: 0.2, z: -3 }],
-        ['desk', { x: 3, y: 0.2, z: -3 }]
+        ['bed', { x: -6.5, y: 0.2, z: 6 }],
+        ['closet90', { x: -7.2, y: 0.2, z: 2 }],
+        ['deskwithbook', { x: -2, y: 0.2, z: 6 }]
       ]
 
       Furnitures.forEach((element) => {
@@ -243,17 +243,17 @@ export default {
       scene.add(boxMesh)
       meshes.push(boxMesh)
 
-      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
-      const material = new THREE.MeshBasicMaterial({
-        color: 'blue',
-        side: THREE.DoubleSide
-      })
-      const plane = new THREE.Mesh(geometry, material)
-      plane.name = 'mypage'
-      plane.position.x = -2
+      // const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+      // const material = new THREE.MeshBasicMaterial({
+      //   color: 'blue',
+      //   side: THREE.DoubleSide
+      // })
+      // const plane = new THREE.Mesh(geometry, material)
+      // plane.name = 'mypage'
+      // plane.position.x = -2
 
-      scene.add(plane)
-      meshes.push(plane)
+      // scene.add(plane)
+      // meshes.push(plane)
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -396,7 +396,7 @@ export default {
           //   pointerMesh.position.z = destinationPoint.z
           // }
 
-          if (item.object.name === 'furniture_and_household_assets001_4') {
+          if (item.object.name === 'book') {
             isPressed = false
             myPage.value.myPage = true
           }
