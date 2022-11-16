@@ -152,7 +152,7 @@ export default {
     let nextQuiz = ref({ nextQuiz: '' })
     const item = ref({ item: {} })
 
-    const socket = io('https://k7e203.p.ssafy.io/socket')
+    const socket = io('http://k7e203.p.ssafy.io:3001')
 
     function disconnect() {
       socket.disconnect()
