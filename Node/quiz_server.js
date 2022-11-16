@@ -143,7 +143,7 @@ io.on("connection", (socket) => {
         roomInfo.quizing = true;
         if (data[3] === "독초야사랑해") {
           io.to(`${roomInfo.roomId}`).emit(
-            "nextQuiz",
+            "startQuiz",
             roomInfo.roomQuiz[roomInfo.nowQuizNumber]
           );
         }
