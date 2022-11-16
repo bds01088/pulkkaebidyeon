@@ -63,20 +63,26 @@
         <div class="input__answer">
           <!-- <span> 숫자 입력 : </span> -->
           <input
-            type="text"
+            type="number"
             v-model="inputAnswer[0]"
+            min="1"
+            max="9"
             maxlength="1"
             class="number__box"
           />
           <input
-            type="text"
+            type="number"
             v-model="inputAnswer[1]"
+            min="1"
+            max="9"
             maxlength="1"
             class="number__box"
           />
           <input
-            type="text"
+            type="number"
             v-model="inputAnswer[2]"
+            min="1"
+            max="9"
             maxlength="1"
             class="number__box"
             @keyup.enter="showResult()"
@@ -198,7 +204,7 @@ export default {
       game.value.game = true
     }
 
-    const numbers = ref(['1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    const numbers = ref([1, 2, 3, 4, 5, 6, 7, 8, 9])
     const answer = ref([])
 
     function getAnswer() {
@@ -341,6 +347,13 @@ export default {
       }
     }
 
+    // // input 체크 : 최대 길이, 문자 ; not defined 떠서 일단 안씀
+    // function maxLengthChk(object) {
+    //   if (object.value.length > object.maxLength) {
+    //     object.value = object.value.slice(0, object.maxLength)
+    //   }
+    // }
+
     return {
       nowStrike,
       nowFinished,
@@ -351,6 +364,7 @@ export default {
       inputAnswer,
       showResult,
       scoreBoard
+      // maxLengthChk
     }
   }
 }
@@ -640,5 +654,17 @@ tr {
 
 .inning {
   background-color: white;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 </style>
