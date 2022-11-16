@@ -10,13 +10,20 @@
           </div>
         </div>
         <div class="btn__box">
-          <button
+          <font-awesome-icon
+            class="icon"
             @click="nextTalk()"
             v-if="this.isTalk.content.line.length !== nowPage.nowPage + 1"
-          >
-            다음
-          </button>
-          <button @click="endTalk()" v-else>대화종료</button>
+            icon="fa-solid fa-caret-down"
+            style="font-size: 50px"
+          />
+          <font-awesome-icon
+            v-else
+            class="icon"
+            icon="fa-solid fa-xmark"
+            @click="endTalk()"
+            style="font-size: 45px"
+          />
         </div>
       </div>
     </div>
@@ -166,7 +173,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  cursor: auto;
+  cursor: url('@/assets/pointer.cur'), auto;
 }
 .talk__box {
   display: flex;
@@ -177,15 +184,17 @@ export default {
   height: 50%;
 }
 .box {
-  border-top-right-radius: 9vw;
-  border-top-left-radius: 9vw;
+  border-top-right-radius: 10vw;
+  border-top-left-radius: 10vw;
   border-bottom-right-radius: 6vw;
   border-bottom-left-radius: 6vw;
   width: 60%;
   height: 50%;
   padding: 2vw 7vw;
-  box-shadow: 0 0 1px 1px gray;
-  background-color: rgb(231, 227, 186);
+  /* box-shadow: 0 0 1px 1px gray; */
+  box-shadow: 10px 10px 10px #00000092;
+  /* box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.5); */
+  background-color: rgb(229, 224, 196);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -194,40 +203,46 @@ export default {
   position: relative;
 }
 .name {
-  width: 12vw;
+  width: 10vw;
   height: 6vh;
   border-radius: 3vh;
-  border: 2px gray solid;
+  box-shadow: 2px 3px 5px 0px rgba(0, 0, 0, 0.5);
+  /* border: 2px rgba(0, 0, 0, 0.5) solid; */
   background-color: rgb(242, 241, 235);
   top: -7vh;
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 3vh;
+  font-size: 3.5vh;
   font-weight: bold;
 }
 .content {
-  margin-top: 3vh;
-  font-size: 1.5vw;
+  margin-top: 5vh;
+  margin-left: 2vh;
+  font-size: 1.4rem;
+  letter-spacing: 0.3px;
+  word-spacing: 5px;
 }
 .btn__box {
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 3vh;
 }
 
-button {
-  border-radius: 2vh;
+.icon {
+  /* border-radius: 3vh;
   border: 2px gray solid;
-  width: 7vw;
-  height: 4vh;
-  font-size: 1vw;
+  width: 6vw;
+  height: 5vh;
+  font-size: 1vw; */
   cursor: url('@/assets/selector.cur'), pointer;
   transition: 0.5s;
 }
 
-button:hover {
-  scale: 1.05;
-  background-color: rgb(171, 174, 240);
+.icon:hover {
+  scale: 1.1;
+  color: #467302;
+  /* background-color: #6bfa8d; */
 }
 </style>
