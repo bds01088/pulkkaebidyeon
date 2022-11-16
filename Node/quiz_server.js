@@ -46,15 +46,17 @@ io.on("connection", (socket) => {
     delete players[socket.id];
   });
 
-  socket.on("sendNickname", (userInfo) => {
-    players[socket.id].object = userInfo;
-    console.log(
-      `${socket.id}, ${
-        players[socket.id].object.nickname
-      }님이 퀴즈에 입장했습니다`
-    );
-    socket.emit("sendSocketId", socket.id);
-  });
+  if (players[socket.id].object) {
+    socket.on("sendNickname", (userInfo) => {
+      players[socket.id].object = userInfo;
+      console.log(
+        `${socket.id}, ${
+          players[socket.id].object.nickname
+        }님이 퀴즈에 입장했습니다`
+      );
+      socket.emit("sendSocketId", socket.id);
+    });
+  }
 
   setInterval(() => {
     socket.emit("sendRooms", rooms);
@@ -71,32 +73,36 @@ io.on("connection", (socket) => {
       quizing: false,
     });
     let roomInfo = rooms.find((room) => room.roomId == roomNum);
-    roomInfo.currentUser.push({
-      socketId: socket.id,
-      nickname: players[socket.id].object.nickname,
-      score: 0,
-    });
-    roomInfo.roomQuiz = _.sampleSize(quizs, 5);
-    let payload = [roomInfo, players[socket.id].object];
-    io.to(`${roomNum}`).emit("createRoomOK", payload);
-    roomNum += 1;
-  });
-
-  socket.on("enterRoom", (data) => {
-    let roomInfo = rooms.find((room) => room.roomId == data);
-    if (roomInfo.currentUser.length > 3) {
-      io.to(socket.id).emit("goaway");
-    } else {
-      socket.join(`${data}`);
+    if (roomInfo.currentUser) {
       roomInfo.currentUser.push({
         socketId: socket.id,
         nickname: players[socket.id].object.nickname,
         score: 0,
       });
+      roomInfo.roomQuiz = _.sampleSize(quizs, 10);
       let payload = [roomInfo, players[socket.id].object];
-      io.to(`${data}`).emit("enterRoomOK", payload);
-      for (user of roomInfo.currentUser) {
-        io.to(`${user.socketId}`).emit("enterRoomOK", payload);
+      io.to(`${roomNum}`).emit("createRoomOK", payload);
+      roomNum += 1;
+    }
+  });
+
+  socket.on("enterRoom", (data) => {
+    let roomInfo = rooms.find((room) => room.roomId == data);
+    if (roomInfo.currentUser) {
+      if (roomInfo.currentUser.length > 3) {
+        io.to(socket.id).emit("goaway");
+      } else {
+        socket.join(`${data}`);
+        roomInfo.currentUser.push({
+          socketId: socket.id,
+          nickname: players[socket.id].object.nickname,
+          score: 0,
+        });
+        let payload = [roomInfo, players[socket.id].object];
+        io.to(`${data}`).emit("enterRoomOK", payload);
+        for (user of roomInfo.currentUser) {
+          io.to(`${user.socketId}`).emit("enterRoomOK", payload);
+        }
       }
     }
   });
@@ -104,12 +110,14 @@ io.on("connection", (socket) => {
   socket.on("leaveRoom", (nowRoom) => {
     socket.leave(`${nowRoom}`);
     let roomInfo = rooms.find((room) => room.roomId == nowRoom);
-    roomInfo.currentUser = roomInfo.currentUser.filter(
-      (user) => user.socketId !== socket.id
-    );
-    let payload = [roomInfo, players[socket.id].object];
+    if (roomInfo.currentUser) {
+      roomInfo.currentUser = roomInfo.currentUser.filter(
+        (user) => user.socketId !== socket.id
+      );
 
-    io.to(`${socket.id}`).emit("deleteMsg");
+      io.to(`${socket.id}`).emit("deleteMsg");
+    }
+    let payload = [roomInfo, players[socket.id].object];
 
     if (roomInfo.currentUser.length > 0) {
       for (user of roomInfo.currentUser) {
@@ -123,11 +131,13 @@ io.on("connection", (socket) => {
   socket.on("msg", (data) => {
     // 받은 메세지를 다시 해당 룸의 모든 사용자에게 보내줌
     let roomInfo = rooms.find((room) => room.roomId == data[0]);
-    for (user of roomInfo.currentUser) {
-      io.to(`${user.socketId}`).emit("msg", data);
+    if (roomInfo.currentUser) {
+      for (user of roomInfo.currentUser) {
+        io.to(`${user.socketId}`).emit("msg", data);
+      }
     }
 
-    if (roomInfo.nowQuizNumber >= 5) {
+    if (roomInfo.nowQuizNumber >= 10) {
       io.to(`${roomInfo.roomId}`).emit("endQuiz");
       roomInfo.quizing = false;
     } else {
@@ -145,11 +155,13 @@ io.on("connection", (socket) => {
           (user) => user.socketId == socket.id
         ).score += 1;
 
-        io.to(`${roomInfo.roomId}`).emit("correct", socket.id);
+        let payload = [socket.id, roomInfo.currentUser];
+
+        io.to(`${roomInfo.roomId}`).emit("correct", payload);
         // 다음 퀴즈 전달
 
         rooms.find((room) => room.roomId == data[0]).nowQuizNumber += 1;
-        if (roomInfo.nowQuizNumber >= 5) {
+        if (roomInfo.nowQuizNumber >= 10) {
           let userScores = [];
 
           for (let user of roomInfo.currentUser) {
