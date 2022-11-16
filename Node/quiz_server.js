@@ -5,7 +5,7 @@ const axios = require("axios");
 const _ = require("lodash");
 
 const app = express();
-const server = https.createServer(options, app);
+const server = http.createServer(options, app);
 const BASE_URL = "https://k7e203.p.ssafy.io";
 
 app.use(cors());
