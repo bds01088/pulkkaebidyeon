@@ -45,7 +45,9 @@ public class MissionServiceImpl implements MissionService{
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
         Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
         UserMission userMission = userMissionRepository.findUserMissionByUserAndMission(user, mission).orElseThrow(MissionNotFoundException::new);
-        return MissionDto.from(mission, userMission.getStatus());
+        Item relic = itemRepository.findById(mission.getRelic()).orElseThrow(ItemNotFoundException::new);
+        Item item = itemRepository.findById(mission.getItem()).orElseThrow(ItemNotFoundException::new);
+        return MissionDto.from(mission, userMission.getStatus(), item, relic);
     }
 
     @Override
@@ -61,7 +63,9 @@ public class MissionServiceImpl implements MissionService{
 
         for(UserMission um : user.getUserMissionList()){
             Mission mission = um.getMission();
-            list.add(MissionDto.from(mission, um.getStatus()));
+            Item item = itemRepository.findById(mission.getItem()).orElseThrow(ItemNotFoundException::new);
+            Item relic = itemRepository.findById(mission.getRelic()).orElseThrow(ItemNotFoundException::new);
+            list.add(MissionDto.from(mission, um.getStatus(), item, relic));
         }
 
         return list;
