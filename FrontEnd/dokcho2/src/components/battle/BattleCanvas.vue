@@ -80,9 +80,10 @@
         style="cursor: url('@/assets/selector.cur'), pointer"
       >
         <span v-for="(item, idx) in itemList" :key="idx">
-          <button @click="doSelectItem(item)">
+          <span @click="doSelectItem(item)" class="tooltip">
             {{ item.itemName }} x {{ item.count }}
-          </button>
+            <span class="tooltiptext">{{ item.description }}</span>
+          </span>
         </span>
         <br />
         <div
@@ -122,11 +123,10 @@
 <script>
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-// import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 
 import { Monster } from '../modules/Monster'
 import { Boss } from '../modules/Boss'
-// import { FbxBoss } from '../modules/FbxBoss'
+import { AnimationBoss } from '../modules/AnimationBoss'
 
 // import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
@@ -179,7 +179,7 @@ export default {
     const enemyAttack = ref(20)
     const enemyDefense = ref(10)
 
-    const msg = ref(`${enemyName.value}과(와) 만났다!`)
+    const msg = ref(`적과 만났다!`)
 
     const actList = ref(['공격', '방어', '아이템'])
     const myAct = ref('')
@@ -249,9 +249,19 @@ export default {
     battleAudio.volume = 0.8
 
     const attackAudio = new Audio('audio/punch.mp3')
+    battleAudio.loop = false
     attackAudio.volume = 1
 
     const defenseAudio = new Audio('audio/moove.mp3')
+    battleAudio.loop = false
+    defenseAudio.volume = 1
+
+    const attackBossAudio = new Audio('audio/punch.mp3')
+    battleAudio.loop = false
+    attackAudio.volume = 1
+
+    const defenseBossAudio = new Audio('audio/moove.mp3')
+    battleAudio.loop = false
     defenseAudio.volume = 1
 
     watch(
@@ -271,7 +281,7 @@ export default {
 
           // Texture
           const textureLoader = new THREE.TextureLoader()
-          const floorTexture = textureLoader.load('/images/map13.png')
+          const floorTexture = textureLoader.load('/images/map18.png')
           floorTexture.wrapS = THREE.RepeatWrapping
           floorTexture.wrapT = THREE.RepeatWrapping
           floorTexture.repeat.x = 1
@@ -393,51 +403,54 @@ export default {
             '근희몬',
             '상균몬',
             '지원몬',
-            '하민몬'
+            '하민몬',
+            '성빈몬'
           ]
 
-          const enemy = new Boss({
-            scene,
-            meshes,
-            cannonWorld,
-            gltfLoader,
-            modelSrc: `/models/Villain/${
-              villain[userInfo.value.nowMissionId - 1]
-            }.glb`,
-            x: -0.125,
-            y: 2,
-            z: -0.75
-          })
+          // const enemy = new Boss({
+          //   scene,
+          //   meshes,
+          //   cannonWorld,
+          //   gltfLoader,
+          //   modelSrc: `/models/Villain/${
+          //     villain[userInfo.value.nowMissionId - 1]
+          //   }.glb`,
+          //   x: -0.125,
+          //   y: 2,
+          //   z: -0.75
+          // })
 
-          // const noMotion = [0, 1, 4]
+          const noMotion = [0, 1, 4]
 
-          // let enemy
+          let enemy
 
-          // if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
-          //   enemy = new Boss({
-          //     scene,
-          //     meshes,
-          //     cannonWorld,
-          //     gltfLoader,
-          //     modelSrc: `/models/Villain/${
-          //       villain[userInfo.value.nowMissionId - 1]
-          //     }.glb`,
-          //     x: -0.125,
-          //     y: 2,
-          //     z: -0.75
-          //   })
-          // } else {
-          //   enemy = new FbxBoss({
-          //     scene,
-          //     meshes,
-          //     cannonWorld,
-          //     fbxLoader,
-          //     name: villain[userInfo.value.nowMissionId - 1],
-          //     x: -0.125,
-          //     y: 2,
-          //     z: -0.75
-          //   })
-          // }
+          if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
+            enemy = new Boss({
+              scene,
+              meshes,
+              cannonWorld,
+              gltfLoader,
+              modelSrc: `/models/Villain/${
+                villain[userInfo.value.nowMissionId - 1]
+              }.glb`,
+              x: -0.125,
+              y: 2,
+              z: -0.75
+            })
+          } else {
+            enemy = new AnimationBoss({
+              scene,
+              meshes,
+              cannonWorld,
+              gltfLoader,
+              modelSrc: `/battle/${
+                villain[userInfo.value.nowMissionId - 1]
+              }.glb`,
+              x: -0.125,
+              y: 2,
+              z: -0.75
+            })
+          }
 
           // const defenseEnemyText = new CreateText({
           //   content: '방어',
@@ -467,11 +480,6 @@ export default {
               player.modelMesh.lookAt(-0.5, 0, -3)
 
               if (status.value == '공격') {
-                // gsap.to(player.cannonBody.position, {
-                //   duration: 0.2,
-                //   y: 1
-                // })
-
                 player.cannonBody.position.y += 0.03
 
                 if (player.cannonBody.position.y >= 0.9) {
@@ -526,58 +534,95 @@ export default {
               enemy.modelMesh.quaternion.copy(enemy.cannonBody.quaternion)
               enemy.modelMesh.lookAt(-0.5, 0, 3)
 
-              if (enemyStatus.value == '공격') {
-                // gsap.to(enemy.cannonBody.position, {
-                //   duration: 0.2,
-                //   y: 1
-                // })
+              if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
+                if (enemyStatus.value == '공격') {
+                  if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
+                    enemy.cannonBody.position.y += 0.03
 
-                enemy.cannonBody.position.y += 0.03
+                    if (enemy.cannonBody.position.y >= 0.9) {
+                      attackAudio.play()
 
-                if (enemy.cannonBody.position.y >= 0.9) {
-                  attackAudio.play()
+                      enemyStatus.value = '대기'
+                    }
+                  }
+                }
 
+                if (enemyStatus.value == '방어') {
+                  // console.log(defenseEnemyText.modelMesh.position)
+                  defenseEnemyText.modelMesh.position.y =
+                    enemy.modelMesh.position.y + 1.48
                   enemyStatus.value = '대기'
+                  defenseAudio.play()
                 }
-              }
 
-              if (enemyStatus.value == '방어') {
-                // console.log(defenseEnemyText.modelMesh.position)
-                defenseEnemyText.modelMesh.position.y =
-                  enemy.modelMesh.position.y + 1.48
-                enemyStatus.value = '대기'
-                defenseAudio.play()
-              }
-
-              if (defenseEnemyText.modelMesh) {
-                if (defenseEnemyText.modelMesh.position.y >= 1) {
-                  defenseEnemyText.modelMesh.position.y += 0.0005
-                  if (
-                    defenseEnemyText.modelMesh.position.y >=
-                    enemy.modelMesh.position.y + 1.53
-                  ) {
-                    defenseEnemyText.modelMesh.position.y = -10
+                if (defenseEnemyText.modelMesh) {
+                  if (defenseEnemyText.modelMesh.position.y >= 1) {
+                    defenseEnemyText.modelMesh.position.y += 0.0005
+                    if (
+                      defenseEnemyText.modelMesh.position.y >=
+                      enemy.modelMesh.position.y + 1.53
+                    ) {
+                      defenseEnemyText.modelMesh.position.y = -10
+                    }
                   }
                 }
-              }
 
-              if (enemyStatus.value == '버프') {
-                // console.log(buffEnemyText.modelMesh.position)
-                buffEnemyText.modelMesh.position.y =
-                  enemy.modelMesh.position.y + 1.48
-                enemyStatus.value = '대기'
-                defenseAudio.play()
-              }
+                if (enemyStatus.value == '버프') {
+                  // console.log(buffEnemyText.modelMesh.position)
+                  buffEnemyText.modelMesh.position.y =
+                    enemy.modelMesh.position.y + 1.48
+                  enemyStatus.value = '대기'
+                  defenseAudio.play()
+                }
 
-              if (buffEnemyText.modelMesh) {
-                if (buffEnemyText.modelMesh.position.y >= 1) {
-                  buffEnemyText.modelMesh.position.y += 0.0005
-                  if (
-                    buffEnemyText.modelMesh.position.y >=
-                    enemy.modelMesh.position.y + 1.53
-                  ) {
-                    buffEnemyText.modelMesh.position.y = -20
+                if (buffEnemyText.modelMesh) {
+                  if (buffEnemyText.modelMesh.position.y >= 1) {
+                    buffEnemyText.modelMesh.position.y += 0.0005
+                    if (
+                      buffEnemyText.modelMesh.position.y >=
+                      enemy.modelMesh.position.y + 1.53
+                    ) {
+                      buffEnemyText.modelMesh.position.y = -20
+                    }
                   }
+                }
+              } else {
+                if (enemyStatus.value == '대기') {
+                  enemy.actions[0].stop()
+                  enemy.actions[1].stop()
+                  enemy.actions[2].play()
+                } else if (enemyStatus.value == '공격') {
+                  enemy.actions[2].stop()
+                  enemy.actions[0].play()
+                  attackBossAudio.play()
+
+                  setTimeout(() => {
+                    attackBossAudio.pause()
+
+                    // setTimeout(() => {
+                    //   attackBossAudio.load()
+                    // }, 100)
+                  }, 1000)
+
+                  setTimeout(() => {
+                    enemyStatus.value = '대기'
+                  }, 1800)
+                } else {
+                  enemy.actions[2].stop()
+                  enemy.actions[1].play()
+                  defenseBossAudio.play()
+
+                  setTimeout(() => {
+                    defenseBossAudio.pause()
+
+                    // setTimeout(() => {
+                    //   defenseBossAudio.load()
+                    // }, 100)
+                  }, 1000)
+
+                  setTimeout(() => {
+                    enemyStatus.value = '대기'
+                  }, 1800)
                 }
               }
 
@@ -1500,19 +1545,19 @@ export default {
         phase.value = 'itemResult'
         survive.value = true
 
-        msg.value = '무조건 산다!!!!'
+        msg.value = '생존 아이템으로 인하여 죽지 않는다!'
         useItem.value = ''
       } else if (useItem.value == '기절') {
         phase.value = 'itemResult'
         stun.value = true
 
-        msg.value = '상대방 기절!!!!!'
+        msg.value = '상대방이 이번 턴에 행동하지 못한다!'
         useItem.value = ''
       } else if (useItem.value == '흡혈') {
         phase.value = 'itemResult'
         blood.value = true
 
-        msg.value = '다음 공격 데미지의 30% 체력 회복!!!!!'
+        msg.value = '다음 공격 데미지의 30%만큼 체력 회복 한다!'
         useItem.value = ''
       } else if (useItem.value == '독극물') {
         enemyHp.value -= 30
@@ -1545,7 +1590,7 @@ export default {
         phase.value = 'itemResult'
         incapacitate.value = true
 
-        msg.value = '다음 적의 데미지 30 감소!!!!!!!'
+        msg.value = '다음 적의 데미지가 30만큼 감소된다!'
         useItem.value = ''
       }
     }
@@ -1556,7 +1601,7 @@ export default {
       begin.value = 0
 
       phase.value = 'start'
-      msg.value = `${enemyName.value}과(와) 만났다!`
+      // msg.value = `${enemyName.value}과(와) 만났다!`
 
       actList.value = ['공격', '방어', '아이템']
       myAct.value = ''
@@ -1750,5 +1795,50 @@ canvas {
   50% {
     opacity: 0;
   }
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+
+  border-radius: 50px;
+  border: none;
+  background-color: rgb(171, 171, 171);
+  margin: 5px;
+  padding: 10px;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 0.8rem;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgb(171, 171, 171) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
 </style>
