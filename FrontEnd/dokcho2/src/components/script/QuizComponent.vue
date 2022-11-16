@@ -42,6 +42,7 @@
 <script>
 import axios from 'axios'
 import swal from 'sweetalert'
+import Swal from 'sweetalert2'
 import { BASE_URL } from '@/constant/BASE_URL'
 import { onMounted } from '@vue/runtime-core'
 import { ref } from 'vue'
@@ -50,6 +51,14 @@ export default {
   setup(props, { emit }) {
     let quiz = ref({ content: [], nowPage: 0 })
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    })
 
     function getQuiz() {
       axios({
@@ -67,12 +76,12 @@ export default {
     }
 
     function endQuiz() {
-      swal({
-        title: '모든 문제를 다 맞췄습니다!!',
+      Toast.fire({
         icon: 'success',
-        text: '축하축하~',
-        buttons: false,
-        timer: 1500
+        html:
+          '<p style="text-align:center;"><b>퀴즈를 통과했어요! </b></p>' +
+          '<br />' +
+          `<p style="text-align:center;">유물을 돌려 받으러 가요 🚀</p>`
       })
       axios({
         url: BASE_URL + '/api/v1/mission/',
@@ -81,19 +90,24 @@ export default {
           AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
         }
       })
-      emit('quizClose')
+      setTimeout(() => {
+        emit('quizClose')
+      }, 1000)
     }
 
     function nextQuiz(answer) {
       if (answer === quiz.value.content[quiz.value.nowPage].right_answer) {
-        swal({
-          title: '정답!!!',
-          icon: 'success',
-          text: '다음 문제도 풀어볼까요?',
-          buttons: false,
-          timer: 800
-        })
-        quiz.value.nowPage += 1
+        if (quiz.value.nowPage !== quiz.value.content.length) {
+          swal({
+            title: '정답!!!',
+            icon: 'success',
+            text: '다음 문제도 풀어볼까요?',
+            buttons: false,
+            timer: 800
+          })
+          quiz.value.nowPage += 1
+        }
+
         if (quiz.value.nowPage === quiz.value.content.length) {
           endQuiz()
         }
@@ -101,7 +115,7 @@ export default {
         swal({
           title: '틀렸습니다. 더 공부하고 도전하세요!',
           icon: 'error',
-          text: '🤔',
+          text: '   ',
           buttons: false,
           timer: 2000
         })
@@ -142,27 +156,37 @@ export default {
   height: 100%;
 }
 .box {
-  border-radius: 8vw;
-  padding: 5vw;
-  width: 70%;
+  border-radius: 30px;
+  padding: 3vw;
+  width: 60%;
   height: 60%;
-  background-color: rgb(231, 227, 186);
+  background-color: rgb(229, 224, 196);
   display: flex;
   flex-direction: column;
 }
 .question {
   font-size: 1.5vw;
+  font-weight: bold;
   width: 100%;
   height: 10%;
+  margin-left: 5vw;
 }
 .content {
-  width: 100%;
+  width: 90%;
   height: 90%;
+  margin-top: 1vh;
+  margin: auto;
   display: flex;
+  justify-content: space-evenly;
+  background-color: white;
+  border-radius: 10px;
 }
 .content > img {
-  max-width: 50vw;
-  max-height: 50vh;
+  /* max-width: 50vw;
+  max-height: 50vh; */
+  width: 25vw;
+  height: 50vh;
+  margin-top: 2vh;
 }
 .answers {
   display: flex;
@@ -171,20 +195,22 @@ export default {
   margin-left: 2vw;
 }
 .answers > div {
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
   margin: 1vw;
-  padding: 0 1vw;
+  padding-left: 2vw;
+  /* padding: 0 1vw; */
   width: 20vw;
-  height: 6vh;
+  height: 7vh;
   border-radius: 3vh;
   background-color: rgb(242, 241, 235);
   transition: 0.5s;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .answers > div:hover {
   scale: 1.05;
-  background-color: rgb(171, 174, 240);
+  background-color: #6bfa8d;
 }
 </style>

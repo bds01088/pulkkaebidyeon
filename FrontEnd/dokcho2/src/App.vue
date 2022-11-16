@@ -7,6 +7,17 @@ export default {}
 </script>
 
 <style>
+body {
+  cursor: url(pointer.cur), auto;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* button {
+  cursor: url(selector.cur), pointer;
+} */
+
 @font-face {
   font-family: 'IM_Hyemin-Bold';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2')

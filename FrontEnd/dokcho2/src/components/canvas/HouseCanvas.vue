@@ -15,6 +15,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Player } from '../modules/Player'
 import { House } from '../modules/House'
+import { Wall } from '../modules/Wall'
 import gsap from 'gsap'
 import { KeyController } from '../modules/CharacterControl'
 import * as CANNON from 'cannon-es'
@@ -23,6 +24,8 @@ import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import monsterDetail from '@/components/monster/monsterDetail.vue'
 import myPage from '@/components/accounts/myPage.vue'
+import { Furniture } from '../modules/Furniture'
+import { Door } from '../modules/Door'
 
 export default {
   name: 'HouseCanvas',
@@ -203,28 +206,68 @@ export default {
         gltfLoader,
         modelSrc: '/models/character.glb'
       })
-      console.log(player)
-      const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
-      const boxMaterial = new THREE.MeshStandardMaterial({
-        color: 'seagreen'
-      })
-      const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
-      boxMesh.position.y = 0.5
-      boxMesh.name = 'box'
-      scene.add(boxMesh)
-      meshes.push(boxMesh)
 
-      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
-      const material = new THREE.MeshBasicMaterial({
-        color: 'blue',
-        side: THREE.DoubleSide
-      })
-      const plane = new THREE.Mesh(geometry, material)
-      plane.name = 'mypage'
-      plane.position.x = -2
+      const Furnitures = [
+        ['bed', { x: -6.5, y: 0.2, z: 6 }],
+        ['closet90', { x: -7.2, y: 0.2, z: 2 }],
+        ['deskwithbook', { x: -2, y: 0.2, z: 6 }]
+      ]
 
-      scene.add(plane)
-      meshes.push(plane)
+      Furnitures.forEach((element) => {
+        new Furniture({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/House/${element[0]}.glb`,
+          width: element[2] || {},
+          position: element[1],
+          name: element[0]
+        })
+      })
+
+      const door = new Door({
+        scene,
+        meshes,
+        cannonWorld,
+        gltfLoader,
+        width: {},
+        modelSrc: `/models/House/door.glb`,
+        position: { x: 4, y: 0.2, z: -7 },
+        name: 'door'
+      })
+
+      console.log(door)
+
+      // 맵 막는 박스 만들기
+      new Wall({
+        cannonWorld,
+        x: 8,
+        z: 8
+      })
+
+      // console.log(player)
+      // const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
+      // const boxMaterial = new THREE.MeshStandardMaterial({
+      //   color: 'seagreen'
+      // })
+      // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
+      // boxMesh.position.y = 0.5
+      // boxMesh.name = 'box'
+      // scene.add(boxMesh)
+      // meshes.push(boxMesh)
+
+      // const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5)
+      // const material = new THREE.MeshBasicMaterial({
+      //   color: 'blue',
+      //   side: THREE.DoubleSide
+      // })
+      // const plane = new THREE.Mesh(geometry, material)
+      // plane.name = 'mypage'
+      // plane.position.x = -2
+
+      // scene.add(plane)
+      // meshes.push(plane)
 
       const raycaster = new THREE.Raycaster()
       let mouse = new THREE.Vector2()
@@ -243,8 +286,8 @@ export default {
         if (delta < 0.01) cannonStepTime = 1 / 120
         cannonWorld.step(cannonStepTime, delta, 3)
 
-        boxMesh.position.copy(boxBody.position) // 위치
-        boxMesh.quaternion.copy(boxBody.quaternion) // 회전
+        // boxMesh.position.copy(boxBody.position) // 위치
+        // boxMesh.quaternion.copy(boxBody.quaternion) // 회전
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
@@ -355,6 +398,7 @@ export default {
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
         for (const item of intersects) {
+          console.log(item)
           // if (item.object.name === 'floor') {
           //   destinationPoint.x = item.point.x
           //   destinationPoint.z = item.point.z
@@ -366,11 +410,11 @@ export default {
           //   pointerMesh.position.z = destinationPoint.z
           // }
 
-          if (item.object.name === 'mypage') {
+          if (item.object.name === 'book') {
             isPressed = false
             myPage.value.myPage = true
           }
-          if (item.object.name === 'box') {
+          if (item.object.name === 'Box230') {
             onClick()
             isPressed = false
           }
@@ -432,9 +476,11 @@ export default {
         const intersects = raycaster.intersectObjects(meshes)
 
         if (intersects && intersects.length > 0) {
-          document.body.style.cursor = 'pointer'
+          document.body.style.cursor =
+            "cursor: url('@/assets/selector.cur'), pointer;"
         } else {
-          document.body.style.cursor = 'default'
+          document.body.style.cursor =
+            "cursor: url('@/assets/pointer.cur'), auto;"
         }
       }
 

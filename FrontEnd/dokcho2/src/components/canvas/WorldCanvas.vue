@@ -33,7 +33,7 @@ import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
 import TalkComponent from '../script/TalkComponent.vue'
 import QuizComponent from '../script/QuizComponent.vue'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 
@@ -47,7 +47,8 @@ export default {
   name: 'WorldCanvas',
   props: {
     nowPage: Number,
-    nowNavbar: Boolean
+    nowNavbar: Boolean,
+    isGameStart: Number
   },
   components: {
     TalkComponent: TalkComponent,
@@ -59,6 +60,7 @@ export default {
   setup(props, { emit }) {
     let isTalk = ref({ talk: false, name: '', content: {} })
     let isQuiz = ref({ quiz: false })
+    let neerTiger = false
 
     const store = useStore()
 
@@ -67,20 +69,35 @@ export default {
       miniGame2: false,
       miniGame3: false
     })
+    const camera = new THREE.OrthographicCamera(
+      -(window.innerWidth / window.innerHeight), // left
+      window.innerWidth / window.innerHeight, // right,
+      1, // top
+      -1, // bottom
+      -1000,
+      1000
+    )
     const isMinigame = ref({ isMinigame: false })
     setTimeout(() => {
       // Texture
       const textureLoader = new THREE.TextureLoader()
+
+      // 바닥
       const floorTexture = textureLoader.load('/images/map17.png')
       floorTexture.wrapS = THREE.RepeatWrapping
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
+      // 집 불러오는 바닥
+      const houseFloorTexture = textureLoader.load('/images/housefloor2.png')
+      houseFloorTexture.wrapS = THREE.RepeatWrapping
+      houseFloorTexture.wrapT = THREE.RepeatWrapping
+      houseFloorTexture.repeat.x = 1
+      houseFloorTexture.repeat.y = 1
       let isLoading = 0
 
       // Renderer
       let canvas = document.querySelector('#WorldCanvas')
-      console.log(canvas)
       const renderer = new THREE.WebGLRenderer({
         canvas,
         antialias: true
@@ -94,18 +111,10 @@ export default {
       const scene = new THREE.Scene()
 
       // Camera
-      const camera = new THREE.OrthographicCamera(
-        -(window.innerWidth / window.innerHeight), // left
-        window.innerWidth / window.innerHeight, // right,
-        1, // top
-        -1, // bottom
-        -1000,
-        1000
-      )
 
-      const cameraPosition = new THREE.Vector3(0, 35, 0)
+      const cameraPosition = new THREE.Vector3(-15, 40, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-      camera.zoom = 0.25
+      camera.zoom = 0.15
       camera.updateProjectionMatrix()
       scene.add(camera)
 
@@ -178,16 +187,15 @@ export default {
       // pointerMesh.receiveShadow = true
       // scene.add(pointerMesh)
 
-      // 집 앞에 있는 노란 박스(삭제 예정)
+      // 집 앞에 있는 노란 박스
       const spotMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 3),
         new THREE.MeshStandardMaterial({
-          color: 'yellow',
-          transparent: true,
-          opacity: 0.5
+          map: houseFloorTexture,
+          opacity: 0.2
         })
       )
-      spotMesh.position.set(5, 0.005, 5)
+      spotMesh.position.set(-23, 0.005, -57)
       spotMesh.rotation.x = -Math.PI / 2
       spotMesh.receiveShadow = true
       scene.add(spotMesh)
@@ -200,9 +208,9 @@ export default {
         scene,
         meshes,
         modelSrc: '/models/house.glb',
-        x: 5,
-        y: 0,
-        z: 2
+        x: -23,
+        y: -1.3,
+        z: -60
       })
 
       // 플레이어
@@ -211,29 +219,11 @@ export default {
         meshes,
         cannonWorld,
         gltfLoader,
-        modelSrc: '/models/character.glb'
+        modelSrc: '/models/character.glb',
+        x: -25,
+        y: 0,
+        z: -55
       })
-
-      // 맵 이동하는 박스 만들기(수정 예정)
-
-      const boxGeometry = new THREE.BoxGeometry(0.5, 5, 0.5)
-      const boxMaterial = new THREE.MeshStandardMaterial({
-        color: 'seagreen'
-      })
-      const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial)
-      boxMesh.position.y = 0.5
-      boxMesh.name = 'box'
-      scene.add(boxMesh)
-      meshes.push(boxMesh)
-
-      // 박스에 캐논 씌우기
-      const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 2.5, 0.25))
-      const boxBody = new CANNON.Body({
-        mass: 0,
-        position: new CANNON.Vec3(0, 0, 0),
-        shape: boxShape
-      })
-      cannonWorld.addBody(boxBody)
 
       // 맵 막는 박스 만들기
       new Wall({
@@ -267,13 +257,14 @@ export default {
       // 빌런들
 
       const Villain = [
-        ['지현몬', { x: -62, y: 0, z: -50 }],
+        ['지현몬', { x: -61, y: 0, z: -48 }],
         ['효근몬', { x: -56, y: 0, z: 3 }],
         ['재준몬', { x: 8, y: 0, z: -30 }],
         ['근희몬', { x: 43, y: 0, z: 20 }],
         ['상균몬', { x: -58, y: 0, z: 60 }],
-        ['지원몬', { x: 10, y: 0, z: 60 }],
-        ['하민몬', { x: 57, y: 0, z: 65 }]
+        ['지원몬', { x: 8, y: 0, z: 60 }],
+        ['하민몬', { x: 57, y: 0, z: 65 }],
+        ['성빈몬', { x: 62, y: 0, z: -40 }]
       ]
       Villain.forEach((element) => {
         new Character({
@@ -292,7 +283,7 @@ export default {
       const Buildings = [
         ['첨성대', { x: 5, y: 0, z: -30 }],
         ['덕수궁', { x: 45, y: 0, z: -10 }],
-        ['광화문', { x: -40, y: 0, z: 45 }]
+        ['광화문', { x: -33, y: 0, z: 45 }]
       ]
       Buildings.forEach((element) => {
         new Building({
@@ -354,7 +345,10 @@ export default {
         scene,
         meshes,
         gltfLoader,
-        modelSrc: `/models/Monsters/${myMonsterId}.glb`
+        modelSrc: `/models/Monsters/${myMonsterId}.glb`,
+        x: -24,
+        y: 0.25,
+        z: -55
       })
 
       const raycaster = new THREE.Raycaster()
@@ -374,8 +368,6 @@ export default {
         if (delta < 0.01) cannonStepTime = 1 / 120
         cannonWorld.step(cannonStepTime, delta, 3)
 
-        boxMesh.position.copy(boxBody.position) // 위치
-        boxMesh.quaternion.copy(boxBody.quaternion) // 회전
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
@@ -432,16 +424,13 @@ export default {
             ) {
               player.moving = false
             }
-
             if (
               Math.abs(spotMesh.position.x - player.modelMesh.position.x) <
                 1.5 &&
               Math.abs(spotMesh.position.z - player.modelMesh.position.z) < 1.5
             ) {
               if (!house.visible) {
-                console.log('나와')
                 house.visible = true
-                spotMesh.material.color.set('seagreen')
                 gsap.to(house.modelMesh.position, {
                   duration: 1,
                   y: 1,
@@ -449,24 +438,64 @@ export default {
                 })
                 gsap.to(camera.position, {
                   duration: 1,
-                  y: 3
+                  y: 20
                 })
-                setTimeout(() => {
-                  alert('집에 들어감')
-                  emit('changeCanvas')
-                }, 1000)
+                gsap.to(camera, {
+                  duration: 1,
+                  zoom: 0.35,
+                  onUpdate: function () {
+                    camera.updateProjectionMatrix()
+                  }
+                })
               }
             } else if (house.visible) {
-              console.log('들어가')
               house.visible = false
-              spotMesh.material.color.set('yellow')
               gsap.to(house.modelMesh.position, {
                 duration: 0.5,
                 y: -1.3
               })
               gsap.to(camera.position, {
                 duration: 1,
-                y: 5
+                y: 30
+              })
+              gsap.to(camera, {
+                duration: 1,
+                zoom: 0.25,
+                onUpdate: function () {
+                  camera.updateProjectionMatrix()
+                }
+              })
+            }
+            if (
+              Math.abs(62 - player.modelMesh.position.x) < 5 &&
+              Math.abs(-33 - player.modelMesh.position.z) < 10
+            ) {
+              if (!neerTiger) {
+                neerTiger = true
+                gsap.to(camera.position, {
+                  duration: 5,
+                  y: 8
+                })
+                gsap.to(camera, {
+                  duration: 5,
+                  zoom: 0.4,
+                  onUpdate: function () {
+                    camera.updateProjectionMatrix()
+                  }
+                })
+              }
+            } else if (neerTiger) {
+              neerTiger = false
+              gsap.to(camera.position, {
+                duration: 3,
+                y: 30
+              })
+              gsap.to(camera, {
+                duration: 3,
+                zoom: 0.25,
+                onUpdate: function () {
+                  camera.updateProjectionMatrix()
+                }
               })
             }
           } else {
@@ -494,6 +523,7 @@ export default {
               ) > 2
             ) {
               myMoster.moving = true
+              myMoster.actions[0].play()
             }
           }
 
@@ -517,6 +547,7 @@ export default {
               ) < 1
             ) {
               myMoster.moving = false
+              myMoster.actions[0].stop()
             }
           }
         }
@@ -526,9 +557,7 @@ export default {
       }
       function checkIntersects() {
         raycaster.setFromCamera(mouse, camera)
-        console.log(meshes)
         const intersects = raycaster.intersectObjects(meshes)
-        console.log(intersects)
         for (const item of intersects) {
           // if (item.object.name === 'floor') {
           //   destinationPoint.x = item.point.x
@@ -542,7 +571,7 @@ export default {
           //   pointerMesh.position.x = destinationPoint.x
           //   pointerMesh.position.z = destinationPoint.z
           // }
-          if (item.object.name === 'box') {
+          if (item.object.name === 'house') {
             onClick()
             isPressed = false
           }
@@ -551,11 +580,23 @@ export default {
             isTalk.value.name = item.object.name.slice(2, -2)
             isPressed = false
             const status = ['NOT_YET', 'READY', 'BATTLE_WIN', 'FINISHED']
+
             setTimeout(() => {
               if (status.includes(isTalk.value.content.status)) {
                 isTalk.value.talk = true
+                gsap.to(camera, {
+                  duration: 1,
+                  zoom: 0.35,
+                  onUpdate: function () {
+                    camera.updateProjectionMatrix()
+                  }
+                })
+                gsap.to(camera.position, {
+                  duration: 1,
+                  y: 20
+                })
               }
-            }, 100)
+            }, 500)
           }
           if (item.object.name.slice(0, 1) === '빌') {
             talkStart(item.object.name.slice(1, 2))
@@ -565,8 +606,19 @@ export default {
             setTimeout(() => {
               if (status.includes(isTalk.value.content.status)) {
                 isTalk.value.talk = true
+                gsap.to(camera, {
+                  duration: 1,
+                  zoom: 0.35,
+                  onUpdate: function () {
+                    camera.updateProjectionMatrix()
+                  }
+                })
+                gsap.to(camera.position, {
+                  duration: 1,
+                  y: 20
+                })
               }
-            }, 100)
+            }, 500)
           }
           if (item.object.name.slice(0, 1) === '건') {
             isPressed = false
@@ -628,9 +680,11 @@ export default {
         const intersects = raycaster.intersectObjects(meshes)
 
         if (intersects && intersects.length > 0) {
-          document.body.style.cursor = 'pointer'
+          document.body.style.cursor =
+            "cursor: url('@/assets/selector.cur'), pointer;"
         } else {
-          document.body.style.cursor = 'default'
+          document.body.style.cursor =
+            "cursor: url('@/assets/pointer.cur'), auto;"
         }
       }
 
@@ -684,7 +738,6 @@ export default {
         player.modelMesh.lookAt(destinationPoint)
       }
       window.addEventListener('keydown', (e) => {
-        console.log(e.key)
         if (
           e.key === 'a' ||
           e.key === 's' ||
@@ -758,6 +811,41 @@ export default {
         emit('changeCanvas')
         // emit('changeBattle')
       }
+      // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
+      watchEffect(() => {
+        console.log(props.nowPage)
+        if (myMoster.modelMesh) {
+          const id = JSON.parse(
+            localStorage.getItem('userInfo')
+          ).representMonster
+          scene.remove(myMoster.modelMesh)
+          myMoster = new myMon({
+            scene,
+            meshes,
+            gltfLoader,
+            modelSrc: `/models/Monsters/${id}.glb`,
+            x: -24,
+            y: 0.25,
+            z: -55
+          })
+        }
+      })
+      watchEffect(() => {
+        console.log(props.isGameStart)
+        if (props.isGameStart === 1) {
+          gsap.to(camera.position, {
+            duration: 3,
+            y: 30
+          })
+          gsap.to(camera, {
+            duration: 3,
+            zoom: 0.25,
+            onUpdate: function () {
+              camera.updateProjectionMatrix()
+            }
+          })
+        }
+      })
     }, 100)
 
     // 대화를 시작하는 함수(미리 받아야 status를 알고 위인과 빌런을 구분할 수 있음)
@@ -782,6 +870,17 @@ export default {
 
     function talkClose() {
       isTalk.value.talk = false
+      gsap.to(camera, {
+        duration: 1,
+        zoom: 0.25,
+        onUpdate: function () {
+          camera.updateProjectionMatrix()
+        }
+      })
+      gsap.to(camera.position, {
+        duration: 1,
+        y: 30
+      })
     }
 
     function quizStart() {
@@ -791,6 +890,17 @@ export default {
 
     function quizClose() {
       isQuiz.value.quiz = false
+      gsap.to(camera, {
+        duration: 1,
+        zoom: 0.25,
+        onUpdate: function () {
+          camera.updateProjectionMatrix()
+        }
+      })
+      gsap.to(camera.position, {
+        duration: 1,
+        y: 30
+      })
     }
 
     function enterBattle() {

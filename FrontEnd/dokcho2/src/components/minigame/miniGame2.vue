@@ -63,20 +63,26 @@
         <div class="input__answer">
           <!-- <span> 숫자 입력 : </span> -->
           <input
-            type="text"
+            type="number"
             v-model="inputAnswer[0]"
+            min="1"
+            max="9"
             maxlength="1"
             class="number__box"
           />
           <input
-            type="text"
+            type="number"
             v-model="inputAnswer[1]"
+            min="1"
+            max="9"
             maxlength="1"
             class="number__box"
           />
           <input
-            type="text"
+            type="number"
             v-model="inputAnswer[2]"
+            min="1"
+            max="9"
             maxlength="1"
             class="number__box"
             @keyup.enter="showResult()"
@@ -184,6 +190,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
+import Swal from 'sweetalert2'
 
 export default {
   components: {},
@@ -197,7 +204,7 @@ export default {
       game.value.game = true
     }
 
-    const numbers = ref(['1', '2', '3', '4', '5', '6', '7', '8', '9'])
+    const numbers = ref([1, 2, 3, 4, 5, 6, 7, 8, 9])
     const answer = ref([])
 
     function getAnswer() {
@@ -271,6 +278,37 @@ export default {
             .then((res) => {
               // console.log(res.data)
               item.value.item = res.data.itemDto
+              // levelup이 true로 들어오면 현재 representMonster -> detail 받아서 레벨업 alert 띄우기
+              if (res.data.levelup === true) {
+                const user = JSON.parse(localStorage.getItem('userInfo'))
+                const monsterId = user.representMonster
+                let monster = []
+                const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
+
+                axios({
+                  url: BASE_URL + '/api/v1/monster/' + monsterId,
+                  method: 'GET',
+                  headers: {
+                    AUTHORIZATION:
+                      'Bearer ' + localStorage.getItem('accessToken')
+                  }
+                })
+                  .then((res) => {
+                    monster = res.data
+                    Swal.fire({
+                      title: 'Level Up!!🎉',
+                      html: `<div style="text-align:center;">
+                  <img  style="height:100px;width:100px;text-align:center;" src=${monsterImg}/>
+                  <p><b>${monster.name}</b>이</p><br /> <p> <b>Lv.${
+                        monster.level - 1
+                      } 👉 Lv.${monster.level}</b>로 성장했어요!</p>
+                  </div>`,
+                      timer: 5000,
+                      showConfirmButton: false
+                    })
+                  })
+                  .catch((err) => console.log(err))
+              }
             })
             .catch((err) => console.log(err))
         }, 1000)
@@ -309,6 +347,13 @@ export default {
       }
     }
 
+    // // input 체크 : 최대 길이, 문자 ; not defined 떠서 일단 안씀
+    // function maxLengthChk(object) {
+    //   if (object.value.length > object.maxLength) {
+    //     object.value = object.value.slice(0, object.maxLength)
+    //   }
+    // }
+
     return {
       nowStrike,
       nowFinished,
@@ -319,6 +364,7 @@ export default {
       inputAnswer,
       showResult,
       scoreBoard
+      // maxLengthChk
     }
   }
 }
@@ -397,7 +443,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 10vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   font-weight: bold;
 }
@@ -414,7 +460,7 @@ export default {
   position: absolute;
   top: 15vh;
   right: 25vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 .input__answer {
   margin-top: 12vh;
@@ -443,7 +489,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 5vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   background-color: #d5d5d5; /* margin-left: 20px; */
 }
@@ -543,7 +589,7 @@ tr {
 
 .item__image {
   width: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .item__item p {
@@ -608,5 +654,17 @@ tr {
 
 .inning {
   background-color: white;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 </style>

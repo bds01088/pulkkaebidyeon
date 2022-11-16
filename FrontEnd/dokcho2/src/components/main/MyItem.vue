@@ -100,7 +100,7 @@ export default {
         .then((res) => {
           items.value.items = res.data
           missionItems.value.missionItems = items.value.items.filter(
-            (item) => item.itemId < 8
+            (item) => item.itemId < 8 || item.itemId === 18
           )
           battleItems.value.battleItems = items.value.items.filter(
             (item) => item.itemId > 20
@@ -195,6 +195,10 @@ h3 {
   text-align: center;
 }
 
+.item__nomission p {
+  margin-top: 10vh;
+}
+
 .item__body2 {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -207,7 +211,7 @@ h3 {
   /* background-color: #ffffff; */
   border-radius: 10px;
   margin-bottom: 3vh;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   /* margin-left: 0.5vh;
   margin-right: 0.5vh; */
 }
@@ -257,7 +261,7 @@ h3 {
   position: absolute;
   top: 4vh;
   right: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .tooltip {

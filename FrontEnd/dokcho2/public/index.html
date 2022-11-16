@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html lang="">
   <head>
+    <!-- <meta
+      http-equiv="Content-Security-Policy"
+      content="upgrade-insecure-requests"
+    /> -->
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+      body {
+        cursor: url(pointer.cur), auto;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+    </style>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
       integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
@@ -21,6 +33,7 @@
     oncontextmenu="return false"
     onselectstart="return false"
     ondragstart="return false"
+    style="margin: 0"
   >
     <noscript>
       <strong

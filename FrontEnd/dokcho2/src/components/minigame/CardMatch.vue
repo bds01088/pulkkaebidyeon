@@ -100,6 +100,7 @@ import swal from 'sweetalert'
 import { BASE_URL } from '@/constant/BASE_URL'
 
 import { useStore } from 'vuex'
+import Swal from 'sweetalert2'
 
 // 스테이지수 (5개)
 // 힌트수 (1회 /2회)
@@ -167,7 +168,7 @@ export default {
           className: 'swal-wide',
           title: '정답입니다!',
           icon: 'success',
-          text: `+3점 :D 
+          text: `+3점 :D
 
           ${quizs.value.quizs[stage.value.stage].question}${
             quizs.value.quizs[stage.value.stage].right_answer
@@ -241,6 +242,37 @@ export default {
         .then((res) => {
           // console.log(res.data)
           item.value.item = res.data.itemDto
+
+          // levelup이 true로 들어오면 현재 representMonster -> detail 받아서 레벨업 alert 띄우기
+          if (res.data.levelup === true) {
+            const user = JSON.parse(localStorage.getItem('userInfo'))
+            const monsterId = user.representMonster
+            let monster = []
+            const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
+
+            axios({
+              url: BASE_URL + '/api/v1/monster/' + monsterId,
+              method: 'GET',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+              }
+            })
+              .then((res) => {
+                monster = res.data
+                Swal.fire({
+                  title: 'Level Up!!🎉',
+                  html: `<div style="text-align:center;">
+                  <img  style="height:100px;width:100px;text-align:center;" src=${monsterImg}/>
+                  <p><b>${monster.name}</b>이</p><br /> <p> <b>Lv.${
+                    monster.level - 1
+                  } 👉 Lv.${monster.level}</b>로 성장했어요!</p>
+                  </div>`,
+                  timer: 5000,
+                  showConfirmButton: false
+                })
+              })
+              .catch((err) => console.log(err))
+          }
         })
         .catch((err) => console.log(err))
     }
@@ -287,7 +319,7 @@ export default {
 }
 
 .game__hint {
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .game__hint:hover {
@@ -315,7 +347,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 10vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   background-color: #d5d5d5;
   /* font-weight: bold; */
@@ -376,7 +408,7 @@ export default {
 
 .item__image {
   width: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .item__item p {
