@@ -7,14 +7,14 @@ export default {}
 </script>
 
 <style>
-/* body {
+body {
   cursor: url(pointer.cur), auto;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
 }
 
-button {
+/* button {
   cursor: url(selector.cur), pointer;
 } */
 
