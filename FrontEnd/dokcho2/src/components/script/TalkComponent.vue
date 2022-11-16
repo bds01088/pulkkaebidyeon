@@ -143,7 +143,7 @@ export default {
                     <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/' +
                       monster1.id +
                       '.png')}"/>
-                    <p style="font-size:0.9rem;"><b>${monster1.name}</b></p>
+                    <p style="font-size:0.9rem;">${monster1.name}</p>
                   </div>
                     
                   </div>` +
