@@ -156,27 +156,37 @@ export default {
   height: 100%;
 }
 .box {
-  border-radius: 8vw;
-  padding: 5vw;
-  width: 70%;
+  border-radius: 30px;
+  padding: 3vw;
+  width: 60%;
   height: 60%;
-  background-color: rgb(231, 227, 186);
+  background-color: rgb(229, 224, 196);
   display: flex;
   flex-direction: column;
 }
 .question {
   font-size: 1.5vw;
+  font-weight: bold;
   width: 100%;
   height: 10%;
+  margin-left: 5vw;
 }
 .content {
-  width: 100%;
+  width: 90%;
   height: 90%;
+  margin-top: 1vh;
+  margin: auto;
   display: flex;
+  justify-content: space-evenly;
+  background-color: white;
+  border-radius: 10px;
 }
 .content > img {
-  max-width: 50vw;
-  max-height: 50vh;
+  /* max-width: 50vw;
+  max-height: 50vh; */
+  width: 25vw;
+  height: 50vh;
+  margin-top: 2vh;
 }
 .answers {
   display: flex;
@@ -185,12 +195,14 @@ export default {
   margin-left: 2vw;
 }
 .answers > div {
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
   margin: 1vw;
-  padding: 0 1vw;
+  padding-left: 2vw;
+  /* padding: 0 1vw; */
   width: 20vw;
-  height: 6vh;
+  height: 7vh;
   border-radius: 3vh;
   background-color: rgb(242, 241, 235);
   transition: 0.5s;
@@ -199,6 +211,6 @@ export default {
 
 .answers > div:hover {
   scale: 1.05;
-  background-color: rgb(171, 174, 240);
+  background-color: #6bfa8d;
 }
 </style>
