@@ -96,13 +96,21 @@
               />
             </div>
           </div>
-          <div class="players">
-            <div
-              v-for="user in this.nowRoomUser.nowRoomUser"
-              v-bind:key="user"
-              class="player"
-            >
-              {{ user.nickname }}
+          <div class="playersBox">
+            <div class="correctPlayer">
+              <div class="player">
+                {{ this.correctUser.correctUser }}
+              </div>
+            </div>
+            <div class="players">
+              <div
+                v-for="user in this.nowRoomUser.nowRoomUser"
+                v-bind:key="user"
+                class="player"
+              >
+                {{ user.nickname }} :
+                {{ user.score }}
+              </div>
             </div>
           </div>
         </div>
@@ -151,8 +159,10 @@ export default {
     let quizing = ref({ quizing: false })
     let nextQuiz = ref({ nextQuiz: '' })
     const item = ref({ item: {} })
+    let correctUser = ref({ correctUser: '정답자' })
 
-    const socket = io('https://k7e203.p.ssafy.io/socket')
+    const socket = io('https://k7e203.p.ssafy.io/')
+    // const socket = io('http://localhost:3001/')
 
     function disconnect() {
       socket.disconnect()
@@ -248,14 +258,15 @@ export default {
       quizing.value.quizing = true
     })
 
-    socket.on('correct', (data) => {
+    socket.on('correct', (payload) => {
+      nowRoomUser.value.nowRoomUser = payload[1]
       for (let user of nowRoomUser.value.nowRoomUser) {
-        if (user.socketId == data) {
-          console.log(`${user.nickname} 가 정답을 맞췄넹`)
+        if (user.socketId == payload[0]) {
+          correctUser.value.correctUser = user.nickname
           allMsg.value.allMsg.push({
             socketId: '',
-            nickname: 'server',
-            content: `${user.nickname}가 정답을 맞췄습니다!`
+            nickname: '김구현(교수)',
+            content: `${user.nickname}가 정답을 맞히었구나!`
           })
         }
       }
@@ -266,8 +277,8 @@ export default {
       for (let winner of data) {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: 'server',
-          content: `${winner.nickname}님이 이겼습니다!`
+          nickname: '김구현(교수)',
+          content: `${winner.nickname}가 이겼노라!`
         })
       }
     })
@@ -310,47 +321,47 @@ export default {
     socket.on('fuckoff', () => {
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: 'server',
-        content: `이 방은 5초뒤에 폭파됩니다.`
+        nickname: '김구현(교수)',
+        content: `이 방은 5초뒤에 폭파된다.`
       })
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: 'server',
+        nickname: '김구현(교수)',
         content: `5..`
       })
 
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: 'server',
+          nickname: '김구현(교수)',
           content: `4..`
         })
       }, 1000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: 'server',
+          nickname: '김구현(교수)',
           content: `3..`
         })
       }, 2000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: 'server',
+          nickname: '김구현(교수)',
           content: `2..`
         })
       }, 3000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: 'server',
+          nickname: '김구현(교수)',
           content: `1..`
         })
       }, 4000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: 'server',
+          nickname: '김구현(교수)',
           content: `폭발은 예술이다!`
         })
       }, 5000)
@@ -380,6 +391,7 @@ export default {
       msgSocketId,
       quizing,
       nextQuiz,
+      correctUser,
       disconnect,
       enterRoom,
       leaveRoom,
@@ -551,7 +563,7 @@ input {
   height: 75%;
   width: 80%;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -595,11 +607,29 @@ input {
   width: 80%;
 }
 
+.playersBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.correctPlayer {
+  height: 60%;
+  width: 80%;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: antiquewhite;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
 .players {
   height: 60%;
-  width: 20%;
+  width: 80%;
   border-radius: 20px;
-  padding: 40px;
+  padding: 20px;
   background-color: antiquewhite;
   display: flex;
   flex-direction: column;

@@ -7,9 +7,9 @@ export class Furniture {
     this.meshes = info.meshes
     this.cannonWorld = info.cannonWorld
     this.rotationY = info.rotationY || 0
-    this.width = info.width.x || 1.2
-    this.height = info.width.y || 1.2
-    this.depth = info.width.z || 1.2
+    this.width = info.width.x || 1.6
+    this.height = info.width.y || 1.6
+    this.depth = info.width.z || 1.6
     this.x = info.position.x
     this.y = info.position.y
     this.z = info.position.z
