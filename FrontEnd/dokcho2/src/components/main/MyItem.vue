@@ -100,7 +100,7 @@ export default {
         .then((res) => {
           items.value.items = res.data
           missionItems.value.missionItems = items.value.items.filter(
-            (item) => item.itemId < 20
+            (item) => item.itemId < 8 || item.itemId === 18
           )
           battleItems.value.battleItems = items.value.items.filter(
             (item) => item.itemId > 20
