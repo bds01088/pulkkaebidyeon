@@ -31,16 +31,13 @@
         </div>
         <div class="myPage__body">
           <div class="myPage__mission">
-            <!-- <p>1번</p> -->
             <p>{{ this.userInfo.nowMissionId }}번</p>
           </div>
           <div class="myPage__monster">
-            <!-- <p>3마리</p> -->
-            <p>{{ this.userInfo.nowMissionId }}마리</p>
+            <p>{{ this.monsterNumber }}마리</p>
           </div>
           <div class="myPage__item">
-            <!-- <p>15개</p> -->
-            <p>{{ this.userInfo.nowMissionId }}개</p>
+            <p>{{ this.itemNumber.length }}개</p>
           </div>
         </div>
         <div class="myPage__footer">
@@ -91,7 +88,9 @@ export default {
       today: '',
       cdate: '',
       password: false,
-      monsterDetail: {}
+      monsterDetail: {},
+      monsterNumber: '',
+      itemNumber: ''
     }
   },
   methods: {
@@ -268,12 +267,48 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+
+    fetchUserMonster() {
+      // 보유한 풀깨비 개수 세기 ~
+      axios({
+        url: BASE_URL + '/api/v1/monster',
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          this.monsterNumber = res.data.length
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+
+    fetchUserItem() {
+      // 보유한 아이템 개수 세기 ~
+      axios({
+        url: BASE_URL + '/api/v1/item',
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          this.itemNumber = res.data.filter(
+            (item) => item.itemId < 8 || item.itemId === 18 || item.itemId > 20
+          )
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
   created() {
     this.fetchrepresentMonster()
-    this.today = new Date()
-    this.cdate = new Date(this.userInfo.createDate)
+    this.fetchUserMonster()
+    this.fetchUserItem()
   }
 }
 </script>

@@ -181,8 +181,8 @@ export default {
         gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
           const monster = item.scene
           monster.name = ['monster', `${id}`]
-          monster.position.x = (Math.random() - 0.5) * 5
-          monster.position.z = (Math.random() - 0.5) * 5
+          monster.position.x = (Math.random() - 0.5) * 2
+          monster.position.z = (Math.random() - 0.5) * 2
           monster.scale.set(0.5, 0.5, 0.5)
           scene.add(monster)
           meshes.push(monster)
