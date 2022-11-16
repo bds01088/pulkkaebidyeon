@@ -80,9 +80,10 @@
         style="cursor: url('@/assets/selector.cur'), pointer"
       >
         <span v-for="(item, idx) in itemList" :key="idx">
-          <button @click="doSelectItem(item)">
+          <span @click="doSelectItem(item)" class="tooltip">
             {{ item.itemName }} x {{ item.count }}
-          </button>
+            <span class="tooltiptext">{{ item.description }}</span>
+          </span>
         </span>
         <br />
         <div
@@ -178,7 +179,7 @@ export default {
     const enemyAttack = ref(20)
     const enemyDefense = ref(10)
 
-    const msg = ref(`${enemyName.value}과(와) 만났다!`)
+    const msg = ref(`적과 만났다!`)
 
     const actList = ref(['공격', '방어', '아이템'])
     const myAct = ref('')
@@ -1544,19 +1545,19 @@ export default {
         phase.value = 'itemResult'
         survive.value = true
 
-        msg.value = '무조건 산다!!!!'
+        msg.value = '생존 아이템으로 인하여 죽지 않는다!'
         useItem.value = ''
       } else if (useItem.value == '기절') {
         phase.value = 'itemResult'
         stun.value = true
 
-        msg.value = '상대방 기절!!!!!'
+        msg.value = '상대방이 이번 턴에 행동하지 못한다!'
         useItem.value = ''
       } else if (useItem.value == '흡혈') {
         phase.value = 'itemResult'
         blood.value = true
 
-        msg.value = '다음 공격 데미지의 30% 체력 회복!!!!!'
+        msg.value = '다음 공격 데미지의 30%만큼 체력 회복 한다!'
         useItem.value = ''
       } else if (useItem.value == '독극물') {
         enemyHp.value -= 30
@@ -1589,7 +1590,7 @@ export default {
         phase.value = 'itemResult'
         incapacitate.value = true
 
-        msg.value = '다음 적의 데미지 30 감소!!!!!!!'
+        msg.value = '다음 적의 데미지가 30만큼 감소된다!'
         useItem.value = ''
       }
     }
@@ -1600,7 +1601,7 @@ export default {
       begin.value = 0
 
       phase.value = 'start'
-      msg.value = `${enemyName.value}과(와) 만났다!`
+      // msg.value = `${enemyName.value}과(와) 만났다!`
 
       actList.value = ['공격', '방어', '아이템']
       myAct.value = ''
@@ -1794,5 +1795,50 @@ canvas {
   50% {
     opacity: 0;
   }
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+
+  border-radius: 50px;
+  border: none;
+  background-color: rgb(171, 171, 171);
+  margin: 5px;
+  padding: 10px;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 0.8rem;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgb(171, 171, 171) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
 </style>
