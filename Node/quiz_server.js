@@ -1,15 +1,8 @@
 const express = require("express");
-const https = require("https");
+const http = require("http");
 const cors = require("cors");
 const axios = require("axios");
 const _ = require("lodash");
-const fs = require("fs")
-
-const options = {
-  key: fs.readFileSync('/etc/letsencrypt/live/k7e203.p.ssafy.io/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/k7e203.p.ssafy.io/fullchain.pem')
-
-}
 
 const app = express();
 const server = https.createServer(options, app);
