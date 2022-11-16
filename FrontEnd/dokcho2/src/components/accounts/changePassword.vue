@@ -143,6 +143,7 @@ button {
   border: none;
   width: 5vw;
   margin: 0.5vh;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .complete__btn:hover {

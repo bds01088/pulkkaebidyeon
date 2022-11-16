@@ -176,7 +176,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 12vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .monster__btn:hover {
@@ -194,6 +194,6 @@ p {
   position: absolute;
   top: 3vh;
   right: 1vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 </style>

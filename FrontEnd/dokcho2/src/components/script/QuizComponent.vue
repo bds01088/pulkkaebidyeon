@@ -194,7 +194,7 @@ export default {
   border-radius: 3vh;
   background-color: rgb(242, 241, 235);
   transition: 0.5s;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .answers > div:hover {

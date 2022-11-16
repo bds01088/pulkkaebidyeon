@@ -319,7 +319,7 @@ export default {
 }
 
 .game__hint {
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .game__hint:hover {
@@ -347,7 +347,7 @@ export default {
   border-radius: 50px;
   border: none;
   width: 10vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   background-color: #d5d5d5;
   /* font-weight: bold; */
@@ -408,7 +408,7 @@ export default {
 
 .item__image {
   width: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .item__item p {

@@ -483,7 +483,7 @@ input {
   position: absolute;
   top: 4vh;
   right: 4vw;
-  cursor: pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 
 .inGame {
