@@ -21,17 +21,29 @@ server.listen(3001, () => {
   console.log("Listening at port 3001...");
 });
 
-let quizs = [];
+let wordQuizs = [];
+let consonantQuizs = [];
 let players = {};
 let roomNum = 0;
 let rooms = [];
 
 axios({
-  url: BASE_URL + "/api/v1/game/words/auth/10",
+  url: BASE_URL + "/api/v1/game/words/auth/30",
   method: "GET",
 })
   .then((res) => {
-    quizs = res.data;
+    wordQuizs = res.data;
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+axios({
+  url: BASE_URL + "/api/v1/game/consonant/auth/41",
+  method: "GET",
+})
+  .then((res) => {
+    consonantQuizs = res.data;
   })
   .catch((err) => {
     console.log(err);
@@ -66,20 +78,28 @@ io.on("connection", (socket) => {
     socket.join(`${roomNum}`);
     rooms.push({
       roomId: roomNum,
-      roomName: data,
+      roomName: data[0],
+      gameType: data[1],
       currentUser: [],
       roomQuiz: [],
       nowQuizNumber: 0,
       quizing: false,
     });
+
     let roomInfo = rooms.find((room) => room.roomId == roomNum);
+
     if (roomInfo) {
       roomInfo.currentUser.push({
         socketId: socket.id,
         nickname: players[socket.id].object.nickname,
         score: 0,
       });
-      roomInfo.roomQuiz = _.sampleSize(quizs, 10);
+      if (roomInfo.gameType === "saja") {
+        roomInfo.roomQuiz = _.sampleSize(wordQuizs, 10);
+      } else {
+        roomInfo.roomQuiz = _.sampleSize(consonantQuizs, 10);
+      }
+
       let payload = [roomInfo, players[socket.id].object];
       io.to(`${roomNum}`).emit("createRoomOK", payload);
       roomNum += 1;
@@ -141,7 +161,7 @@ io.on("connection", (socket) => {
       } else {
         // 퀴즈시작
         roomInfo.quizing = true;
-        if (data[3] === "독초야사랑해") {
+        if (data[3] === "독초는 퀴즈를 뿌려라") {
           io.to(`${roomInfo.roomId}`).emit(
             "startQuiz",
             roomInfo.roomQuiz[roomInfo.nowQuizNumber]
