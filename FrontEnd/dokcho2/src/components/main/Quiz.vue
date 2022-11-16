@@ -12,6 +12,17 @@
           v-model="inputRoomName.inputRoomName"
           placeholder="방 이름"
         />
+        <input
+          type="radio"
+          v-model="inputGameType.inputGameType"
+          value="saja"
+        />
+        <input
+          type="radio"
+          v-model="inputGameType.inputGameType"
+          value="chosung"
+        />
+        <div>{{ inputGameType.inputGameType }}</div>
         <div>
           <button @click="createRoom()">방생성</button>
         </div>
@@ -144,6 +155,7 @@ export default {
   },
   setup(props, { emit }) {
     let inputRoomName = ref({ inputRoomName: '' })
+    let inputGameType = ref({ inputGameType: '' })
     let nowRoomInfo = ref({ nowRoomInfo: [] })
     let roomName = ref({ roomName: '' })
     let nowRoomUser = ref({ nowRoomUser: '' })
@@ -377,6 +389,7 @@ export default {
 
     return {
       inputRoomName,
+      inputGameType,
       roomName,
       nowRoomInfo,
       nowRoomUser,
