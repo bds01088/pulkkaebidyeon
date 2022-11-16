@@ -152,7 +152,7 @@ export default {
 }
 input {
   display: block;
-  width: 15vw;
+  width: 12vw;
   height: 2vh;
   margin: 8px 0 8px 0;
   padding: 10px 15px 10px 25px;
@@ -167,7 +167,7 @@ input::placeholder {
 
 input:focus {
   outline: none;
-  border: #467302 solid 2px;
+  /* border: #6bfa8d solid 3px; */
 }
 .loginpage {
   display: flex;
@@ -183,8 +183,9 @@ input:focus {
 .logo__img {
   display: block;
   margin: auto;
-  padding-top: 10vh;
-  width: 60vw;
+  padding-top: 15vh;
+  width: 31vw;
+  margin-bottom: 5vh;
 }
 
 .login__button {
@@ -195,11 +196,14 @@ input:focus {
 }
 
 .login__btn {
-  width: 95%;
+  /* margin-top: 5%; */
+  width: 90%;
+  margin-top: 1vh;
 }
 
 .login__btn:hover {
   cursor: url('@/assets/selector.cur'), pointer;
+  scale: 1.05;
 }
 .kakao__button {
   display: flex;
@@ -220,11 +224,12 @@ input:focus {
   flex-direction: row;
   justify-content: center;
   margin-top: 5vmin;
+  margin-right: 3vw;
 }
 
 .howto__btn,
 .signup__btn {
-  width: 15vw;
+  width: 10vw;
   margin-left: 2%;
 }
 
@@ -232,7 +237,8 @@ input:focus {
 .signup__btn:hover {
   cursor: url('@/assets/selector.cur'), pointer;
   /* box-shadow: 0px 0px 2px 5px yellow; */
-  border-radius: 100%;
+  /* border-radius: 100%; */
+  scale: 1.05;
 }
 
 .findpassword__a {
