@@ -69,6 +69,14 @@ export default {
       miniGame2: false,
       miniGame3: false
     })
+    const camera = new THREE.OrthographicCamera(
+      -(window.innerWidth / window.innerHeight), // left
+      window.innerWidth / window.innerHeight, // right,
+      1, // top
+      -1, // bottom
+      -1000,
+      1000
+    )
     const isMinigame = ref({ isMinigame: false })
     setTimeout(() => {
       // Texture
@@ -103,14 +111,6 @@ export default {
       const scene = new THREE.Scene()
 
       // Camera
-      const camera = new THREE.OrthographicCamera(
-        -(window.innerWidth / window.innerHeight), // left
-        window.innerWidth / window.innerHeight, // right,
-        1, // top
-        -1, // bottom
-        -1000,
-        1000
-      )
 
       const cameraPosition = new THREE.Vector3(-15, 40, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
@@ -580,11 +580,23 @@ export default {
             isTalk.value.name = item.object.name.slice(2, -2)
             isPressed = false
             const status = ['NOT_YET', 'READY', 'BATTLE_WIN', 'FINISHED']
+
             setTimeout(() => {
               if (status.includes(isTalk.value.content.status)) {
                 isTalk.value.talk = true
+                gsap.to(camera, {
+                  duration: 1,
+                  zoom: 0.35,
+                  onUpdate: function () {
+                    camera.updateProjectionMatrix()
+                  }
+                })
+                gsap.to(camera.position, {
+                  duration: 1,
+                  y: 20
+                })
               }
-            }, 100)
+            }, 500)
           }
           if (item.object.name.slice(0, 1) === '빌') {
             talkStart(item.object.name.slice(1, 2))
@@ -594,8 +606,19 @@ export default {
             setTimeout(() => {
               if (status.includes(isTalk.value.content.status)) {
                 isTalk.value.talk = true
+                gsap.to(camera, {
+                  duration: 1,
+                  zoom: 0.35,
+                  onUpdate: function () {
+                    camera.updateProjectionMatrix()
+                  }
+                })
+                gsap.to(camera.position, {
+                  duration: 1,
+                  y: 20
+                })
               }
-            }, 100)
+            }, 500)
           }
           if (item.object.name.slice(0, 1) === '건') {
             isPressed = false
@@ -847,6 +870,17 @@ export default {
 
     function talkClose() {
       isTalk.value.talk = false
+      gsap.to(camera, {
+        duration: 1,
+        zoom: 0.25,
+        onUpdate: function () {
+          camera.updateProjectionMatrix()
+        }
+      })
+      gsap.to(camera.position, {
+        duration: 1,
+        y: 30
+      })
     }
 
     function quizStart() {
@@ -856,6 +890,17 @@ export default {
 
     function quizClose() {
       isQuiz.value.quiz = false
+      gsap.to(camera, {
+        duration: 1,
+        zoom: 0.25,
+        onUpdate: function () {
+          camera.updateProjectionMatrix()
+        }
+      })
+      gsap.to(camera.position, {
+        duration: 1,
+        y: 30
+      })
     }
 
     function enterBattle() {
