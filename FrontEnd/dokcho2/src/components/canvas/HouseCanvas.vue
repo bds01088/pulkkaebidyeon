@@ -531,7 +531,6 @@ export default {
         player.modelMesh.lookAt(destinationPoint)
       }
       window.addEventListener('keydown', (e) => {
-        console.log(e.key)
         if (
           e.key === 'a' ||
           e.key === 's' ||

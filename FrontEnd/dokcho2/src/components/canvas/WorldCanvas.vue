@@ -161,6 +161,10 @@ export default {
       // Mesh
       const meshes = []
 
+      setTimeout(() => {
+        console.log(scene)
+      }, 20000)
+
       // 바닥 만들기
       const floorMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(150, 150),
@@ -373,7 +377,7 @@ export default {
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
         }
 
-        if (isLoading === 0 && scene.children.length >= 160) {
+        if (isLoading === 0 && scene.children.length >= 167) {
           isLoading = 1
           console.log('로딩 끝1')
           emit('loadingEnd')
