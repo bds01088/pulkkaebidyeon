@@ -43,6 +43,7 @@ export default {
     const monster = ref({ monster: false })
     const monsterDetail = ref({ monsterDetail: {} })
     const myPage = ref({ myPage: false })
+    const checkMonster = ref({ checkMonster: false })
 
     setTimeout(() => {
       // Texture
@@ -173,6 +174,7 @@ export default {
       scene.add(spotMesh)
 
       const gltfLoader = new GLTFLoader()
+      let myMonsters = []
 
       // 내가 가진 풀깨비 넣기
       for (let monsterID in userMonster.value.userMonster) {
@@ -185,7 +187,8 @@ export default {
           monster.position.z = (Math.random() - 0.5) * 2
           monster.scale.set(0.5, 0.5, 0.5)
           scene.add(monster)
-          meshes.push(monster)
+          // meshes.push(monster)
+          myMonsters.push(monster)
         })
       }
 
@@ -285,6 +288,17 @@ export default {
         let cannonStepTime = 1 / 60
         if (delta < 0.01) cannonStepTime = 1 / 120
         cannonWorld.step(cannonStepTime, delta, 3)
+
+        if (props.nowPage === 1 && !checkMonster.value.checkMonster) {
+          checkMonster.value.checkMonster = true
+          console.log('집 들어옴 checkmonster', checkMonster.value.checkMonster)
+          changeMonsters()
+        }
+
+        if (props.nowPage === 0 && checkMonster.value.checkMonster) {
+          checkMonster.value.checkMonster = false
+          console.log('집 나감 checkmonster', checkMonster.value.checkMonster)
+        }
 
         // boxMesh.position.copy(boxBody.position) // 위치
         // boxMesh.quaternion.copy(boxBody.quaternion) // 회전
@@ -396,7 +410,8 @@ export default {
       }
       function checkIntersects() {
         raycaster.setFromCamera(mouse, camera)
-        const intersects = raycaster.intersectObjects(meshes)
+        const meshArray = meshes.concat(myMonsters)
+        const intersects = raycaster.intersectObjects(meshArray)
         for (const item of intersects) {
           console.log(item)
           // if (item.object.name === 'floor') {
@@ -473,7 +488,8 @@ export default {
         mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
 
         raycaster.setFromCamera(mouse, camera)
-        const intersects = raycaster.intersectObjects(meshes)
+        const meshArray = meshes.concat(myMonsters)
+        const intersects = raycaster.intersectObjects(meshArray)
 
         if (intersects && intersects.length > 0) {
           document.body.style.cursor =
@@ -603,6 +619,36 @@ export default {
       function onClick() {
         alert('aa')
         emit('changeCanvas')
+      }
+
+      function changeMonsters() {
+        fetchUserMonster()
+        console.log('몬스터 받아옴')
+
+        setTimeout(() => {
+          for (let monster in myMonsters) {
+            scene.remove(myMonsters[monster])
+          }
+          myMonsters = []
+
+          console.log('뉴 풀깨비 체크', userMonster.value.userMonster)
+
+          // 내가 가진 풀깨비 넣기
+          for (let monsterID in userMonster.value.userMonster) {
+            let id = Number(monsterID) + 1
+            console.log('풀깨비 아이디', id)
+            gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
+              const monster = item.scene
+              monster.name = ['monster', `${id}`]
+              monster.position.x = (Math.random() - 0.5) * 2
+              monster.position.z = (Math.random() - 0.5) * 2
+              monster.scale.set(0.5, 0.5, 0.5)
+              scene.add(monster)
+
+              myMonsters.push(monster)
+            })
+          }
+        }, 100)
       }
     }, 100)
 
