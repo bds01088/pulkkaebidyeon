@@ -44,6 +44,10 @@
 
 <script>
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+
+import { Ending } from '../modules/Ending'
+import { EndingAnimation } from '../modules/EndingAnimation'
 
 export default {
   name: 'EndingCredits',
@@ -81,7 +85,7 @@ export default {
       )
 
       camera.position.set(3, 1, 3)
-      camera.lookAt(0, 1, 0)
+      camera.lookAt(-1.5, 1, 1.5)
       scene.add(camera)
 
       // Light
@@ -119,10 +123,110 @@ export default {
       floorMesh.receiveShadow = true
       scene.add(floorMesh)
 
-      //   const clock = new THREE.Clock()
+      const gltfLoader = new GLTFLoader()
+
+      const squirrel = new Ending({
+        scene,
+        gltfLoader,
+        modelSrc: '/ending/지현몬.glb',
+        x: 0.8,
+        y: 0,
+        z: -2
+      })
+
+      const deer = new Ending({
+        scene,
+        gltfLoader,
+        modelSrc: '/ending/효근몬.glb',
+        x: -2.5,
+        y: 0,
+        z: 4.5
+      })
+
+      const dog = new Ending({
+        scene,
+        gltfLoader,
+        modelSrc: '/ending/상균몬.glb',
+        x: -0.9,
+        y: 0,
+        z: 1.7
+      })
+
+      const fox = new EndingAnimation({
+        scene,
+        gltfLoader,
+        modelSrc: '/ending/근희몬.glb',
+        x: 0.2,
+        y: 0,
+        z: 1
+      })
+
+      const cat = new EndingAnimation({
+        scene,
+        gltfLoader,
+        modelSrc: '/ending/지원몬.glb',
+        x: 0,
+        y: 0,
+        z: -0.2
+      })
+
+      const tiger = new EndingAnimation({
+        scene,
+        gltfLoader,
+        modelSrc: '/ending/성빈몬.glb',
+        x: -0.7,
+        y: 0,
+        z: 4.5
+      })
+
+      const bird = new EndingAnimation({
+        scene,
+        gltfLoader,
+        modelSrc: '/ending/재준몬.glb',
+        x: -0.6,
+        y: 0,
+        z: 2.8
+      })
+
+      const clock = new THREE.Clock()
 
       function draw() {
-        // const delta = clock.getDelta()
+        const delta = clock.getDelta()
+
+        if (squirrel.modelMesh) {
+          squirrel.modelMesh.lookAt(3, 0, 3)
+        }
+        if (squirrel.mixer) squirrel.mixer.update(delta)
+
+        if (deer.modelMesh) {
+          deer.modelMesh.lookAt(3, 0, 3)
+        }
+        if (deer.mixer) deer.mixer.update(delta)
+
+        if (dog.modelMesh) {
+          dog.modelMesh.lookAt(3, 0, 3)
+        }
+        if (dog.mixer) dog.mixer.update(delta)
+
+        if (fox.modelMesh) {
+          fox.modelMesh.lookAt(3, 0, 3)
+        }
+        if (fox.mixer) fox.mixer.update(delta)
+
+        if (bird.modelMesh) {
+          bird.modelMesh.lookAt(3, 0, 3)
+        }
+        if (bird.mixer) bird.mixer.update(delta)
+
+        if (tiger.modelMesh) {
+          tiger.modelMesh.lookAt(3, 0, 3)
+        }
+        if (tiger.mixer) tiger.mixer.update(delta)
+
+        if (cat.modelMesh) {
+          cat.modelMesh.lookAt(3, 0, 3)
+        }
+        if (cat.mixer) cat.mixer.update(delta)
 
         renderer.render(scene, camera)
         renderer.setAnimationLoop(draw)

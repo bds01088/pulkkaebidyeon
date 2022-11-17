@@ -489,9 +489,9 @@ export default {
               player.modelMesh.lookAt(-0.5, 0, -3)
 
               if (status.value == '공격') {
-                player.cannonBody.position.y += 0.03
+                player.cannonBody.position.y += 0.04
 
-                if (player.cannonBody.position.y >= 0.8) {
+                if (player.cannonBody.position.y >= 0.6) {
                   status.value = '대기'
                   attackAudio.play()
                 }
@@ -546,9 +546,9 @@ export default {
               if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
                 if (enemyStatus.value == '공격') {
                   if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
-                    enemy.cannonBody.position.y += 0.03
+                    enemy.cannonBody.position.y += 0.04
 
-                    if (enemy.cannonBody.position.y >= 0.8) {
+                    if (enemy.cannonBody.position.y >= 0.6) {
                       attackAudio.play()
 
                       enemyStatus.value = '대기'
@@ -849,7 +849,12 @@ export default {
             '의 피해를 주었다!'
           phase.value = 'actResult'
 
-          enemyHp.value -= myDamage.value
+          if (enemyHp.value - myDamage.value < 0) {
+            enemyHp.value = 0
+          } else {
+            enemyHp.value -= myDamage.value
+          }
+
           enemyHpBar.value = Math.round(
             (enemyHp.value / enemyMaxHp.value) * 100
           )
@@ -918,7 +923,12 @@ export default {
           msg.value = myDamage.value.toString() + '의 피해를 주었다!'
           phase.value = 'actResult'
 
-          enemyHp.value -= myDamage.value
+          if (enemyHp.value - myDamage.value < 0) {
+            enemyHp.value = 0
+          } else {
+            enemyHp.value -= myDamage.value
+          }
+
           enemyHpBar.value = Math.round(
             (enemyHp.value / enemyMaxHp.value) * 100
           )
@@ -1197,7 +1207,12 @@ export default {
             '의 피해를 받았다!'
           phase.value = 'enemyActResult'
 
-          myHp.value -= enemyDamage.value
+          if (myHp.value - enemyDamage.value < 0) {
+            myHp.value = 0
+          } else {
+            myHp.value -= enemyDamage.value
+          }
+
           myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
 
           myAct.value = ''
@@ -1281,7 +1296,12 @@ export default {
           msg.value = enemyDamage.value.toString() + '의 피해를 받았다!'
           phase.value = 'enemyActResult'
 
-          myHp.value -= enemyDamage.value
+          if (myHp.value - enemyDamage.value < 0) {
+            myHp.value = 0
+          } else {
+            myHp.value -= enemyDamage.value
+          }
+
           myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
 
           // setTimeout(() => {
