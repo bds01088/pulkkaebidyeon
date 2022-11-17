@@ -31,7 +31,7 @@ import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
-import TalkComponent from '../script/TalkComponent.vue'
+import TalkComponent from '../script/TalkComponent2.vue'
 import QuizComponent from '../script/QuizComponent.vue'
 import { ref, watchEffect } from 'vue'
 
@@ -681,16 +681,26 @@ export default {
       function onPointerMove(e) {
         mouse.x = (e.clientX / window.innerWidth) * 2 - 1
         mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+        // console.log('on pointer move 인식')
 
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
 
+        // for (const item of intersects) {
+        //   if (
+        //     item.object.name === 'house' ||
+        //     item.object.name.slice(0, 1) === '위' ||
+        //     item.object.name.slice(0, 1) === '빌' ||
+        //     item.object.name.slice(0, 1) === '건'
+        //   ) {
+        //     // item.object.material.color.set(0xff0000)
+        //   }
+        // }
+
         if (intersects && intersects.length > 0) {
-          document.body.style.cursor =
-            "cursor: url('@/assets/selector.cur'), pointer;"
+          document.body.style.cursor = "url('@/assets/selector.cur'), pointer;"
         } else {
-          document.body.style.cursor =
-            "cursor: url('@/assets/pointer.cur'), auto;"
+          document.body.style.cursor = "url('@/assets/pointer.cur'), auto;"
         }
       }
 
