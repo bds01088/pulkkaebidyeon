@@ -84,10 +84,12 @@ export default {
     function openQuiz() {
       quiz.value.quiz = true
       emit('changeNavbar')
+      emit('quizStart', true)
     }
     function closeQuiz() {
       quiz.value.quiz = false
       emit('changeNavbar')
+      emit('quizStart', false)
     }
     function openModal1() {
       modal1.value.modal1 = true
