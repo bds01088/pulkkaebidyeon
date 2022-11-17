@@ -236,12 +236,12 @@ export default {
 }
 
 .prvv {
-  transform: translate3d(0px, -300%, 0px);
+  transform: translate3d(0px, -500%, 0px);
   opacity: 0;
 }
 
 .prv {
-  transform: translate3d(0px, -150%, 0px);
+  transform: translate3d(0px, -180%, 0px);
   opacity: 0.3;
 }
 
@@ -251,17 +251,18 @@ export default {
 }
 
 .nxt {
-  transform: translate3d(0px, 150%, 0px);
+  transform: translate3d(0px, 180%, 0px);
   opacity: 0.3;
 }
 
 .nxtt {
-  transform: translate3d(0px, 300%, 0px);
+  transform: translate3d(0px, 500%, 0px);
   opacity: 0;
 }
 
 .hidden {
   top: 10vh;
   opacity: 0;
+  height: 0;
 }
 </style>
