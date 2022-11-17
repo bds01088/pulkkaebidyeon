@@ -412,9 +412,9 @@ export default {
             player.cannonBody.position.z += Math.sin(angle) * 0.04
 
             camera.position.x =
-              cameraPosition.x + player.modelMesh.position.x + 25
+              cameraPosition.x + player.modelMesh.position.x + 23
             camera.position.z =
-              cameraPosition.z + player.modelMesh.position.z + 55
+              cameraPosition.z + player.modelMesh.position.z + 58
 
             player.actions[0].stop()
             player.actions[2].stop()
