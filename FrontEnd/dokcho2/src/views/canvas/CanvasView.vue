@@ -14,7 +14,7 @@
         v-if="fullPage === true"
       />
     </div>
-    <NavBar @changeNavbar="changeNavbar" />
+    <NavBar @changeNavbar="changeNavbar" @quizStart="quizStart" />
     <LoadingPage
       v-if="this.isGameStart === 0"
       @gameStart="gameStart"
@@ -65,6 +65,7 @@ export default {
       isloading: 0,
       isGameStart: 0,
       audio: new Audio('audio/oursound.mp3'),
+      quizAudio: new Audio('audio/future.mp3'),
       fullPage: false
     }
   },
@@ -76,13 +77,9 @@ export default {
     LoadingPage: LoadingPage
   },
   mounted() {
-    this.audio.muted = true
     this.audio.loop = true
     this.audio.volume = 0.9
     this.audio.play()
-    setTimeout(() => {
-      this.audio.muted = false
-    }, 1000)
   },
   beforeUnmount() {
     this.audio.pause()
@@ -143,6 +140,16 @@ export default {
 
     gameStart() {
       this.isGameStart = 1
+    },
+
+    quizStart(isOpen) {
+      if (isOpen) {
+        this.audio.pause()
+        this.quizAudio.play()
+      } else {
+        this.quizAudio.pause()
+        this.audio.play()
+      }
     }
   }
 }
