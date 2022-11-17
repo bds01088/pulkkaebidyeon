@@ -191,6 +191,9 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
 import Swal from 'sweetalert2'
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = new JSConfetti()
 
 export default {
   components: {},
@@ -263,6 +266,9 @@ export default {
         ', ' +
         inputAnswer.value[2]
 
+      function startConfetti() {
+        jsConfetti.addConfetti()
+      }
       // 정답!!!!!
       if (strike.value == 3) {
         scoreBoard.value[turn.value].result = '정답'
@@ -294,6 +300,7 @@ export default {
                   }
                 })
                   .then((res) => {
+                    startConfetti()
                     monster = res.data
                     Swal.fire({
                       title: 'Level Up!!🎉',
@@ -306,6 +313,9 @@ export default {
                       timer: 5000,
                       showConfirmButton: false
                     })
+                    setTimeout(() => {
+                      jsConfetti.clearCanvas()
+                    }, 5000)
                   })
                   .catch((err) => console.log(err))
               }

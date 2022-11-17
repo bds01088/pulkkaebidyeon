@@ -101,6 +101,9 @@ import { BASE_URL } from '@/constant/BASE_URL'
 
 import { useStore } from 'vuex'
 import Swal from 'sweetalert2'
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = new JSConfetti()
 
 // 스테이지수 (5개)
 // 힌트수 (1회 /2회)
@@ -232,6 +235,9 @@ export default {
 
     // 포인트 보내기 ..........
     function sendPoint() {
+      function startConfetti() {
+        jsConfetti.addConfetti()
+      }
       axios({
         url: BASE_URL + '/api/v1/mission/mini?rewardExp=' + point.value.point,
         method: 'PUT',
@@ -258,6 +264,7 @@ export default {
               }
             })
               .then((res) => {
+                startConfetti()
                 monster = res.data
                 Swal.fire({
                   title: 'Level Up!!🎉',
@@ -270,6 +277,9 @@ export default {
                   timer: 5000,
                   showConfirmButton: false
                 })
+                setTimeout(() => {
+                  jsConfetti.clearCanvas()
+                }, 5000)
               })
               .catch((err) => console.log(err))
           }

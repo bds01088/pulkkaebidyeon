@@ -253,7 +253,10 @@ export default {
         }
       })
         .then(() => {
-          this.fetchnowUserInfo()
+          setTimeout(() => {
+            this.fetchnowUserInfo()
+          }, 200)
+
           swal({
             title: '진행도 초기화가 완료되었어요!',
             icon: 'success',
