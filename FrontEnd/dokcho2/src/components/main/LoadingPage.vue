@@ -59,7 +59,8 @@ export default {
         '허준의 제자인 여러분은 허준이 기르던 풀깨비들과 함께 동의보감을 찾기 위해 모험을 떠나기로 했어요.',
         '호랑이의 흔적을 찾아 동의보감을 되찾아주세요!'
       ],
-      indexTimer: 0
+      indexTimer: 0,
+      audio: new Audio('audio/button.mp3')
     }
   },
   mounted() {
@@ -77,6 +78,7 @@ export default {
   },
   methods: {
     gameStart() {
+      this.audio.play()
       this.$emit('gameStart')
     },
     getClassName(idx) {

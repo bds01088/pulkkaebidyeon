@@ -54,6 +54,7 @@ export default {
   },
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
+    const audio = new Audio('audio/button.mp3')
 
     const store = useStore()
     // store.dispatch('fetchnowUserInfo')
@@ -66,6 +67,7 @@ export default {
     })
 
     function endTalk() {
+      audio.play()
       const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
       console.log(content)
@@ -275,6 +277,7 @@ export default {
     }
 
     function nextTalk() {
+      audio.play()
       nowPage.value.nowPage += 1
     }
 
