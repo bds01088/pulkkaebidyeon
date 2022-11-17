@@ -23,9 +23,9 @@ export class Monster {
       })
 
       this.modelMesh = glb.scene
-      this.modelMesh.scale.x = 0.3
-      this.modelMesh.scale.y = 0.3
-      this.modelMesh.scale.z = 0.3
+      this.modelMesh.scale.x = 0.4
+      this.modelMesh.scale.y = 0.4
+      this.modelMesh.scale.z = 0.4
 
       this.modelMesh.position.set(this.x, this.y, this.z)
       this.modelMesh.name = 'player'
