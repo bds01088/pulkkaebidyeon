@@ -76,9 +76,11 @@ export default {
     LoadingPage: LoadingPage
   },
   mounted() {
+    this.audio.muted = true
     this.audio.loop = true
     this.audio.volume = 0.9
     this.audio.play()
+    this.audio.muted = false
   },
   beforeUnmount() {
     this.audio.pause()
