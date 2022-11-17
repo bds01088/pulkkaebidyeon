@@ -58,7 +58,21 @@ export default {
         '하지만 이 모습을 지켜보던 악랄한 호랑이와 동물들이 완성된 동의보감을 훔쳐 달아나 버렸어요.',
         '허준의 제자인 여러분은 허준이 기르던 풀깨비들과 함께 동의보감을 찾기 위해 모험을 떠나기로 했어요.',
         '호랑이의 흔적을 찾아 동의보감을 되찾아주세요!'
-      ]
+      ],
+      indexTimer: 0
+    }
+  },
+  mounted() {
+    setInterval(() => {
+      this.indexTimer += 1
+    }, 1000)
+  },
+  watch: {
+    indexTimer: function () {
+      if (this.indexTimer === 4 && this.index <= 4) {
+        this.indexTimer = 0
+        this.index += 1
+      }
     }
   },
   methods: {
@@ -74,7 +88,7 @@ export default {
       else return 'hidden'
     },
     clickContext(idx) {
-      console.log('클릭', idx, this.index)
+      this.indexTimer = 0
       if (this.index + 1 === idx) {
         this.index += 1
       } else if (this.index - 1 === idx) {
