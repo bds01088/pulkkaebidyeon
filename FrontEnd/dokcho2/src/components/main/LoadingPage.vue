@@ -162,12 +162,14 @@ export default {
   min-height: 8vh;
   font-size: 20px;
   transition: 0.5s;
-  background-color: #6bfa8d;
+  background-color: #a7c957;
 }
 
 .start__btn:hover {
+  transition: 0.5s;
   scale: 1.05;
-  background-color: #6bfa8d;
+  color: white;
+  background-color: #467302;
 }
 
 .loading__box {
@@ -237,7 +239,8 @@ export default {
   position: relative;
   width: 80vw;
   height: auto;
-  margin-bottom: 20vh;
+  margin-top: 10vh;
+  margin-bottom: 40vh;
 }
 
 .context > div {
