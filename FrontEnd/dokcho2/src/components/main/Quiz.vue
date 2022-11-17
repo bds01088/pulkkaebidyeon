@@ -16,7 +16,10 @@
               alt=""
             />
             <div class="myName">
-              {{ userInfo.nickname }}
+              <p>
+                <b>{{ userInfo.nickname }}</b
+                >님, &nbsp; 퀴즈왕을 향해 가볼까요?
+              </p>
             </div>
           </div>
           <div class="makeRoom">
@@ -48,12 +51,16 @@
               />
             </div>
             <div class="makeRoomBtnBox">
-              <button class="makeRoomBtn" @click="createRoom()">방생성</button>
+              <button class="makeRoomBtn" @click="createRoom()">방 생성</button>
             </div>
           </div>
         </div>
         <div class="waitingRoom__right">
           <div class="roomList">
+            <!-- <div class="roomList__header">
+              <p>방 리스트</p>
+            </div> -->
+
             <div
               @click="enterRoom(room.roomId)"
               v-for="room in this.rooms.rooms"
@@ -61,17 +68,27 @@
               class="room"
             >
               <div class="roomLeft">
-                <div class="roomPic"></div>
+                <div class="roomPic">
+                  <img
+                    v-if="room.gameType === 'saja'"
+                    src="@/assets/quiz/saja.png"
+                    alt=""
+                  />
+                  <img v-else src="@/assets/quiz/chosung.png" alt="" />
+                </div>
               </div>
               <div class="roomRight">
                 <div class="roomRight__top">
                   <div class="roomName">
-                    {{ room.roomName }}
+                    <p>No.{{ room.roomId }}</p>
+                    <p>
+                      {{ room.roomName }}
+                    </p>
                   </div>
                 </div>
                 <div class="roomRight__bottom">
                   <div class="roomPerson">
-                    {{ room.currentUser.length }} / 4
+                    🙋‍♂️ &nbsp; {{ room.currentUser.length }} / 4
                   </div>
                   <button class="roomStartBtn">참여</button>
                 </div>
@@ -91,11 +108,11 @@
     <div v-else>
       <div class="inGame">
         <div class="inGame__header">
-          <div class="inGame__roomNum">
-            <p>{{ this.nowRoomInfo.nowRoomInfo.roomId }}번 방</p>
-          </div>
           <div class="inGame__roomName">
-            <p>{{ this.nowRoomInfo.nowRoomInfo.roomName }}</p>
+            <p>
+              No.{{ this.nowRoomInfo.nowRoomInfo.roomId }} &nbsp;
+              {{ this.nowRoomInfo.nowRoomInfo.roomName }}
+            </p>
           </div>
           <div class="inGame__exit">
             <button @click="leaveRoom()">방나가기</button>
@@ -110,7 +127,7 @@
             </div>
           </div>
           <div v-else>
-            퀴즈를 시작하려면 독초는 퀴즈를 뿌려라 라고 입력하세요!
+            퀴즈를 시작하려면 <b>"독초는 퀴즈를 뿌려라"</b> 라고 입력하세요!
           </div>
         </div>
         <div class="inGame__body">
@@ -151,7 +168,7 @@
               <input
                 type="text"
                 v-model="inputMsg.inputMsg"
-                placeholder="메세지"
+                placeholder="여기에 입력하세요!"
                 @keyup.enter="
                   sendMsg(
                     this.nowRoomInfo.nowRoomInfo.roomId,
@@ -164,15 +181,24 @@
             </div>
           </div>
           <div class="playersBox">
+            <!-- <p class="players__room">
+              "{{ this.nowRoomInfo.nowRoomInfo.roomName }}"
+            </p> -->
             <div class="players">
               <div
-                v-for="user in this.nowRoomUser.nowRoomUser"
-                v-bind:key="user"
+                v-for="(user, i) in this.nowRoomUser.nowRoomUser"
+                v-bind:key="i"
                 class="player"
-                :class="isCorrectUser(user) ? 'correctUser' : ''"
               >
-                {{ user.nickname }} :
-                {{ user.score }}
+                <img
+                  class="player__img"
+                  :src="require('@/assets/quiz/' + i + '.png')"
+                  alt=""
+                />
+                <p :class="isCorrectUser(user) ? 'correctUser' : ''">
+                  {{ user.nickname }}
+                </p>
+                <p class="player__score">{{ user.score }}</p>
               </div>
             </div>
           </div>
@@ -199,6 +225,7 @@ import swal from 'sweetalert'
 import Swal from 'sweetalert2'
 import { BASE_URL } from '@/constant/BASE_URL'
 // import QuizRoomCanvas from './QuizRoomCanvas.vue'
+import _ from 'lodash'
 
 export default {
   name: 'QuizCanvas',
@@ -535,6 +562,9 @@ export default {
       }, 2000)
     }
 
+    let imageNumber = _.random(1, 4)
+    // const images =
+
     return {
       inputRoomName,
       inputGameType,
@@ -560,7 +590,8 @@ export default {
       createRoom,
       sendMsg,
       closeQuiz,
-      isCorrectUser
+      isCorrectUser,
+      imageNumber
     }
   }
 }
@@ -571,7 +602,7 @@ export default {
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('../../assets/seodang.png');
   background-size: cover;
   background-repeat: no-repeat;
@@ -595,62 +626,73 @@ export default {
 }
 
 .waitingRoom__left {
-  width: 35%;
+  width: 32%;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
   border-radius: 20px;
-  background-color: rgba(206, 212, 218, 0.9);
+  background-color: #efdcc3;
 }
 
 .myProfile {
   height: 40%;
-  width: 80%;
+  width: 75%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  border-radius: 15px;
+  border-radius: 10px;
   opacity: 1;
-  background-color: white;
+  /* background-color: white; */
 }
 
 .myProfile > img {
-  width: 50%;
+  width: 35%;
   height: 60%;
 }
 
 .myName {
-  height: 20%;
+  height: 10%;
   display: flex;
   align-items: center;
-  font-size: 25px;
-  font-weight: bold;
+  font-size: 1.1rem;
+  /* font-weight: bold; */
+  /* margin: 0; */
+}
+
+.myName p {
+  margin: 0;
 }
 
 .makeRoom {
-  height: 40%;
-  width: 80%;
+  height: 55%;
+  width: 75%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  border: 1px black solid;
+  /* align-items: center; */
+  background-color: #e4c49b;
+  border-radius: 10px;
+  /* border: 1px black solid; */
+  margin-bottom: 3vh;
 }
 
 .makeRoomTitle {
-  height: 30%;
+  height: 25%;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
 }
 
 .makeRoomTitle > p {
-  font-size: 25px;
-  margin: 0 5px 0 0;
+  font-size: 1.3rem;
+  margin-left: 1.5vw;
+  /* margin: 0 5px 0 0; */
+  /* margin: 0; */
   font-weight: bold;
+  /* font-family: 'DungGeunMo'; */
 }
 
 .makeRoomDetail {
@@ -659,7 +701,11 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  align-items: center;
+  /* align-items: center; */
+}
+
+.radio {
+  margin-left: 1.5vw;
 }
 
 .radio input[type='radio'] {
@@ -670,35 +716,46 @@ export default {
   display: inline-block;
   cursor: url(http://localhost:8080/da0004d92b7c37a7.cur), pointer;
   height: 24px;
-  width: 90px;
+  width: 45%;
   border: 1px solid #333;
   line-height: 24px;
   text-align: center;
-  font-weight: bold;
-  font-size: 13px;
+  /* font-weight: bold; */
+  font-size: 0.9rem;
+  /* margin-left: 1.5vw; */
 }
 
 .radio input[type='radio'] + label {
-  background-color: #fff;
-  color: #333;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: #000000;
 }
 
 .radio input[type='radio']:hover + label {
   scale: 1.05;
-  background-color: rgb(167, 167, 167);
+  background-color: #deb887;
   transition: 0.2s linear;
 }
 
 .radio input[type='radio']:checked + label {
   scale: 1.05;
-  background-color: #333;
-  color: #fff;
+  background-color: #ce954b;
+  color: #000000;
+  font-weight: bold;
 }
 
-input {
+.makeRoomDetail input {
   margin: 0;
-  height: 35px;
-  width: 80%;
+  margin-left: 1.3vw;
+  height: 2.5vw;
+  width: 85%;
+  font-size: 1rem;
+  border-color: #d9ac73;
+  background-color: #efdcc3;
+}
+
+.makeRoomDetail input:focus {
+  border-color: #d9ac73;
+  box-shadow: 0 0 10px 0 #d9ac73;
 }
 
 .makeRoomBtnBox {
@@ -712,7 +769,7 @@ input {
 .makeRoomBtn {
   width: 60%;
   height: 50%;
-  font-size: 18px;
+  font-size: 1rem;
   transition: 0.2s linear;
 }
 
@@ -723,7 +780,7 @@ input {
 }
 
 .waitingRoom__right {
-  width: 55%;
+  width: 62%;
   height: 100%;
   border-radius: 20px;
   display: flex;
@@ -733,20 +790,27 @@ input {
 }
 
 .roomList {
-  width: 70%;
-  height: 90%;
+  width: 80%;
+  height: 85%;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.roomList__header {
+  /* position: fixed; */
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-left: 0.5vw;
 }
 
 .room {
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 20px;
+  border-radius: 10px;
   margin: 15px 10px;
-  width: 95%;
-  height: 25%;
+  width: 85%;
+  height: 30%;
   background-color: burlywood;
 }
 
@@ -759,21 +823,31 @@ input {
 }
 
 .roomPic {
-  width: 70%;
-  height: 70%;
-  border: 1px black solid;
+  /* width: 100%;
+  height: 100%;
+  border: 1px black solid; */
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.roomPic img {
+  width: 55%;
+  margin: auto;
 }
 
 .roomRight {
-  width: 65%;
+  margin-left: 2vw;
+  width: 70%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .roomRight__top {
-  width: 80%;
-  height: 60%;
+  width: 90%;
+  height: 40%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -781,19 +855,20 @@ input {
 
 .roomName {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   border-radius: 15px;
-  background-color: gainsboro;
-  padding: 0 15px;
-  font-size: 20px;
+  background-color: antiquewhite;
+  padding: 0 20px;
+  padding-top: 10px;
+  font-size: 1rem;
   font-weight: bold;
-  height: 50%;
+  height: 60%;
   width: 100%;
 }
 
 .roomRight__bottom {
-  width: 80%;
+  width: 90%;
   height: 40%;
   display: flex;
   justify-content: space-between;
@@ -802,17 +877,19 @@ input {
 
 .roomPerson {
   text-align: center;
-  width: 15%;
+  width: 30%;
 }
 
 .roomStartBtn {
   transition: 0.2s linear;
+  border-radius: 12px;
 }
 
 .roomStartBtn:hover {
   scale: 1.05;
   background-color: #a7c957;
   transition: 0.2s linear;
+  font-weight: bold;
 }
 
 .exit__btn {
@@ -838,19 +915,20 @@ input {
 .inGame__header {
   width: 80%;
   height: 10%;
-  margin: 30px;
+  margin-top: 5vh;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  /* align-items: center; */
 }
 
-.inGame__header > div {
+/* .inGame__header > div {
   text-align: center;
-}
+} */
 
 .inGame__roomName {
-  font-size: 50px;
+  font-size: 2.5rem;
   color: white;
+  margin-left: 1.5vw;
 }
 
 .inGame__quizBox {
@@ -861,7 +939,7 @@ input {
   border-radius: 20px;
   margin: 15px 0;
   width: 80%;
-  height: 20%;
+  height: 15%;
   background-color: burlywood;
 }
 
@@ -885,8 +963,18 @@ input {
   width: 60%;
 }
 
-.inGame__exit {
-  width: 20%;
+.inGame__exit button {
+  width: 6vw;
+  height: 2.5vw;
+  margin-right: 1.5vw;
+  border-radius: 20px;
+}
+
+.inGame__exit button:hover {
+  scale: 1.05;
+  background-color: #a7c957;
+  transition: 0.2s linear;
+  font-weight: bold;
 }
 
 .inGame__body {
@@ -898,7 +986,7 @@ input {
 
 .inGame__left {
   height: 100%;
-  width: 72%;
+  width: 73%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -916,13 +1004,14 @@ input {
 
 .chatBox {
   height: 45vh;
-  width: 80%;
+  width: 90%;
   overflow-y: scroll;
 }
 
 .textBox {
-  width: 100%;
+  width: 90%;
   display: flex;
+  margin: auto;
 }
 
 .yourTextBox {
@@ -931,26 +1020,26 @@ input {
 }
 
 .myTexts {
-  border-radius: 5px;
+  border-radius: 15px;
   background-color: #a7c957;
   width: fit-content;
-  padding: 5px 15px;
+  padding: 10px 15px;
   margin: 10px;
 }
 
 .gguTexts {
-  border-radius: 5px;
+  border-radius: 15px;
   background-color: #ffa6a6;
   width: fit-content;
-  padding: 5px 10px;
+  padding: 10px 15px;
   margin: 10px;
 }
 
 .yourTexts {
-  border-radius: 5px;
+  border-radius: 15px;
   background-color: #fff78c;
   width: fit-content;
-  padding: 5px 10px;
+  padding: 10px 15px;
   margin: 10px;
 }
 
@@ -977,31 +1066,63 @@ input {
 
 .inputBox > input {
   width: 80%;
+  height: 100%;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.inputBox input:focus {
+  border-color: #839d46;
+  box-shadow: 0 0 8px 0 #839d46;
 }
 
 .playersBox {
   height: 80%;
   width: 25%;
   border-radius: 20px;
-  background-color: antiquewhite;
+  background-color: #efdcc3;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .players {
   width: 80%;
   height: 80%;
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: flex-start; */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .player {
-  width: 100%;
-  font-size: 25px;
+  width: 90%;
+  font-size: 1.2rem;
+  font-weight: bold;
   text-align: center;
-  margin: 25px 0;
+  /* margin: 25px 0; */
+  margin-top: 2vh;
+  margin: auto;
+  background-color: white;
+  border-radius: 20px;
+}
+
+.players__room {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+.player__img {
+  width: 50%;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+}
+
+.player__score {
+  font-size: 1rem;
+  /* margin: 1vh; */
 }
 
 .correctUser {
