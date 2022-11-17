@@ -491,7 +491,7 @@ export default {
               if (status.value == '공격') {
                 player.cannonBody.position.y += 0.03
 
-                if (player.cannonBody.position.y >= 0.9) {
+                if (player.cannonBody.position.y >= 0.8) {
                   status.value = '대기'
                   attackAudio.play()
                 }
@@ -548,7 +548,7 @@ export default {
                   if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
                     enemy.cannonBody.position.y += 0.03
 
-                    if (enemy.cannonBody.position.y >= 0.9) {
+                    if (enemy.cannonBody.position.y >= 0.8) {
                       attackAudio.play()
 
                       enemyStatus.value = '대기'
@@ -713,6 +713,10 @@ export default {
 
         if (enemyAct.value == '방어') {
           myDamage.value = myAttack.value - enemyDefense.value
+
+          if (myDamage.value < 0) {
+            myDamage.value = 0
+          }
 
           setTimeout(() => {
             if (stun.value == true) {

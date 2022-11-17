@@ -24,6 +24,7 @@ import monsterDetail from '@/components/monster/monsterDetail.vue'
 import myPage from '@/components/accounts/myPage.vue'
 import { Furniture } from '../modules/Furniture'
 import { Door } from '../modules/Door'
+import { Body, Box, Vec3 } from 'cannon-es'
 
 export default {
   name: 'HouseCanvas',
@@ -41,6 +42,7 @@ export default {
     const monster = ref({ monster: false })
     const monsterDetail = ref({ monsterDetail: {} })
     const myPage = ref({ myPage: false })
+    const checkMonster = ref({ checkMonster: false })
 
     setTimeout(() => {
       // Texture
@@ -137,12 +139,12 @@ export default {
       meshes.push(floorMesh)
 
       const gltfLoader = new GLTFLoader()
-
+      let myMonsters = []
       const monsterPos = [
-        { x: 0, z: 0 },
-        { x: 1, z: 1 },
-        { x: 2, z: 2 },
-        { x: -2, z: -2 }
+        { x: 0, y: 0.2, z: 0 },
+        { x: 1.5, y: 0.2, z: 1.5 },
+        { x: -3, y: 0.2, z: -2 },
+        { x: -1, y: 0.2, z: -1.5 }
       ]
 
       // 내가 가진 풀깨비 넣기
@@ -153,12 +155,89 @@ export default {
           const monster = item.scene
           monster.name = ['monster', `${id}`]
           monster.position.x = monsterPos[id].x
+          monster.position.y = monsterPos[id].y
           monster.position.z = monsterPos[id].z
           monster.scale.set(0.5, 0.5, 0.5)
+
+          const shape = new Box(new Vec3(0.08, 0.08, 0.08))
+
+          monster.cannonBody = new Body({
+            mass: 0,
+            position: new Vec3(
+              monster.position.x,
+              monster.position.y,
+              monster.position.z
+            ),
+            shape
+          })
+
+          monster.cannonBody.quaternion.setFromAxisAngle(
+            new Vec3(0, 1, 0), // y축
+            0
+          )
+
+          console.log(monster.cannonBody)
+
+          cannonWorld.addBody(monster.cannonBody)
+
           scene.add(monster)
-          meshes.push(monster)
+          // meshes.push(monster)
+          myMonsters.push(monster)
         })
       }
+
+      // 내가 가진 풀깨비 넣기
+      // axios({
+      //   url: BASE_URL + '/api/v1/monster',
+      //   method: 'GET',
+      //   headers: {
+      //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+      //   }
+      // })
+      //   .then((res) => {
+      //     userMonster.value.userMonster = res.data
+      //     console.log('axios 내부', userMonster.value.userMonster)
+
+      //     for (let monsterID in res.data) {
+      //       console.log(monsterID)
+      //       let id = Number(monsterID) + 1
+      //       console.log('풀깨비 아이디', id)
+      //       gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
+      //         const monster = item.scene
+      //         monster.name = ['monster', `${id}`]
+      //         monster.position.x = monsterPos[id].x
+      //         monster.position.y = monsterPos[id].y
+      //         monster.position.z = monsterPos[id].z
+      //         monster.scale.set(0.5, 0.5, 0.5)
+      //         scene.add(monster)
+      //         meshes.push(monster)
+
+      //         const shape = new Box(new Vec3(0.08, 0.08, 0.08))
+
+      //         monster.cannonBody = new Body({
+      //           mass: 0,
+      //           position: new Vec3(
+      //             monster.position.x,
+      //             monster.position.y,
+      //             monster.position.z
+      //           ),
+      //           shape
+      //         })
+
+      //         monster.cannonBody.quaternion.setFromAxisAngle(
+      //           new Vec3(0, 1, 0), // y축
+      //           0
+      //         )
+
+      //         console.log(monster.cannonBody)
+
+      //         cannonWorld.addBody(monster.cannonBody)
+      //       })
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log(err)
+      //   })
 
       const player = new Player({
         scene,
@@ -223,6 +302,20 @@ export default {
         let cannonStepTime = 1 / 60
         if (delta < 0.01) cannonStepTime = 1 / 120
         cannonWorld.step(cannonStepTime, delta, 3)
+
+        if (props.nowPage === 1 && !checkMonster.value.checkMonster) {
+          checkMonster.value.checkMonster = true
+          console.log('집 들어옴 checkmonster', checkMonster.value.checkMonster)
+          changeMonsters()
+        }
+
+        if (props.nowPage === 0 && checkMonster.value.checkMonster) {
+          checkMonster.value.checkMonster = false
+          console.log('집 나감 checkmonster', checkMonster.value.checkMonster)
+        }
+
+        // boxMesh.position.copy(boxBody.position) // 위치
+        // boxMesh.quaternion.copy(boxBody.quaternion) // 회전
 
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
@@ -295,7 +388,8 @@ export default {
       }
       function checkIntersects() {
         raycaster.setFromCamera(mouse, camera)
-        const intersects = raycaster.intersectObjects(meshes)
+        const meshArray = meshes.concat(myMonsters)
+        const intersects = raycaster.intersectObjects(meshArray)
         for (const item of intersects) {
           console.log(item)
           // if (item.object.name === 'floor') {
@@ -372,7 +466,8 @@ export default {
         mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
 
         raycaster.setFromCamera(mouse, camera)
-        const intersects = raycaster.intersectObjects(meshes)
+        const meshArray = meshes.concat(myMonsters)
+        const intersects = raycaster.intersectObjects(meshArray)
 
         if (intersects && intersects.length > 0) {
           document.body.style.cursor =
@@ -502,6 +597,59 @@ export default {
       function onClick() {
         // alert('aa')
         emit('changeCanvas')
+      }
+
+      function changeMonsters() {
+        fetchUserMonster()
+        console.log('몬스터 받아옴')
+
+        setTimeout(() => {
+          for (let monster in myMonsters) {
+            scene.remove(myMonsters[monster])
+            cannonWorld.removeBody(myMonsters[monster].cannonBody)
+          }
+          myMonsters = []
+
+          console.log('뉴 풀깨비 체크', userMonster.value.userMonster)
+
+          // 내가 가진 풀깨비 넣기
+          for (let monsterID in userMonster.value.userMonster) {
+            let id = Number(monsterID) + 1
+            console.log('풀깨비 아이디', id)
+            gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
+              const monster = item.scene
+              monster.name = ['monster', `${id}`]
+              monster.position.x = monsterPos[id].x
+              monster.position.y = monsterPos[id].y
+              monster.position.z = monsterPos[id].z
+              monster.scale.set(0.5, 0.5, 0.5)
+
+              const shape = new Box(new Vec3(0.08, 0.08, 0.08))
+
+              monster.cannonBody = new Body({
+                mass: 0,
+                position: new Vec3(
+                  monster.position.x,
+                  monster.position.y,
+                  monster.position.z
+                ),
+                shape
+              })
+
+              monster.cannonBody.quaternion.setFromAxisAngle(
+                new Vec3(0, 1, 0), // y축
+                0
+              )
+
+              console.log(monster.cannonBody)
+
+              cannonWorld.addBody(monster.cannonBody)
+
+              scene.add(monster)
+              myMonsters.push(monster)
+            })
+          }
+        }, 100)
       }
     }, 100)
 

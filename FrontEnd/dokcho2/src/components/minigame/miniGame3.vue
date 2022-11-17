@@ -141,7 +141,7 @@ export default {
               '<p>정답은 바로 ...</p>' +
               '<br />' +
               `<h3><b>${
-                chosung.value.quiz[chosung.value.nowPage].answer
+                chosung.value.quiz[chosung.value.nowPage].right_answer
               }!</b></h3>` +
               '<br />' +
               `<p>${chosung.value.quiz[chosung.value.nowPage].description}</p>`
@@ -161,7 +161,8 @@ export default {
     function submitInput() {
       console.log(chosung.value.quiz)
       if (
-        chosung.value.input === chosung.value.quiz[chosung.value.nowPage].answer
+        chosung.value.input ===
+        chosung.value.quiz[chosung.value.nowPage].right_answer
       ) {
         chosung.value.time = 20
         chosung.value.input = ''

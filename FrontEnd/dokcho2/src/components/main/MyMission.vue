@@ -102,6 +102,11 @@
               alt=""
               class="item__image"
             />
+            <img
+              :src="require('@/assets/item/' + mission.item + '.png')"
+              alt=""
+              class="item__image"
+            />
           </div>
           <div v-else class="mission__item">
             <p>✨보상 &nbsp; &nbsp;</p>
