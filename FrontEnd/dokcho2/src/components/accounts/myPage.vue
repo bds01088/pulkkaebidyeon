@@ -238,7 +238,6 @@ export default {
         .then((res) => {
           if (res.value) {
             this.fetchReset()
-            this.$router.go()
           }
         })
     },
@@ -253,9 +252,7 @@ export default {
         }
       })
         .then(() => {
-          setTimeout(() => {
-            this.fetchnowUserInfo()
-          }, 200)
+          this.fetchnowUserInfo()
 
           swal({
             title: '진행도 초기화가 완료되었어요!',
@@ -263,6 +260,8 @@ export default {
             text: '악당 호랑이를 물리치는 여정을 새롭게 시작하세요!',
             buttons: false,
             timer: 1500
+          }).then(() => {
+            this.$router.go()
           })
         })
         .catch((err) => {
