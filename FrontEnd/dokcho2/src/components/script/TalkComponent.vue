@@ -175,7 +175,7 @@ export default {
                       `<div style="display:flex; flex-direction: row; justify-content:center">
 
                   <div style="margin: 1vw">
-                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/exp.png')}"/>
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
                     <p style="font-size:0.9rem;">경험치 <b>${
                       content.exp
                     }</b></p>

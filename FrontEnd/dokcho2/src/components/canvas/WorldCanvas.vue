@@ -559,6 +559,7 @@ export default {
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
         for (const item of intersects) {
+          console.log(item)
           // if (item.object.name === 'floor') {
           //   destinationPoint.x = item.point.x
           //   destinationPoint.z = item.point.z
@@ -602,23 +603,28 @@ export default {
             talkStart(item.object.name.slice(1, 2))
             isTalk.value.name = item.object.name.slice(2, -2)
             isPressed = false
-            const status = ['STARTED', 'QUIZ_PASSED']
-            setTimeout(() => {
-              if (status.includes(isTalk.value.content.status)) {
-                isTalk.value.talk = true
-                gsap.to(camera, {
-                  duration: 1,
-                  zoom: 0.35,
-                  onUpdate: function () {
-                    camera.updateProjectionMatrix()
-                  }
-                })
-                gsap.to(camera.position, {
-                  duration: 1,
-                  y: 20
-                })
-              }
-            }, 500)
+
+            if (isTalk.value.name === '성빈몬') {
+              isTalk.value.talk = true
+            } else {
+              const status = ['STARTED', 'QUIZ_PASSED']
+              setTimeout(() => {
+                if (status.includes(isTalk.value.content.status)) {
+                  isTalk.value.talk = true
+                  gsap.to(camera, {
+                    duration: 1,
+                    zoom: 0.35,
+                    onUpdate: function () {
+                      camera.updateProjectionMatrix()
+                    }
+                  })
+                  gsap.to(camera.position, {
+                    duration: 1,
+                    y: 20
+                  })
+                }
+              }, 500)
+            }
           }
           if (item.object.name.slice(0, 1) === '건') {
             isPressed = false
@@ -807,10 +813,10 @@ export default {
 
       function onClick() {
         store.dispatch('fetchnowUserInfo')
-        alert('aa')
+        // alert('aa')
         emit('changeCanvas')
-        // emit('changeBattle')
       }
+
       // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
       watchEffect(() => {
         console.log(props.nowPage)
