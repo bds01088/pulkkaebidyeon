@@ -21,7 +21,7 @@
       :isloading="this.isloading"
     />
     <WorldCanvas
-      v-show="this.nowPage === 0"
+      v-show="this.nowPage === 0 && this.isBattle === 0"
       @changeCanvas="changeCanvas"
       @changeBattle="changeBattle"
       @talkStart="talkStart"
@@ -37,7 +37,7 @@
       :nowNavbar="this.nowNavbar"
     />
     <BattleCanvas
-      v-show="this.nowPage === 3"
+      v-show="this.isBattle === 1"
       @changeBattle="changeBattle"
       @startBattle="startBattle"
       :nowPage="this.nowPage"
@@ -59,6 +59,7 @@ export default {
   data() {
     return {
       nowPage: 0,
+      isBattle: 0,
       nowNavbar: false,
       startSignal: 0,
       isloading: 0,
@@ -107,11 +108,11 @@ export default {
     },
 
     changeBattle() {
-      if (this.nowPage === 0) {
-        this.nowPage = 3
+      if (this.nowPage === 0 && this.isBattle === 0) {
+        this.isBattle = 1
         this.startBattle()
       } else {
-        this.nowPage = 0
+        this.isBattle = 0
         this.audio.play()
       }
     },
