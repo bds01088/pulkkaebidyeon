@@ -117,6 +117,7 @@ export default {
       }
     },
     changePassword() {
+      this.audio.play()
       if (!passwordCheck.test(this.newPassword)) {
         swal({
           title:

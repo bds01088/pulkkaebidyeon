@@ -89,7 +89,7 @@ export default {
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
       // 집 불러오는 바닥
-      const houseFloorTexture = textureLoader.load('/images/housefloor2.png')
+      const houseFloorTexture = textureLoader.load('/images/housefloor3.png')
       houseFloorTexture.wrapS = THREE.RepeatWrapping
       houseFloorTexture.wrapT = THREE.RepeatWrapping
       houseFloorTexture.repeat.x = 1
@@ -195,7 +195,7 @@ export default {
           opacity: 0.2
         })
       )
-      spotMesh.position.set(-23, 0.005, -57)
+      spotMesh.position.set(-23, 0.005, -60.5)
       spotMesh.rotation.x = -Math.PI / 2
       spotMesh.receiveShadow = true
       scene.add(spotMesh)
@@ -210,7 +210,7 @@ export default {
         modelSrc: '/models/house.glb',
         x: -23,
         y: -1.3,
-        z: -60
+        z: -63.5
       })
 
       // 플레이어
@@ -220,9 +220,9 @@ export default {
         cannonWorld,
         gltfLoader,
         modelSrc: '/models/character.glb',
-        x: -25,
+        x: -23,
         y: 0,
-        z: -55
+        z: -58
       })
 
       // 맵 막는 박스 만들기
@@ -346,9 +346,9 @@ export default {
         meshes,
         gltfLoader,
         modelSrc: `/models/Monsters/${myMonsterId}.glb`,
-        x: -24,
+        x: -22,
         y: 0.25,
-        z: -55
+        z: -58
       })
 
       const raycaster = new THREE.Raycaster()
@@ -840,9 +840,9 @@ export default {
             meshes,
             gltfLoader,
             modelSrc: `/models/Monsters/${id}.glb`,
-            x: -24,
+            x: -22,
             y: 0.25,
-            z: -55
+            z: -58
           })
         }
       })
