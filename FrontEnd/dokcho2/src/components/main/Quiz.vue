@@ -9,7 +9,7 @@
           <div class="myProfile">
             <img
               :src="
-                require('@/assets/monsters/' +
+                require('@/assets/starting/' +
                   userInfo.representMonster +
                   '.png')
               "
@@ -30,6 +30,7 @@
                   v-model="inputGameType.inputGameType"
                   value="saja"
                   id="saja"
+                  checked="true"
                 />
                 <label for="saja">사자성어</label>
                 <input
@@ -72,9 +73,7 @@
                   <div class="roomPerson">
                     {{ room.currentUser.length }} / 4
                   </div>
-                  <div class="roomStartBtn">
-                    <button>참여</button>
-                  </div>
+                  <button class="roomStartBtn">참여</button>
                 </div>
               </div>
             </div>
@@ -115,17 +114,36 @@
           </div>
         </div>
         <div class="inGame__body">
-          <div class="chatting">
-            <div class="chatBox">
-              <div v-for="msg in this.allMsg.allMsg" :key="msg" class="texts">
+          <div class="inGame__left">
+            <div class="chatting">
+              <div class="chatBox">
                 <div
-                  class="myText"
-                  v-if="this.userSocketId.userSocketId === msg.socketId"
+                  class="textBox"
+                  :class="
+                    this.userSocketId.userSocketId === msg.socketId
+                      ? 'myText'
+                      : 'yourText'
+                  "
+                  v-for="msg in this.allMsg.allMsg"
+                  :key="msg"
                 >
-                  {{ msg.content }}
-                </div>
-                <div class="yourText" v-else>
-                  {{ msg.nickname }} : {{ msg.content }}
+                  <div v-if="this.userSocketId.userSocketId === msg.socketId">
+                    <div class="myTexts">
+                      {{ msg.content }}
+                    </div>
+                  </div>
+                  <div v-else-if="msg.socketId === ''" class="yourTextBox">
+                    {{ msg.nickname }} :
+                    <div class="gguTexts">
+                      {{ msg.content }}
+                    </div>
+                  </div>
+                  <div v-else class="yourTextBox">
+                    {{ msg.nickname }} :
+                    <div class="yourTexts">
+                      {{ msg.content }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -146,16 +164,12 @@
             </div>
           </div>
           <div class="playersBox">
-            <div class="correctPlayer">
-              <div class="player">
-                {{ this.correctUser.correctUser }}
-              </div>
-            </div>
             <div class="players">
               <div
                 v-for="user in this.nowRoomUser.nowRoomUser"
                 v-bind:key="user"
                 class="player"
+                :class="isCorrectUser(user) ? 'correctUser' : ''"
               >
                 {{ user.nickname }} :
                 {{ user.score }}
@@ -193,7 +207,7 @@ export default {
   },
   setup(props, { emit }) {
     let inputRoomName = ref({ inputRoomName: '' })
-    let inputGameType = ref({ inputGameType: '' })
+    let inputGameType = ref({ inputGameType: 'saja' })
     let nowRoomInfo = ref({ nowRoomInfo: [] })
     let roomName = ref({ roomName: '' })
     let nowRoomUser = ref({ nowRoomUser: '' })
@@ -234,10 +248,20 @@ export default {
     })
 
     function createRoom() {
-      roomName.value.roomName = inputRoomName.value.inputRoomName
-      let payload = [roomName.value.roomName, inputGameType.value.inputGameType]
-      socket.emit('createRoom', payload)
-      QuizRoomEntered.value.QuizRoomEntered = true
+      if (inputRoomName.value.inputRoomName) {
+        roomName.value.roomName = inputRoomName.value.inputRoomName
+        console.log('보냈다', inputGameType.value.inputGameType)
+        let payload = [
+          roomName.value.roomName,
+          inputGameType.value.inputGameType
+        ]
+        socket.emit('createRoom', payload)
+        QuizRoomEntered.value.QuizRoomEntered = true
+        inputRoomName.value.inputRoomName = ''
+        inputGameType.value.inputGameType = 'saja'
+      } else {
+        alert('방제목 입력해라 좋은말할때')
+      }
     }
 
     socket.on('createRoomOK', (payload) => {
@@ -253,6 +277,8 @@ export default {
     function enterRoom(data) {
       nowRoomInfo.value.nowRoomInfo.roomId = data
       socket.emit('enterRoom', nowRoomInfo.value.nowRoomInfo.roomId)
+      inputRoomName.value.inputRoomName = ''
+      inputGameType.value.inputGameType = 'saja'
     }
 
     socket.on('goaway', () => {
@@ -293,6 +319,16 @@ export default {
       inputMsg.value.inputMsg = null
     }
 
+    function goToScrollBottom() {
+      const chattingBox = document.getElementsByClassName('chatBox')
+      setTimeout(() => {
+        if (chattingBox) {
+          chattingBox[0].scrollTop =
+            chattingBox[0].scrollHeight - chattingBox[0].clientHeight
+        }
+      }, 100)
+    }
+
     socket.on('msg', (msgpayload) => {
       // msgSocketId.value.msgSocketId = msgpayload[1]
       msgNickname.value.msgNickname = msgpayload[2]
@@ -302,7 +338,7 @@ export default {
         nickname: msgNickname.value.msgNickname,
         content: msgContent.value.msgContent
       })
-
+      goToScrollBottom()
       // console.log(allMsg.value.allMsg)
     })
 
@@ -312,18 +348,20 @@ export default {
         nickname: '김구현(교수)',
         content: `퀴즈가 5초뒤에 시작된다.`
       })
+      goToScrollBottom()
       allMsg.value.allMsg.push({
         socketId: '',
         nickname: '김구현(교수)',
         content: `5..`
       })
-
+      goToScrollBottom()
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
           nickname: '김구현(교수)',
           content: `4..`
         })
+        goToScrollBottom()
       }, 1000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
@@ -331,6 +369,7 @@ export default {
           nickname: '김구현(교수)',
           content: `3..`
         })
+        goToScrollBottom()
       }, 2000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
@@ -338,6 +377,7 @@ export default {
           nickname: '김구현(교수)',
           content: `2..`
         })
+        goToScrollBottom()
       }, 3000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
@@ -345,6 +385,7 @@ export default {
           nickname: '김구현(교수)',
           content: `1..`
         })
+        goToScrollBottom()
       }, 4000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
@@ -352,6 +393,7 @@ export default {
           nickname: '김구현(교수)',
           content: `퀴즈시작!`
         })
+        goToScrollBottom()
         quizing.value.quizing = true
         nextQuiz.value.nextQuiz = data
       }, 5000)
@@ -369,8 +411,9 @@ export default {
           allMsg.value.allMsg.push({
             socketId: '',
             nickname: '김구현(교수)',
-            content: `${user.nickname}가 정답을 맞히었구나!`
+            content: `${user.nickname}(이)가 정답을 맞히었구나!`
           })
+          goToScrollBottom()
         }
       }
     })
@@ -383,6 +426,7 @@ export default {
           nickname: '김구현(교수)',
           content: `${winner.nickname}가 이겼노라!`
         })
+        goToScrollBottom()
       }
     })
 
@@ -427,18 +471,20 @@ export default {
         nickname: '김구현(교수)',
         content: `이 방은 5초뒤에 폭파된다.`
       })
+      goToScrollBottom()
       allMsg.value.allMsg.push({
         socketId: '',
         nickname: '김구현(교수)',
         content: `5..`
       })
-
+      goToScrollBottom()
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
           nickname: '김구현(교수)',
           content: `4..`
         })
+        goToScrollBottom()
       }, 1000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
@@ -446,6 +492,7 @@ export default {
           nickname: '김구현(교수)',
           content: `3..`
         })
+        goToScrollBottom()
       }, 2000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
@@ -453,6 +500,7 @@ export default {
           nickname: '김구현(교수)',
           content: `2..`
         })
+        goToScrollBottom()
       }, 3000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
@@ -460,6 +508,7 @@ export default {
           nickname: '김구현(교수)',
           content: `1..`
         })
+        goToScrollBottom()
       }, 4000)
       setTimeout(() => {
         allMsg.value.allMsg.push({
@@ -467,6 +516,7 @@ export default {
           nickname: '김구현(교수)',
           content: `폭발은 예술이다!`
         })
+        goToScrollBottom()
       }, 5000)
       setTimeout(() => {
         leaveRoom()
@@ -476,6 +526,13 @@ export default {
     function closeQuiz() {
       disconnect()
       emit('closeQuiz')
+    }
+
+    function isCorrectUser(user) {
+      if (correctUser.value.correctUser === user.nickname) return true
+      setTimeout(() => {
+        correctUser.value.correctUser = ''
+      }, 2000)
     }
 
     return {
@@ -502,7 +559,8 @@ export default {
       leaveRoom,
       createRoom,
       sendMsg,
-      closeQuiz
+      closeQuiz,
+      isCorrectUser
     }
   }
 }
@@ -513,7 +571,10 @@ export default {
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background-color: white;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    url('../../assets/seodang.png');
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .waitingRoom {
@@ -541,7 +602,7 @@ export default {
   justify-content: space-evenly;
   align-items: center;
   border-radius: 20px;
-  background-color: antiquewhite;
+  background-color: rgba(206, 212, 218, 0.9);
 }
 
 .myProfile {
@@ -549,14 +610,16 @@ export default {
   width: 80%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  border: 1px black solid;
+  border-radius: 15px;
+  opacity: 1;
+  background-color: white;
 }
 
 .myProfile > img {
-  width: 80%;
-  height: 80%;
+  width: 50%;
+  height: 60%;
 }
 
 .myName {
@@ -620,7 +683,14 @@ export default {
   color: #333;
 }
 
+.radio input[type='radio']:hover + label {
+  scale: 1.05;
+  background-color: rgb(167, 167, 167);
+  transition: 0.2s linear;
+}
+
 .radio input[type='radio']:checked + label {
+  scale: 1.05;
   background-color: #333;
   color: #fff;
 }
@@ -643,6 +713,13 @@ input {
   width: 60%;
   height: 50%;
   font-size: 18px;
+  transition: 0.2s linear;
+}
+
+.makeRoomBtn:hover {
+  scale: 1.05;
+  background-color: #a7c957;
+  transition: 0.2s linear;
 }
 
 .waitingRoom__right {
@@ -667,8 +744,8 @@ input {
   justify-content: space-between;
   align-items: center;
   border-radius: 20px;
-  margin: 15px 0;
-  width: 100%;
+  margin: 15px 10px;
+  width: 95%;
   height: 25%;
   background-color: burlywood;
 }
@@ -704,9 +781,13 @@ input {
 
 .roomName {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  border: 1px black solid;
+  border-radius: 15px;
+  background-color: gainsboro;
+  padding: 0 15px;
+  font-size: 20px;
+  font-weight: bold;
   height: 50%;
   width: 100%;
 }
@@ -722,6 +803,16 @@ input {
 .roomPerson {
   text-align: center;
   width: 15%;
+}
+
+.roomStartBtn {
+  transition: 0.2s linear;
+}
+
+.roomStartBtn:hover {
+  scale: 1.05;
+  background-color: #a7c957;
+  transition: 0.2s linear;
 }
 
 .exit__btn {
@@ -758,7 +849,8 @@ input {
 }
 
 .inGame__roomName {
-  font-size: 35px;
+  font-size: 50px;
+  color: white;
 }
 
 .inGame__quizBox {
@@ -769,19 +861,20 @@ input {
   border-radius: 20px;
   margin: 15px 0;
   width: 80%;
-  height: 10%;
+  height: 20%;
   background-color: burlywood;
 }
 
 .inGame__quizBox > div {
+  letter-spacing: 0.3px;
   font-size: 20px;
   text-align: center;
   margin: 7px 0;
 }
 
 .inGame__body {
-  width: 100%;
-  height: 80%;
+  width: 80%;
+  height: 70%;
 }
 
 .inGame__roomNum {
@@ -800,42 +893,84 @@ input {
   height: 75%;
   width: 80%;
   display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.chatting {
-  height: 100%;
-  width: 60%;
-  display: flex;
-  flex-direction: column;
   justify-content: space-between;
 }
 
-.chatBox {
-  height: 75%;
-  width: 100%;
-  border-radius: 20px;
-  padding: 30px;
-  background-color: antiquewhite;
-  overflow: auto;
+.inGame__left {
+  height: 100%;
+  width: 72%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
-.texts > div {
-  margin: 5px 0;
-  font-size: 20px;
+.chatting {
+  height: 80%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  background-color: antiquewhite;
 }
+
+.chatBox {
+  height: 45vh;
+  width: 80%;
+  overflow-y: scroll;
+}
+
+.textBox {
+  width: 100%;
+  display: flex;
+}
+
+.yourTextBox {
+  display: flex;
+  align-items: center;
+}
+
+.myTexts {
+  border-radius: 5px;
+  background-color: #a7c957;
+  width: fit-content;
+  padding: 5px 15px;
+  margin: 10px;
+}
+
+.gguTexts {
+  border-radius: 5px;
+  background-color: #ffa6a6;
+  width: fit-content;
+  padding: 5px 10px;
+  margin: 10px;
+}
+
+.yourTexts {
+  border-radius: 5px;
+  background-color: #fff78c;
+  width: fit-content;
+  padding: 5px 10px;
+  margin: 10px;
+}
+
+/* .texts > div {
+  font-size: 20px;
+  letter-spacing: 0.3px;
+  width: fit-content;
+} */
 
 .myText {
-  text-align: end;
+  justify-content: flex-end;
 }
 .yourText {
-  text-align: start;
+  justify-content: flex-start;
 }
 
 .inputBox {
   width: 100%;
   height: 10%;
+  margin: 15px;
   display: flex;
   justify-content: center;
 }
@@ -845,29 +980,18 @@ input {
 }
 
 .playersBox {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.correctPlayer {
-  height: 60%;
-  width: 80%;
+  height: 80%;
+  width: 25%;
   border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 20px;
   background-color: antiquewhite;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
 }
 
 .players {
-  height: 60%;
   width: 80%;
-  border-radius: 20px;
-  padding: 20px;
-  background-color: antiquewhite;
+  height: 80%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -877,6 +1001,10 @@ input {
   width: 100%;
   font-size: 25px;
   text-align: center;
-  margin: 20px 0;
+  margin: 25px 0;
+}
+
+.correctUser {
+  color: red;
 }
 </style>
