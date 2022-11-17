@@ -49,4 +49,21 @@ body {
 * {
   font-family: 'Mabinogi';
 }
+
+*::-webkit-scrollbar {
+  width: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #467302;
+  border-radius: 10px;
+  width: 8px;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+*::-webkit-scrollbar-track {
+  background-color: #bcd497;
+  opacity: 0.5;
+  border-radius: 10px;
+  box-shadow: inset 0px 0px 5px white;
+}
 </style>
