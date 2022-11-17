@@ -90,12 +90,14 @@ export default {
       password: false,
       monsterDetail: {},
       monsterNumber: '',
-      itemNumber: ''
+      itemNumber: '',
+      audio: new Audio('audio/button.mp3')
     }
   },
   methods: {
     ...mapActions(['fetchnowUserInfo']),
     openPassword() {
+      this.audio.play()
       this.password = true
     },
     closePassword() {
@@ -169,6 +171,7 @@ export default {
       }
     },
     deleteUser() {
+      this.audio.play()
       swalWithBootstrapButtons
         .fire({
           title: '호랑이섬에서 떠나시겠어요?',
@@ -208,6 +211,7 @@ export default {
         })
     },
     fetchrepresentMonster() {
+      this.audio.play()
       const id = this.userInfo.representMonster
       axios({
         url: BASE_URL + '/api/v1/monster/' + id,
@@ -224,6 +228,7 @@ export default {
         })
     },
     goReset() {
+      this.audio.play()
       // swal 띄워서 진짜 지울건지 확인
       swalWithBootstrapButtons
         .fire({

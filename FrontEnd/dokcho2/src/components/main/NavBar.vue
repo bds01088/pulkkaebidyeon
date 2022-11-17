@@ -80,6 +80,7 @@ export default {
     const message1 = ref({ message1: '' })
     const message2 = ref({ message2: '' })
     const message3 = ref({ message3: '' })
+    const audio = new Audio('audio/paper.mp3')
 
     function openQuiz() {
       quiz.value.quiz = true
@@ -92,27 +93,33 @@ export default {
       emit('quizStart', false)
     }
     function openModal1() {
+      audio.play()
       modal1.value.modal1 = true
       emit('changeNavbar')
     }
     function closeModal1() {
+      audio.play()
       console.log('닫음')
       modal1.value.modal1 = false
       emit('changeNavbar')
     }
     function openModal2() {
+      audio.play()
       modal2.value.modal2 = true
       emit('changeNavbar')
     }
     function closeModal2() {
+      audio.play()
       modal2.value.modal2 = false
       emit('changeNavbar')
     }
     function openModal3() {
+      audio.play()
       modal3.value.modal3 = true
       emit('changeNavbar')
     }
     function closeModal3() {
+      audio.play()
       modal3.value.modal3 = false
       emit('changeNavbar')
     }
