@@ -80,7 +80,9 @@ export default {
     this.audio.loop = true
     this.audio.volume = 0.9
     this.audio.play()
-    this.audio.muted = false
+    setTimeout(() => {
+      this.audio.muted = false
+    }, 1000)
   },
   beforeUnmount() {
     this.audio.pause()
