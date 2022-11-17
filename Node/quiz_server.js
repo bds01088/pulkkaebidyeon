@@ -52,10 +52,31 @@ axios({
 try {
   io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
-    players[socket.id] = { id: socket.id, object: {} };
+    players[socket.id] = { id: socket.id, object: {}, room: -1 };
 
     socket.on("disconnect", (reason) => {
       console.log(`User ${socket.id} disconnected`);
+
+      let roomInfo = rooms.find(
+        (room) => room.roomId == players[socket.id].room
+      );
+      if (roomInfo) {
+        roomInfo.currentUser = roomInfo.currentUser.filter(
+          (user) => user.socketId !== socket.id
+        );
+
+        io.to(`${socket.id}`).emit("deleteMsg");
+        let payload = [roomInfo, players[socket.id].object];
+
+        if (roomInfo.currentUser.length > 0) {
+          for (user of roomInfo.currentUser) {
+            io.to(`${user.socketId}`).emit("leaveRoomOK", payload);
+          }
+        } else {
+          rooms = rooms.filter((room) => room.roomId !== roomInfo.roomId);
+        }
+      }
+
       delete players[socket.id];
     });
 
@@ -87,6 +108,8 @@ try {
         quizing: false,
       });
 
+      players[socket.id].room = roomNum;
+
       let roomInfo = rooms.find((room) => room.roomId == roomNum);
 
       if (roomInfo) {
@@ -109,6 +132,9 @@ try {
 
     socket.on("enterRoom", (data) => {
       let roomInfo = rooms.find((room) => room.roomId == data);
+
+      players[socket.id].room = data;
+
       if (roomInfo) {
         if (roomInfo.currentUser.length > 3) {
           io.to(socket.id).emit("goaway");
@@ -130,6 +156,9 @@ try {
 
     socket.on("leaveRoom", (nowRoom) => {
       socket.leave(`${nowRoom}`);
+
+      players[socket.id].room = -1;
+
       let roomInfo = rooms.find((room) => room.roomId == nowRoom);
       if (roomInfo) {
         roomInfo.currentUser = roomInfo.currentUser.filter(

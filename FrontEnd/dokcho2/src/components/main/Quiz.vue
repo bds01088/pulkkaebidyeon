@@ -219,6 +219,12 @@ export default {
       socket.disconnect()
     }
 
+    // onBeforeUnmount(() => {
+    //   socket.disconnect()
+    //   leaveRoom()
+    //   console.log('디스커넥트으으으ㅡ으으')
+    // })
+
     socket.emit('sendNickname', JSON.parse(localStorage.getItem('userInfo')))
 
     userNickName.value.userNickName = JSON.parse(
