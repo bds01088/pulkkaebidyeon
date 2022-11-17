@@ -202,9 +202,6 @@ export default {
             timer: 1500
           })
           localStorage.clear()
-          this.$router.push({
-            path: '/'
-          })
         })
         .catch((err) => {
           console.log(err)
@@ -241,6 +238,7 @@ export default {
         .then((res) => {
           if (res.value) {
             this.fetchReset()
+            this.$router.go()
           }
         })
     },
