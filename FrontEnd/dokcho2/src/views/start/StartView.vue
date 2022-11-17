@@ -64,7 +64,8 @@ export default {
       password: '',
       kakaoLoginURL: BASE_URL + '/oauth2/authorization/kakao',
       howToGame: false,
-      audio: new Audio('audio/dokchoTitle.mp3')
+      audio: new Audio('audio/dokchoTitle.mp3'),
+      buttonAudio: new Audio('audio/button.mp3')
     }
   },
   components: {
@@ -82,15 +83,19 @@ export default {
     ...mapActions(['doRefreshToken', 'fetchUserInfo', 'fetchUserDeck']),
     ...mapGetters(['isAccessTokenExpired']),
     kakaoLogin() {
+      this.buttonAudio.play()
       window.location.href = this.kakaoLoginURL
     },
     findpassword() {
+      this.buttonAudio.play()
       this.$router.push({ name: 'findpassword' })
     },
     signUp() {
+      this.buttonAudio.play()
       this.$router.push({ name: 'signup' })
     },
     howtoGame() {
+      this.buttonAudio.play()
       if (this.howToGame === false) {
         this.howToGame = true
       } else {
@@ -98,6 +103,7 @@ export default {
       }
     },
     async login() {
+      this.buttonAudio.play()
       console.log(this.username)
 
       try {

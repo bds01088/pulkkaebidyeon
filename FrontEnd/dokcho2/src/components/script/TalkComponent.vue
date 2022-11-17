@@ -62,6 +62,7 @@ export default {
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
     const store = useStore()
+    const audio = new Audio('audio/button.mp3')
 
     // toast 설정
     const Toast = Swal.mixin({
@@ -75,10 +76,13 @@ export default {
     // nexttalk 다음 대화로 넘기기
     function nextTalk() {
       nowPage.value.nowPage += 1
+      audio.play()
     }
 
     // endtalk
     function endTalk() {
+      console.log(audio)
+      audio.play()
       const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
 
