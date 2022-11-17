@@ -79,7 +79,7 @@ export default {
         1000
       )
 
-      const cameraPosition = new THREE.Vector3(1, 5, 5)
+      const cameraPosition = new THREE.Vector3(1, 3.5, 5)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
       camera.zoom = 0.3
       camera.updateProjectionMatrix()
@@ -512,6 +512,7 @@ export default {
       const keyController = new KeyController()
 
       function walk() {
+        destinationPoint.y = 0.25
         if (keyController.keys['KeyW'] || keyController.keys['ArrowUp']) {
           destinationPoint.z = player.modelMesh.position.z - 1
         }
