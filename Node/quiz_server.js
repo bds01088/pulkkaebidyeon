@@ -28,7 +28,7 @@ let roomNum = 0;
 let rooms = [];
 
 axios({
-  url: BASE_URL + "/api/v1/game/words/auth/30",
+  url: BASE_URL + "/api/v1/game/words/auth/51",
   method: "GET",
 })
   .then((res) => {
@@ -39,7 +39,7 @@ axios({
   });
 
 axios({
-  url: BASE_URL + "/api/v1/game/consonant/auth/41",
+  url: BASE_URL + "/api/v1/game/consonant/auth/50",
   method: "GET",
 })
   .then((res) => {
