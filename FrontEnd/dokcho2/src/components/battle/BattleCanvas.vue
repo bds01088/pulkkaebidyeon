@@ -714,6 +714,10 @@ export default {
         if (enemyAct.value == '방어') {
           myDamage.value = myAttack.value - enemyDefense.value
 
+          if (myDamage.value < 0) {
+            myDamage.value = 0
+          }
+
           setTimeout(() => {
             if (stun.value == true) {
               stun.value = false

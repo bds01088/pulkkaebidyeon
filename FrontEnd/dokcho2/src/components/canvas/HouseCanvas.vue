@@ -24,6 +24,7 @@ import monsterDetail from '@/components/monster/monsterDetail.vue'
 import myPage from '@/components/accounts/myPage.vue'
 import { Furniture } from '../modules/Furniture'
 import { Door } from '../modules/Door'
+import { Body, Box, Vec3 } from 'cannon-es'
 
 export default {
   name: 'HouseCanvas',
@@ -139,26 +140,64 @@ export default {
       const gltfLoader = new GLTFLoader()
 
       const monsterPos = [
-        { x: 0, z: 0 },
-        { x: 1, z: 1 },
-        { x: 2, z: 2 },
-        { x: -2, z: -2 }
+        { x: 0, y: 0.2, z: 0 },
+        { x: 1.5, y: 0.2, z: 1.5 },
+        { x: -3, y: 0.2, z: -2 },
+        { x: -1, y: 0.2, z: -1.5 }
       ]
 
       // 내가 가진 풀깨비 넣기
-      for (let monsterID in userMonster.value.userMonster) {
-        let id = Number(monsterID) + 1
-        console.log('풀깨비 아이디', id)
-        gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
-          const monster = item.scene
-          monster.name = ['monster', `${id}`]
-          monster.position.x = monsterPos[id].x
-          monster.position.z = monsterPos[id].z
-          monster.scale.set(0.5, 0.5, 0.5)
-          scene.add(monster)
-          meshes.push(monster)
+      axios({
+        url: BASE_URL + '/api/v1/monster',
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          userMonster.value.userMonster = res.data
+          console.log('axios 내부', userMonster.value.userMonster)
+
+          for (let monsterID in res.data) {
+            console.log(monsterID)
+            let id = Number(monsterID) + 1
+            console.log('풀깨비 아이디', id)
+            gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
+              const monster = item.scene
+              monster.name = ['monster', `${id}`]
+              monster.position.x = monsterPos[id].x
+              monster.position.y = monsterPos[id].y
+              monster.position.z = monsterPos[id].z
+              monster.scale.set(0.5, 0.5, 0.5)
+              scene.add(monster)
+              meshes.push(monster)
+
+              const shape = new Box(new Vec3(0.08, 0.08, 0.08))
+
+              monster.cannonBody = new Body({
+                mass: 0,
+                position: new Vec3(
+                  monster.position.x,
+                  monster.position.y,
+                  monster.position.z
+                ),
+                shape
+              })
+
+              monster.cannonBody.quaternion.setFromAxisAngle(
+                new Vec3(0, 1, 0), // y축
+                0
+              )
+
+              console.log(monster.cannonBody)
+
+              cannonWorld.addBody(monster.cannonBody)
+            })
+          }
         })
-      }
+        .catch((err) => {
+          console.log(err)
+        })
 
       const player = new Player({
         scene,
