@@ -260,6 +260,12 @@ export default {
       socket.disconnect()
     }
 
+    // onBeforeUnmount(() => {
+    //   socket.disconnect()
+    //   leaveRoom()
+    //   console.log('디스커넥트으으으ㅡ으으')
+    // })
+
     socket.emit('sendNickname', JSON.parse(localStorage.getItem('userInfo')))
 
     userNickName.value.userNickName = JSON.parse(
@@ -367,6 +373,14 @@ export default {
       })
       goToScrollBottom()
       // console.log(allMsg.value.allMsg)
+    })
+
+    socket.on('dontStartQuiz', () => {
+      allMsg.value.allMsg.push({
+        socketId: '',
+        nickname: '김구현(교수)',
+        content: `친구가 없니? 한명은 더 모아오렴.`
+      })
     })
 
     socket.on('startQuiz', (data) => {
