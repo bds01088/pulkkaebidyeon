@@ -189,7 +189,9 @@ try {
           io.to(`${roomInfo.roomId}`).emit("endQuiz");
           roomInfo.quizing = false;
         } else {
-          if (
+          if (roomInfo.currentUser.length < 2) {
+            io.to(`${roomInfo.roomId}`).emit("whyAlone");
+          } else if (
             data[3] === "독초는 퀴즈를 뿌려라" &&
             roomInfo.currentUser.length < 2
           ) {
