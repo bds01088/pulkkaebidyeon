@@ -1091,6 +1091,8 @@ export default {
   height: 100%;
   margin: 0;
   font-size: 1.2rem;
+  border-radius: 20px;
+  padding-left: 2vw;
 }
 
 .inputBox input:focus {
