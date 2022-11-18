@@ -253,8 +253,8 @@ export default {
     let correctUser = ref({ correctUser: '정답자' })
 
     let userInfo = JSON.parse(localStorage.getItem('userInfo'))
-    // const socket = io('https://k7e203.p.ssafy.io/')
-    const socket = io('http://localhost:3001/')
+    const socket = io('https://k7e203.p.ssafy.io/')
+    // const socket = io('http://localhost:3001/')
 
     function disconnect() {
       socket.disconnect()
@@ -769,7 +769,7 @@ export default {
   margin: 0;
   margin-left: 1.3vw;
   height: 2.5vw;
-  width: 85%;
+  width: 75%;
   font-size: 1rem;
   border-color: #d9ac73;
   background-color: #efdcc3;
