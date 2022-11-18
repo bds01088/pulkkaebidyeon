@@ -389,6 +389,15 @@ export default {
       goToScrollBottom()
     })
 
+    socket.on('whyAlone', () => {
+      allMsg.value.allMsg.push({
+        socketId: '',
+        nickname: '김구현(훈장)',
+        content: `혼자서 중얼중얼 뭐라는거니? 친구를 데려오렴.`
+      })
+      goToScrollBottom()
+    })
+
     socket.on('startQuiz', (data) => {
       allMsg.value.allMsg.push({
         socketId: '',
