@@ -190,7 +190,11 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
+import swal from 'sweetalert'
 import Swal from 'sweetalert2'
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = new JSConfetti()
 
 export default {
   components: {},
@@ -220,7 +224,6 @@ export default {
     }
 
     getAnswer()
-    console.log(answer.value)
 
     const inputAnswer = ref(['', '', ''])
     const turn = ref(-1)
@@ -241,109 +244,134 @@ export default {
     const ball = ref(0)
 
     function showResult() {
-      turn.value += 1
+      let isValid = true
+      inputAnswer.value.forEach((el) => {
+        if (el < 0 || el > 9 || !el.isInteger) {
+          isValid = false
+        }
+      })
 
-      strike.value = 0
-      ball.value = 0
+      function startConfetti() {
+        jsConfetti.addConfetti()
+      }
 
-      for (let i = 0; i < 3; i++) {
-        if (answer.value[i] == inputAnswer.value[i]) {
-          strike.value += 1
-        } else {
-          if (answer.value.includes(inputAnswer.value[i])) {
-            ball.value += 1
+      if (isValid) {
+        turn.value += 1
+
+        strike.value = 0
+        ball.value = 0
+
+        for (let i = 0; i < 3; i++) {
+          if (answer.value[i] == inputAnswer.value[i]) {
+            strike.value += 1
+          } else {
+            if (answer.value.includes(inputAnswer.value[i])) {
+              ball.value += 1
+            }
           }
         }
-      }
 
-      scoreBoard.value[turn.value].input =
-        inputAnswer.value[0] +
-        ', ' +
-        inputAnswer.value[1] +
-        ', ' +
-        inputAnswer.value[2]
+        scoreBoard.value[turn.value].input =
+          inputAnswer.value[0] +
+          ', ' +
+          inputAnswer.value[1] +
+          ', ' +
+          inputAnswer.value[2]
 
-      // 정답!!!!!
-      if (strike.value == 3) {
-        scoreBoard.value[turn.value].result = '정답'
-        // 정답보상
-        setTimeout(() => {
-          axios({
-            url: BASE_URL + '/api/v1/mission/mini?rewardExp=15',
-            method: 'PUT',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          })
-            .then((res) => {
-              // console.log(res.data)
-              item.value.item = res.data.itemDto
-              // levelup이 true로 들어오면 현재 representMonster -> detail 받아서 레벨업 alert 띄우기
-              if (res.data.levelup === true) {
-                const user = JSON.parse(localStorage.getItem('userInfo'))
-                const monsterId = user.representMonster
-                let monster = []
-                const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
-
-                axios({
-                  url: BASE_URL + '/api/v1/monster/' + monsterId,
-                  method: 'GET',
-                  headers: {
-                    AUTHORIZATION:
-                      'Bearer ' + localStorage.getItem('accessToken')
-                  }
-                })
-                  .then((res) => {
-                    monster = res.data
-                    Swal.fire({
-                      title: 'Level Up!!🎉',
-                      html: `<div style="text-align:center;">
-                  <img  style="height:100px;width:100px;text-align:center;" src=${monsterImg}/>
-                  <p><b>${monster.name}</b>이</p><br /> <p> <b>Lv.${
-                        monster.level - 1
-                      } 👉 Lv.${monster.level}</b>로 성장했어요!</p>
-                  </div>`,
-                      timer: 5000,
-                      showConfirmButton: false
-                    })
-                  })
-                  .catch((err) => console.log(err))
+        // 정답!!!!!
+        if (strike.value == 3) {
+          scoreBoard.value[turn.value].result = '정답'
+          // 정답보상
+          setTimeout(() => {
+            axios({
+              url: BASE_URL + '/api/v1/mission/mini?rewardExp=15',
+              method: 'PUT',
+              headers: {
+                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
               }
             })
-            .catch((err) => console.log(err))
-        }, 1000)
+              .then((res) => {
+                // console.log(res.data)
+                item.value.item = res.data.itemDto
+                // levelup이 true로 들어오면 현재 representMonster -> detail 받아서 레벨업 alert 띄우기
+                if (res.data.levelup === true) {
+                  const user = JSON.parse(localStorage.getItem('userInfo'))
+                  const monsterId = user.representMonster
+                  let monster = []
+                  const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
 
-        nowStrike.value.nowStrike = true
-      }
-      // 스트라이크, 볼
-      else if (strike.value > 0 && ball.value > 0) {
-        scoreBoard.value[turn.value].result =
-          strike.value.toString() +
-          ' 스트라이크, ' +
-          ball.value.toString() +
-          ' 볼'
-      }
-      // 스트라이크
-      else if (strike.value > 0) {
-        scoreBoard.value[turn.value].result =
-          strike.value.toString() + ' 스트라이크'
-      }
-      // 볼
-      else if (ball.value > 0) {
-        scoreBoard.value[turn.value].result = ball.value.toString() + ' 볼'
-      }
-      // 아웃
-      else {
-        scoreBoard.value[turn.value].result = '아웃'
-      }
+                  axios({
+                    url: BASE_URL + '/api/v1/monster/' + monsterId,
+                    method: 'GET',
+                    headers: {
+                      AUTHORIZATION:
+                        'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                  })
+                    .then((res) => {
+                      startConfetti()
+                      monster = res.data
+                      Swal.fire({
+                        title: 'Level Up!!🎉',
+                        html: `<div style="text-align:center;">
+                    <img  style="height:100px;width:100px;text-align:center;" src=${monsterImg}/>
+                    <p><b>${monster.name}</b>이</p><br /> <p> <b>Lv.${
+                          monster.level - 1
+                        } 👉 Lv.${monster.level}</b>로 성장했어요!</p>
+                    </div>`,
+                        timer: 5000,
+                        showConfirmButton: false
+                      })
+                      setTimeout(() => {
+                        jsConfetti.clearCanvas()
+                      }, 5000)
+                    })
+                    .catch((err) => console.log(err))
+                }
+              })
+              .catch((err) => console.log(err))
+          }, 1000)
 
-      inputAnswer.value = ['', '', '']
+          nowStrike.value.nowStrike = true
+        }
+        // 스트라이크, 볼
+        else if (strike.value > 0 && ball.value > 0) {
+          scoreBoard.value[turn.value].result =
+            strike.value.toString() +
+            ' 스트라이크, ' +
+            ball.value.toString() +
+            ' 볼'
+        }
+        // 스트라이크
+        else if (strike.value > 0) {
+          scoreBoard.value[turn.value].result =
+            strike.value.toString() + ' 스트라이크'
+        }
+        // 볼
+        else if (ball.value > 0) {
+          scoreBoard.value[turn.value].result = ball.value.toString() + ' 볼'
+        }
+        // 아웃
+        else {
+          scoreBoard.value[turn.value].result = '아웃'
+        }
 
-      // 실패!!!!
-      if (turn.value >= 8 && strike.value != 3) {
-        // 실패 메시지
-        nowFinished.value.nowFinished = true
-        // emit('miniGame2Close')
+        inputAnswer.value = ['', '', '']
+
+        // 실패!!!!
+        if (turn.value >= 8 && strike.value != 3) {
+          // 실패 메시지
+          nowFinished.value.nowFinished = true
+          // emit('miniGame2Close')
+        }
+      } else {
+        swal({
+          title: '유효한 숫자가 아닙니다!',
+          icon: 'error',
+          text: '1 ~ 9 사이의 숫자를 입력하세요',
+          buttons: false,
+          timer: 2000
+        })
       }
     }
 

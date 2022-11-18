@@ -28,8 +28,10 @@
         </div>
       </div>
       <div class="item__nomission" v-else>
-        <p>현재 보유한 미션 아이템이 없어요 😥</p>
-        <p>미션을 해결하고 아이템을 모아보세요!</p>
+        <p>
+          현재 보유한 미션 아이템이 없어요 😥 <br />
+          미션을 해결하고 아이템을 모아보세요!
+        </p>
       </div>
       <h3>배틀 사용 아이템</h3>
       <div class="item__body2" v-if="battleItems.battleItems.length > 0">

@@ -51,6 +51,7 @@ export default {
   setup(props, { emit }) {
     let quiz = ref({ content: [], nowPage: 0 })
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    const audio = new Audio('audio/button.mp3')
 
     const Toast = Swal.mixin({
       toast: true,
@@ -96,6 +97,7 @@ export default {
     }
 
     function nextQuiz(answer) {
+      audio.play()
       if (answer === quiz.value.content[quiz.value.nowPage].right_answer) {
         if (quiz.value.nowPage !== quiz.value.content.length) {
           swal({
@@ -145,7 +147,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  cursor: auto;
+  cursor: url('@/assets/pointer.cur'), auto;
 }
 .quiz__box {
   display: flex;

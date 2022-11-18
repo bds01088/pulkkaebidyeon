@@ -64,7 +64,8 @@ export default {
       password: '',
       kakaoLoginURL: BASE_URL + '/oauth2/authorization/kakao',
       howToGame: false,
-      audio: new Audio('audio/dokchoTitle.mp3')
+      audio: new Audio('audio/dokchoTitle.mp3'),
+      buttonAudio: new Audio('audio/button.mp3')
     }
   },
   components: {
@@ -82,15 +83,19 @@ export default {
     ...mapActions(['doRefreshToken', 'fetchUserInfo', 'fetchUserDeck']),
     ...mapGetters(['isAccessTokenExpired']),
     kakaoLogin() {
+      this.buttonAudio.play()
       window.location.href = this.kakaoLoginURL
     },
     findpassword() {
+      this.buttonAudio.play()
       this.$router.push({ name: 'findpassword' })
     },
     signUp() {
+      this.buttonAudio.play()
       this.$router.push({ name: 'signup' })
     },
     howtoGame() {
+      this.buttonAudio.play()
       if (this.howToGame === false) {
         this.howToGame = true
       } else {
@@ -98,6 +103,7 @@ export default {
       }
     },
     async login() {
+      this.buttonAudio.play()
       console.log(this.username)
 
       try {
@@ -152,8 +158,8 @@ export default {
 }
 input {
   display: block;
-  width: 12vw;
-  height: 2vh;
+  width: 15vw;
+  height: 6vh;
   margin: 8px 0 8px 0;
   padding: 10px 15px 10px 25px;
   font-size: 16px;
@@ -197,8 +203,8 @@ input:focus {
 
 .login__btn {
   /* margin-top: 5%; */
-  width: 90%;
-  margin-top: 1vh;
+  width: 80%;
+  margin-top: 2vh;
 }
 
 .login__btn:hover {

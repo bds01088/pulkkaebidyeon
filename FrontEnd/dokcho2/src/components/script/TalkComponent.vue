@@ -2,7 +2,22 @@
   <div class="talk">
     <div class="talk__box">
       <div class="box" v-if="this.isTalk.content.line">
-        <div class="content__box">
+        <div
+          class="content__box"
+          @click="nextTalk()"
+          v-if="this.isTalk.content.line.length !== nowPage.nowPage + 1"
+        >
+          <div class="name">{{ this.isTalk.name }}</div>
+          <div class="content">
+            <!-- {{ this.isTalk.content }} -->
+            {{ this.isTalk.content.line[nowPage.nowPage] }}
+          </div>
+        </div>
+        <div
+          class="content__box"
+          v-else-if="this.isTalk.content.line.length === nowPage.nowPage + 1"
+          @click="endTalk()"
+        >
           <div class="name">{{ this.isTalk.name }}</div>
           <div class="content">
             <!-- {{ this.isTalk.content }} -->
@@ -36,6 +51,9 @@ import { BASE_URL } from '@/constant/BASE_URL'
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import Swal from 'sweetalert2'
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = new JSConfetti()
 
 export default {
   props: {
@@ -43,9 +61,10 @@ export default {
   },
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
-
     const store = useStore()
-    // store.dispatch('fetchnowUserInfo')
+    const audio = new Audio('audio/button.mp3')
+
+    // toast 설정
     const Toast = Swal.mixin({
       toast: true,
       position: 'top',
@@ -54,13 +73,300 @@ export default {
       timerProgressBar: true
     })
 
+    // nexttalk 다음 대화로 넘기기
+    function nextTalk() {
+      nowPage.value.nowPage += 1
+      audio.play()
+    }
+
+    // endtalk
     function endTalk() {
+      console.log(audio)
+      audio.play()
       const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
-      console.log(content)
-      console.log(userInfo)
+
+      const monsters = [
+        { id: 2, name: '도꼬마리몬' },
+        { id: 3, name: '마늘몬' }
+      ]
 
       const clearImg = require('@/assets/mission/clear.png')
+
+      function startConfetti() {
+        jsConfetti.addConfetti()
+      }
+
+      function fetchMonster() {
+        const monsterId = userInfo.representMonster
+        const monsterImg = require(`@/assets/starting/${monsterId}.png`)
+        axios({
+          url: BASE_URL + '/api/v1/monster/' + monsterId,
+          method: 'GET',
+          headers: {
+            AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          }
+        })
+          .then((res) => {
+            let monster = res.data
+            startConfetti()
+            Swal.fire({
+              title: 'Level Up!!🎉',
+              html: `<div style="text-align:center;">
+                  <img  style="height:200px;width:150px;text-align:center;" src=${monsterImg}/>
+                  <p style="font-size: 1.2rem;"><b>${
+                    monster.name
+                  }</b>이</p><br /> <p style="font-size: 1.2rem;"> <b>Lv.${
+                monster.level - 1
+              } 👉 Lv.${monster.level}</b>로 성장했어요!</p>
+                  </div>`,
+              timer: 5000,
+              showConfirmButton: false
+            })
+            setTimeout(() => {
+              jsConfetti.clearCanvas()
+            }, 5000)
+          })
+          .catch((err) => console.log(err))
+      }
+
+      function defaultAlert() {
+        Swal.fire({
+          title: `${content.characters}의 고민 해결 완료 ✨`,
+          html:
+            `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.item +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+                    
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+          imageUrl: clearImg,
+          imageWidth: 300,
+          imageHeight: 100,
+          imageAlt: 'Custom image',
+          background: 'rgba(255, 255, 255)'
+        })
+      }
+
+      function levelUpAlert() {
+        Swal.fire({
+          title: `${content.characters}의 고민 해결 완료 ✨`,
+          html:
+            `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.item +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+                    
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+          imageUrl: clearImg,
+          imageWidth: 300,
+          imageHeight: 100,
+          imageAlt: 'Custom image',
+          background: 'rgba(255, 255, 255)'
+        })
+          .then((res) => {
+            if (res.value) {
+              fetchMonster()
+            }
+          })
+          .catch((err) => console.log(err))
+      }
+
+      function defaultMonsterAlert() {
+        if (content.missionId === 2) {
+          Swal.fire({
+            title: `${content.characters}의 고민 해결 완료 ✨`,
+            html:
+              `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.item +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/' +
+                      monsters[0].id +
+                      '.png')}"/>
+                    <p style="font-size:0.9rem;">${monsters[0].name}</p>
+                  </div>
+                    
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+            imageUrl: clearImg,
+            imageWidth: 300,
+            imageHeight: 100,
+            imageAlt: 'Custom image',
+            background: 'rgba(255, 255, 255)'
+          })
+        }
+
+        if (content.missionId === 5) {
+          Swal.fire({
+            title: `${content.characters}의 고민 해결 완료 ✨`,
+            html:
+              `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.item +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/' +
+                      monsters[1].id +
+                      '.png')}"/>
+                    <p style="font-size:0.9rem;">${monsters[1].name}</p>
+                  </div>
+                    
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+            imageUrl: clearImg,
+            imageWidth: 300,
+            imageHeight: 100,
+            imageAlt: 'Custom image',
+            background: 'rgba(255, 255, 255)'
+          })
+        }
+      }
+
+      function levelUpMonsterAlert() {
+        if (content.missionId === 2) {
+          axios({
+            url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
+            method: 'POST',
+            headers: {
+              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+            }
+          }).catch((err) => console.log(err))
+          Swal.fire({
+            title: `${content.characters}의 고민 해결 완료 ✨`,
+            html:
+              `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.item +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/' +
+                      monsters[0].id +
+                      '.png')}"/>
+                    <p style="font-size:0.9rem;">${monsters[0].name}</p>
+                  </div>
+                    
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+            imageUrl: clearImg,
+            imageWidth: 300,
+            imageHeight: 100,
+            imageAlt: 'Custom image',
+            background: 'rgba(255, 255, 255)'
+          })
+            .then((res) => {
+              if (res.value) {
+                fetchMonster()
+              }
+            })
+            .catch((err) => console.log(err))
+        }
+
+        if (content.missionId === 5) {
+          axios({
+            url: BASE_URL + '/api/v1/monster/' + monsters[1].id,
+            method: 'POST',
+            headers: {
+              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+            }
+          }).catch((err) => console.log(err))
+          Swal.fire({
+            title: `${content.characters}의 고민 해결 완료 ✨`,
+            html:
+              `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
+                    content.item +
+                    '.png')}"/>
+                    <p style="font-size:0.9rem;">${content.itemName}</p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/' +
+                      monsters[1].id +
+                      '.png')}"/>
+                    <p style="font-size:0.9rem;">${monsters[1].name}</p>
+                  </div>
+                    
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+            imageUrl: clearImg,
+            imageWidth: 300,
+            imageHeight: 100,
+            imageAlt: 'Custom image',
+            background: 'rgba(255, 255, 255)'
+          })
+            .then((res) => {
+              if (res.value) {
+                fetchMonster()
+              }
+            })
+            .catch((err) => console.log(err))
+        }
+      }
 
       // started : 미션 시작한 상태 -> 보스 찾아가 문제 풀기 / 대화 끝나고 바로 퀴즈 시작
       if (content.status === 'STARTED') {
@@ -79,16 +385,18 @@ export default {
               headers: {
                 AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
               }
-            }).then(() => {
-              emit('talkClose')
-              Toast.fire({
-                icon: 'success',
-                html:
-                  `<p><b>유물 도둑을 찾아라!</b></p>` +
-                  '<br />' +
-                  `<p>${content.next}</p>`
-              })
             })
+              .then(() => {
+                emit('talkClose')
+                Toast.fire({
+                  icon: 'success',
+                  html:
+                    `<p><b>유물 도둑을 찾아라!</b></p>` +
+                    '<br />' +
+                    `<p>${content.next}</p>`
+                })
+              })
+              .catch((err) => console.log(err))
           } else if (content.status === 'QUIZ_PASSED') {
             // quiz_passed : 퀴즈 다 맞힌 상태 -> 시비거는 보스와 배틀 시작
             emit('talkClose')
@@ -98,48 +406,44 @@ export default {
             })
             emit('enterBattle')
           } else if (content.status === 'BATTLE_WIN') {
-            // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
-            axios({
-              url: BASE_URL + '/api/v1/mission/',
-              method: 'PUT',
-              headers: {
-                AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-              }
-            }).then(() => {
-              store.dispatch('fetchnowUserInfo')
-              // mission complete alert 그 외에는 다음 설명
-              Swal.fire({
-                title: `${content.characters}의 고민 해결 완료 ✨`,
-                html:
-                  `<div style="display:flex; flex-direction: row; justify-content:center">
-
-                  <div style="margin: 1vw">
-                    <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/mission/exp.png')}"/>
-                    <p style="font-size:0.9rem;">경험치 <b>${
-                      content.exp
-                    }</b></p>
-                  </div>
-
-                  <div style="margin: 1vw">
-                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/' +
-                    content.item +
-                    '.png')}"/>
-                    <p style="font-size:0.9rem;">${content.itemName}</p>
-                  </div>
-                    
-                  </div>` +
-                  '<br />' +
-                  `<p>🔍 ${content.next}</p>`,
-                imageUrl: clearImg,
-                imageWidth: 300,
-                imageHeight: 100,
-                imageAlt: 'Custom image',
-                // showConfirmButton: false,
-                // timer: 2500,
-                background: 'rgba(255, 255, 255)'
+            if (content.missionId === 2 || content.missionId === 5) {
+              // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
+              axios({
+                url: BASE_URL + '/api/v1/mission/',
+                method: 'PUT',
+                headers: {
+                  AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+                }
+              }).then((res) => {
+                // console.log()
+                store.dispatch('fetchnowUserInfo')
+                if (res.data === true) {
+                  emit('talkClose')
+                  levelUpMonsterAlert()
+                } else {
+                  emit('talkClose')
+                  defaultMonsterAlert()
+                }
               })
-              emit('talkClose')
-            })
+            } else {
+              // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
+              axios({
+                url: BASE_URL + '/api/v1/mission/',
+                method: 'PUT',
+                headers: {
+                  AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+                }
+              }).then((res) => {
+                store.dispatch('fetchnowUserInfo')
+                if (res.data === true) {
+                  emit('talkClose')
+                  levelUpAlert()
+                } else {
+                  emit('talkClose')
+                  defaultAlert()
+                }
+              })
+            }
           } else {
             emit('talkClose')
           }
@@ -147,10 +451,6 @@ export default {
           emit('talkClose')
         }
       }
-    }
-
-    function nextTalk() {
-      nowPage.value.nowPage += 1
     }
 
     return {
@@ -193,7 +493,6 @@ export default {
   padding: 2vw 7vw;
   /* box-shadow: 0 0 1px 1px gray; */
   box-shadow: 10px 10px 10px #00000092;
-  /* box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.5); */
   background-color: rgb(229, 224, 196);
   display: flex;
   flex-direction: column;
@@ -201,6 +500,7 @@ export default {
 }
 .content__box {
   position: relative;
+  cursor: url('@/assets/selector.cur'), pointer;
 }
 .name {
   width: 10vw;
@@ -217,12 +517,19 @@ export default {
   font-size: 3.5vh;
   font-weight: bold;
 }
+
+/* 대사  */
 .content {
   margin-top: 5vh;
   margin-left: 2vh;
   font-size: 1.4rem;
   letter-spacing: 0.3px;
   word-spacing: 5px;
+  /* overflow: hidden;
+  font-size: 1.4rem;
+  width: 0;
+  white-space: nowrap;
+  animation: typing 1s steps(20, end) forwards; */
 }
 .btn__box {
   display: flex;
@@ -243,6 +550,15 @@ export default {
 .icon:hover {
   scale: 1.1;
   color: #467302;
-  /* background-color: #6bfa8d; */
 }
+
+/* 타이핑 애니메이션 : 첫번째 줄 시작에만 적용돼서 주석처리 */
+/* @keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+} */
 </style>

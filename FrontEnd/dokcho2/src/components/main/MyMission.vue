@@ -78,7 +78,37 @@
               >와 싸워 동의보감을 되찾아주세요!!
             </p>
           </div>
-          <div class="mission__item">
+          <div v-if="mission.characters === '장수왕'" class="mission__item">
+            <p>✨보상 &nbsp; &nbsp;</p>
+            <img
+              :src="require('@/assets/mission/2.png')"
+              alt=""
+              class="item__image"
+            />
+            <img
+              :src="require('@/assets/item/' + mission.item + '.png')"
+              alt=""
+              class="item__image"
+            />
+          </div>
+          <div
+            v-else-if="mission.characters === '세종대왕'"
+            class="mission__item"
+          >
+            <p>✨보상 &nbsp; &nbsp;</p>
+
+            <img
+              :src="require('@/assets/mission/3.png')"
+              alt=""
+              class="item__image"
+            />
+            <img
+              :src="require('@/assets/item/' + mission.item + '.png')"
+              alt=""
+              class="item__image"
+            />
+          </div>
+          <div v-else class="mission__item">
             <p>✨보상 &nbsp; &nbsp;</p>
             <img
               :src="require('@/assets/item/' + mission.item + '.png')"
@@ -239,10 +269,10 @@ export default {
 }
 
 .mission__item {
-  max-width: 30%;
+  max-width: 40%;
   max-height: 7%;
   /* margin-bottom: 2vh; */
-  margin-right: 5%;
+  margin-right: 3%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -253,6 +283,7 @@ export default {
 
 .item__image {
   width: 3vw;
+  margin-right: 0.5vh;
 }
 .mission__box p {
   /* margin: auto; */

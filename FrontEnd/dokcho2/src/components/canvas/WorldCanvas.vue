@@ -31,7 +31,7 @@ import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
-import TalkComponent from '../script/TalkComponent.vue'
+import TalkComponent from '../script/TalkComponent2.vue'
 import QuizComponent from '../script/QuizComponent.vue'
 import { ref, watchEffect } from 'vue'
 
@@ -89,7 +89,7 @@ export default {
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
       // 집 불러오는 바닥
-      const houseFloorTexture = textureLoader.load('/images/housefloor2.png')
+      const houseFloorTexture = textureLoader.load('/images/housefloor3.png')
       houseFloorTexture.wrapS = THREE.RepeatWrapping
       houseFloorTexture.wrapT = THREE.RepeatWrapping
       houseFloorTexture.repeat.x = 1
@@ -161,6 +161,10 @@ export default {
       // Mesh
       const meshes = []
 
+      setTimeout(() => {
+        console.log(scene)
+      }, 20000)
+
       // 바닥 만들기
       const floorMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(150, 150),
@@ -195,7 +199,7 @@ export default {
           opacity: 0.2
         })
       )
-      spotMesh.position.set(-23, 0.005, -57)
+      spotMesh.position.set(-23, 0.005, -60.5)
       spotMesh.rotation.x = -Math.PI / 2
       spotMesh.receiveShadow = true
       scene.add(spotMesh)
@@ -210,7 +214,7 @@ export default {
         modelSrc: '/models/house.glb',
         x: -23,
         y: -1.3,
-        z: -60
+        z: -63.5
       })
 
       // 플레이어
@@ -220,9 +224,9 @@ export default {
         cannonWorld,
         gltfLoader,
         modelSrc: '/models/character.glb',
-        x: -25,
+        x: -23,
         y: 0,
-        z: -55
+        z: -58
       })
 
       // 맵 막는 박스 만들기
@@ -240,7 +244,8 @@ export default {
         ['공민왕', { x: 35, y: 0, z: 0 }],
         ['세종대왕', { x: -44, y: 0, z: 20 }],
         ['이순신', { x: -15, y: 0, z: 45 }],
-        ['유관순', { x: 45, y: 0, z: 42 }]
+        ['유관순', { x: 45, y: 0, z: 42 }],
+        ['허준', { x: -30, y: 0, z: -60 }]
       ]
       Greats.forEach((element) => {
         new Character({
@@ -346,9 +351,9 @@ export default {
         meshes,
         gltfLoader,
         modelSrc: `/models/Monsters/${myMonsterId}.glb`,
-        x: -24,
+        x: -22,
         y: 0.25,
-        z: -55
+        z: -58
       })
 
       const raycaster = new THREE.Raycaster()
@@ -373,7 +378,7 @@ export default {
           player.modelMesh.quaternion.copy(player.cannonBody.quaternion)
         }
 
-        if (isLoading === 0 && scene.children.length >= 160) {
+        if (isLoading === 0 && scene.children.length >= 167) {
           isLoading = 1
           console.log('로딩 끝1')
           emit('loadingEnd')
@@ -408,9 +413,9 @@ export default {
             player.cannonBody.position.z += Math.sin(angle) * 0.04
 
             camera.position.x =
-              cameraPosition.x + player.modelMesh.position.x + 25
+              cameraPosition.x + player.modelMesh.position.x + 23
             camera.position.z =
-              cameraPosition.z + player.modelMesh.position.z + 55
+              cameraPosition.z + player.modelMesh.position.z + 58
 
             player.actions[0].stop()
             player.actions[2].stop()
@@ -559,6 +564,7 @@ export default {
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
         for (const item of intersects) {
+          console.log(item)
           // if (item.object.name === 'floor') {
           //   destinationPoint.x = item.point.x
           //   destinationPoint.z = item.point.z
@@ -579,46 +585,78 @@ export default {
             talkStart(item.object.name.slice(1, 2))
             isTalk.value.name = item.object.name.slice(2, -2)
             isPressed = false
-            const status = ['NOT_YET', 'READY', 'BATTLE_WIN', 'FINISHED']
 
-            setTimeout(() => {
-              if (status.includes(isTalk.value.content.status)) {
-                isTalk.value.talk = true
-                gsap.to(camera, {
-                  duration: 1,
-                  zoom: 0.35,
-                  onUpdate: function () {
-                    camera.updateProjectionMatrix()
-                  }
-                })
-                gsap.to(camera.position, {
-                  duration: 1,
-                  y: 20
-                })
-              }
-            }, 500)
+            if (isTalk.value.name === '허준') {
+              let status = ['BATTLE_WIN', 'FINISHED']
+
+              setTimeout(() => {
+                if (status.includes(isTalk.value.content.status)) {
+                  isTalk.value.talk = true
+                  gsap.to(camera, {
+                    duration: 1,
+                    zoom: 0.35,
+                    onUpdate: function () {
+                      camera.updateProjectionMatrix()
+                    }
+                  })
+                  gsap.to(camera.position, {
+                    duration: 1,
+                    y: 20
+                  })
+                }
+              }, 500)
+            } else {
+              let status = ['NOT_YET', 'READY', 'BATTLE_WIN', 'FINISHED']
+
+              setTimeout(() => {
+                if (status.includes(isTalk.value.content.status)) {
+                  isTalk.value.talk = true
+                  gsap.to(camera, {
+                    duration: 1,
+                    zoom: 0.35,
+                    onUpdate: function () {
+                      camera.updateProjectionMatrix()
+                    }
+                  })
+                  gsap.to(camera.position, {
+                    duration: 1,
+                    y: 20
+                  })
+                }
+              }, 500)
+            }
           }
           if (item.object.name.slice(0, 1) === '빌') {
             talkStart(item.object.name.slice(1, 2))
             isTalk.value.name = item.object.name.slice(2, -2)
             isPressed = false
-            const status = ['STARTED', 'QUIZ_PASSED']
-            setTimeout(() => {
+
+            if (isTalk.value.name === '성빈몬') {
+              let status = ['NOT_YET', 'READY', 'STARTED', 'QUIZ_PASSED']
               if (status.includes(isTalk.value.content.status)) {
                 isTalk.value.talk = true
-                gsap.to(camera, {
-                  duration: 1,
-                  zoom: 0.35,
-                  onUpdate: function () {
-                    camera.updateProjectionMatrix()
-                  }
-                })
-                gsap.to(camera.position, {
-                  duration: 1,
-                  y: 20
-                })
+              } else {
+                isTalk.value.talk = false
               }
-            }, 500)
+            } else {
+              let status = ['STARTED', 'QUIZ_PASSED']
+              setTimeout(() => {
+                if (status.includes(isTalk.value.content.status)) {
+                  isTalk.value.talk = true
+                  gsap.to(camera, {
+                    duration: 1,
+                    zoom: 0.35,
+                    onUpdate: function () {
+                      camera.updateProjectionMatrix()
+                    }
+                  })
+                  gsap.to(camera.position, {
+                    duration: 1,
+                    y: 20
+                  })
+                }
+              }, 500)
+            }
           }
           if (item.object.name.slice(0, 1) === '건') {
             isPressed = false
@@ -675,16 +713,26 @@ export default {
       function onPointerMove(e) {
         mouse.x = (e.clientX / window.innerWidth) * 2 - 1
         mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
+        // console.log('on pointer move 인식')
 
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
 
+        // for (const item of intersects) {
+        //   if (
+        //     item.object.name === 'house' ||
+        //     item.object.name.slice(0, 1) === '위' ||
+        //     item.object.name.slice(0, 1) === '빌' ||
+        //     item.object.name.slice(0, 1) === '건'
+        //   ) {
+        //     // item.object.material.color.set(0xff0000)
+        //   }
+        // }
+
         if (intersects && intersects.length > 0) {
-          document.body.style.cursor =
-            "cursor: url('@/assets/selector.cur'), pointer;"
+          document.body.style.cursor = "url('@/assets/selector.cur'), pointer;"
         } else {
-          document.body.style.cursor =
-            "cursor: url('@/assets/pointer.cur'), auto;"
+          document.body.style.cursor = "url('@/assets/pointer.cur'), auto;"
         }
       }
 
@@ -807,10 +855,10 @@ export default {
 
       function onClick() {
         store.dispatch('fetchnowUserInfo')
-        alert('aa')
+        // alert('aa')
         emit('changeCanvas')
-        // emit('changeBattle')
       }
+
       // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
       watchEffect(() => {
         console.log(props.nowPage)
@@ -824,9 +872,9 @@ export default {
             meshes,
             gltfLoader,
             modelSrc: `/models/Monsters/${id}.glb`,
-            x: -24,
+            x: -22,
             y: 0.25,
-            z: -55
+            z: -58
           })
         }
       })
@@ -881,6 +929,17 @@ export default {
         duration: 1,
         y: 30
       })
+
+      const missionId = JSON.parse(
+        localStorage.getItem('userInfo')
+      ).nowMissionId
+
+      // 엔딩
+      if (missionId === 8 && isTalk.value.content.status === 'BATTLE_WIN') {
+        console.log('ending!!!!!!!!!!!!!!')
+
+        emit('startEndingCredits')
+      }
     }
 
     function quizStart() {

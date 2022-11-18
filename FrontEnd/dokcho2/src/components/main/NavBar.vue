@@ -80,45 +80,54 @@ export default {
     const message1 = ref({ message1: '' })
     const message2 = ref({ message2: '' })
     const message3 = ref({ message3: '' })
+    const audio = new Audio('audio/paper.mp3')
 
     function openQuiz() {
       quiz.value.quiz = true
       emit('changeNavbar')
+      emit('quizStart', true)
     }
     function closeQuiz() {
       quiz.value.quiz = false
       emit('changeNavbar')
+      emit('quizStart', false)
     }
     function openModal1() {
+      audio.play()
       modal1.value.modal1 = true
       emit('changeNavbar')
     }
     function closeModal1() {
+      audio.play()
       console.log('닫음')
       modal1.value.modal1 = false
       emit('changeNavbar')
     }
     function openModal2() {
+      audio.play()
       modal2.value.modal2 = true
       emit('changeNavbar')
     }
     function closeModal2() {
+      audio.play()
       modal2.value.modal2 = false
       emit('changeNavbar')
     }
     function openModal3() {
+      audio.play()
       modal3.value.modal3 = true
       emit('changeNavbar')
     }
     function closeModal3() {
+      audio.play()
       modal3.value.modal3 = false
       emit('changeNavbar')
     }
     function logout() {
       swalWithBootstrapButtons
         .fire({
-          title: '도감을 덮으시겠어요?',
-          text: '풀깨비들이 도감에서 웅성거리고 있어요 😥',
+          title: '휴식을 취하시겠어요?',
+          text: '풀깨비도 쉴 준비를 하고 있네요 .. 🌚',
           icon: 'question',
           showCancelButton: true,
           confirmButtonText: '예',
@@ -142,7 +151,7 @@ export default {
           console.log(res)
           swal({
             title: '로그아웃이 완료되었습니다!',
-            text: ' 다시 도감을 펼치는 날을 기다릴게요 🌻 ',
+            text: ' 다시 탐험 하는 날을 기다릴게요 🌻 ',
             icon: 'success',
             buttons: false,
             timer: 1500

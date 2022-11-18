@@ -31,16 +31,13 @@
         </div>
         <div class="myPage__body">
           <div class="myPage__mission">
-            <!-- <p>1번</p> -->
             <p>{{ this.userInfo.nowMissionId }}번</p>
           </div>
           <div class="myPage__monster">
-            <!-- <p>3마리</p> -->
-            <p>{{ this.userInfo.nowMissionId }}마리</p>
+            <p>{{ this.monsterNumber }}마리</p>
           </div>
           <div class="myPage__item">
-            <!-- <p>15개</p> -->
-            <p>{{ this.userInfo.nowMissionId }}개</p>
+            <p>{{ this.itemNumber.length }}개</p>
           </div>
         </div>
         <div class="myPage__footer">
@@ -91,12 +88,16 @@ export default {
       today: '',
       cdate: '',
       password: false,
-      monsterDetail: {}
+      monsterDetail: {},
+      monsterNumber: '',
+      itemNumber: '',
+      audio: new Audio('audio/button.mp3')
     }
   },
   methods: {
     ...mapActions(['fetchnowUserInfo']),
     openPassword() {
+      this.audio.play()
       this.password = true
     },
     closePassword() {
@@ -116,6 +117,7 @@ export default {
       }
     },
     changePassword() {
+      this.audio.play()
       if (!passwordCheck.test(this.newPassword)) {
         swal({
           title:
@@ -170,6 +172,7 @@ export default {
       }
     },
     deleteUser() {
+      this.audio.play()
       swalWithBootstrapButtons
         .fire({
           title: '호랑이섬에서 떠나시겠어요?',
@@ -203,15 +206,13 @@ export default {
             timer: 1500
           })
           localStorage.clear()
-          this.$router.push({
-            path: '/'
-          })
         })
         .catch((err) => {
           console.log(err)
         })
     },
     fetchrepresentMonster() {
+      this.audio.play()
       const id = this.userInfo.representMonster
       axios({
         url: BASE_URL + '/api/v1/monster/' + id,
@@ -228,6 +229,7 @@ export default {
         })
     },
     goReset() {
+      this.audio.play()
       // swal 띄워서 진짜 지울건지 확인
       swalWithBootstrapButtons
         .fire({
@@ -257,13 +259,52 @@ export default {
       })
         .then(() => {
           this.fetchnowUserInfo()
+
           swal({
             title: '진행도 초기화가 완료되었어요!',
             icon: 'success',
             text: '악당 호랑이를 물리치는 여정을 새롭게 시작하세요!',
             buttons: false,
             timer: 1500
+          }).then(() => {
+            this.$router.go()
           })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+
+    fetchUserMonster() {
+      // 보유한 풀깨비 개수 세기 ~
+      axios({
+        url: BASE_URL + '/api/v1/monster',
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          this.monsterNumber = res.data.length
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+
+    fetchUserItem() {
+      // 보유한 아이템 개수 세기 ~
+      axios({
+        url: BASE_URL + '/api/v1/item',
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          this.itemNumber = res.data.filter(
+            (item) => item.itemId < 8 || item.itemId === 18 || item.itemId > 20
+          )
         })
         .catch((err) => {
           console.log(err)
@@ -272,8 +313,8 @@ export default {
   },
   created() {
     this.fetchrepresentMonster()
-    this.today = new Date()
-    this.cdate = new Date(this.userInfo.createDate)
+    this.fetchUserMonster()
+    this.fetchUserItem()
   }
 }
 </script>

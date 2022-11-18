@@ -19,6 +19,14 @@ body {
 } */
 
 @font-face {
+  font-family: 'DungGeunMo';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'IM_Hyemin-Bold';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2')
     format('woff');
@@ -48,5 +56,22 @@ body {
 
 * {
   font-family: 'Mabinogi';
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #467302;
+  border-radius: 10px;
+  width: 8px;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+*::-webkit-scrollbar-track {
+  background-color: #bcd497;
+  opacity: 0.5;
+  border-radius: 10px;
+  box-shadow: inset 0px 0px 5px white;
 }
 </style>

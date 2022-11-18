@@ -100,6 +100,9 @@ import Swal from 'sweetalert2'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 import { useStore } from 'vuex'
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = new JSConfetti()
 
 export default {
   components: {},
@@ -141,7 +144,7 @@ export default {
               '<p>정답은 바로 ...</p>' +
               '<br />' +
               `<h3><b>${
-                chosung.value.quiz[chosung.value.nowPage].answer
+                chosung.value.quiz[chosung.value.nowPage].right_answer
               }!</b></h3>` +
               '<br />' +
               `<p>${chosung.value.quiz[chosung.value.nowPage].description}</p>`
@@ -158,10 +161,15 @@ export default {
       }, 1000)
     }
 
+    function startConfetti() {
+      jsConfetti.addConfetti()
+    }
+
     function submitInput() {
       console.log(chosung.value.quiz)
       if (
-        chosung.value.input === chosung.value.quiz[chosung.value.nowPage].answer
+        chosung.value.input ===
+        chosung.value.quiz[chosung.value.nowPage].right_answer
       ) {
         chosung.value.time = 20
         chosung.value.input = ''
@@ -207,6 +215,7 @@ export default {
                   }
                 })
                   .then((res) => {
+                    startConfetti()
                     monster = res.data
                     Swal.fire({
                       title: 'Level Up!!🎉',
@@ -219,6 +228,9 @@ export default {
                       timer: 5000,
                       showConfirmButton: false
                     })
+                    setTimeout(() => {
+                      jsConfetti.clearCanvas()
+                    }, 5000)
                   })
                   .catch((err) => console.log(err))
               }
