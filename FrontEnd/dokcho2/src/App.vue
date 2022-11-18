@@ -7,6 +7,15 @@ export default {}
 </script>
 
 <style>
+button {
+  height: 4vh;
+  border-radius: 50px;
+  border: none;
+  width: 5vw;
+  margin: 0.5vh;
+  cursor: url('@/assets/selector.cur'), pointer;
+}
+
 body {
   cursor: url(pointer.cur), auto;
   -webkit-user-select: none;
