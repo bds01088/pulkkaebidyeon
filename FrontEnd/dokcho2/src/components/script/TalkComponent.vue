@@ -266,6 +266,33 @@ export default {
             background: 'rgba(255, 255, 255)'
           })
         }
+
+        if (content.missionId === 8) {
+          Swal.fire({
+            title: `${content.characters}의 고민 해결 완료 ✨`,
+            html:
+              `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/18.png')}"/>
+                    <p style="font-size:0.9rem;">동의보감</p>
+                  </div>
+                    
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+            imageUrl: clearImg,
+            imageWidth: 300,
+            imageHeight: 100,
+            imageAlt: 'Custom image',
+            background: 'rgba(255, 255, 255)'
+          })
+        }
       }
 
       function levelUpMonsterAlert() {
@@ -366,6 +393,46 @@ export default {
             })
             .catch((err) => console.log(err))
         }
+
+        if (content.missionId === 8) {
+          axios({
+            url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
+            method: 'POST',
+            headers: {
+              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+            }
+          }).catch((err) => console.log(err))
+          Swal.fire({
+            title: `${content.characters}의 고민 해결 완료 ✨`,
+            html:
+              `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/18.png')}"/>
+                    <p style="font-size:0.9rem;">동의보감</p>
+                  </div>
+
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+            imageUrl: clearImg,
+            imageWidth: 300,
+            imageHeight: 100,
+            imageAlt: 'Custom image',
+            background: 'rgba(255, 255, 255)'
+          })
+            .then((res) => {
+              if (res.value) {
+                fetchMonster()
+              }
+            })
+            .catch((err) => console.log(err))
+        }
       }
 
       // started : 미션 시작한 상태 -> 보스 찾아가 문제 풀기 / 대화 끝나고 바로 퀴즈 시작
@@ -406,7 +473,7 @@ export default {
             })
             emit('enterBattle')
           } else if (content.status === 'BATTLE_WIN') {
-            if (content.missionId === 2 || content.missionId === 5) {
+            if (content.missionId === 2 || content.missionId === 5 || content.missionId === 8) {
               // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
               axios({
                 url: BASE_URL + '/api/v1/mission/',
