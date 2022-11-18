@@ -22,6 +22,9 @@ public class CharacterQuiz {
     @Column(name = "question")
     private String question;
 
-    @Column(name = "answer")
-    private String answer;
+    @Column(name = "right_answer")
+    private String right_answer;
+
+    @Column(name = "description")
+    private String description;
 }
