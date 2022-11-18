@@ -283,7 +283,7 @@ export default {
     function createRoom() {
       if (inputRoomName.value.inputRoomName) {
         roomName.value.roomName = inputRoomName.value.inputRoomName
-        console.log('보냈다', inputGameType.value.inputGameType)
+
         let payload = [
           roomName.value.roomName,
           inputGameType.value.inputGameType
@@ -293,7 +293,13 @@ export default {
         inputRoomName.value.inputRoomName = ''
         inputGameType.value.inputGameType = 'saja'
       } else {
-        alert('방제목 입력해라 좋은말할때')
+        swal({
+          title: '방 제목을 입력해주세요!',
+          text: '좋은 말 할때!',
+          icon: 'warning',
+          buttons: false,
+          timer: 1500
+        })
       }
     }
 
@@ -315,10 +321,9 @@ export default {
     }
 
     socket.on('goaway', () => {
-      console.log('꺼져랑')
       swal({
-        title: '풀방이네요~',
-        text: ' 꺼져',
+        title: '방에 사람이 가득 찼어요!',
+        text: ' 다음에 함께해요~',
         icon: 'warning',
         buttons: false,
         timer: 1500
@@ -381,6 +386,7 @@ export default {
         nickname: '김구현(교수)',
         content: `친구가 없니? 한명은 더 모아오렴.`
       })
+      goToScrollBottom()
     })
 
     socket.on('startQuiz', (data) => {
