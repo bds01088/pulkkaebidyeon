@@ -418,9 +418,11 @@ export default {
                 // console.log()
                 store.dispatch('fetchnowUserInfo')
                 if (res.data === true) {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   levelUpMonsterAlert()
                 } else {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   defaultMonsterAlert()
                 }
@@ -436,9 +438,11 @@ export default {
               }).then((res) => {
                 store.dispatch('fetchnowUserInfo')
                 if (res.data === true) {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   levelUpAlert()
                 } else {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   defaultAlert()
                 }

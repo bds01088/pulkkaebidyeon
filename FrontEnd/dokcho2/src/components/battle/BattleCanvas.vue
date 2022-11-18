@@ -19,104 +19,103 @@
     <div id="battleDiv"><div id="battle"></div></div>
 
     <div id="consoleDiv">
-      <div
-        id="console"
-        @click="changePhase()"
-        v-show="phase === 'start'"
-        style="cursor: url('@/assets/selector.cur'), pointer"
-      >
-        <p>{{ msg }}</p>
-        <div class="triangle triangle--top"></div>
-      </div>
-
-      <div
-        id="console"
-        @click="changePhase()"
-        v-show="phase === 'ready'"
-        style="cursor: url('@/assets/selector.cur'), pointer"
-      >
-        <p>{{ msg }}</p>
-        <div class="triangle triangle--top"></div>
-      </div>
-
-      <div id="console" v-show="phase === 'selectAct'">
-        <p>
-          <span v-for="(act, idx) in actList" :key="idx">
-            <button
-              @click="doSelectAct(act)"
-              style="cursor: url('@/assets/selector.cur'), pointer"
-            >
-              {{ act }}
-            </button>
-          </span>
-        </p>
-      </div>
-
-      <div id="console" v-show="phase === 'showAct'">
-        <p>{{ msg }}</p>
-      </div>
-
-      <div id="console" v-show="phase === 'actResult'">
-        <p>{{ msg }}</p>
-      </div>
-
-      <div id="console" v-show="phase === 'showEnemyAct'">
-        <p>{{ msg }}</p>
-      </div>
-
-      <div id="console" v-show="phase === 'enemyActResult'">
-        <p>{{ msg }}</p>
-      </div>
-
-      <div id="console" v-show="phase === 'noHappen'">
-        <p>{{ msg }}</p>
-      </div>
-
-      <div id="console" v-show="phase === 'end'">
-        <p>{{ msg }}</p>
-      </div>
-
-      <div
-        id="console"
-        v-show="phase === 'selectItem'"
-        style="cursor: url('@/assets/selector.cur'), pointer"
-      >
-        <span v-for="(item, idx) in itemList" :key="idx">
-          <span @click="doSelectItem(item)" class="tooltip">
-            {{ item.itemName }} x {{ item.count }}
-            <span class="tooltiptext">{{ item.description }}</span>
-          </span>
-        </span>
-        <br />
-        <div
-          style="float: right; cursor: url('@/assets/selector.cur'), pointer"
-        >
-          <button
-            @click="itemToSelect()"
-            style="cursor: url('@/assets/selector.cur'), pointer"
-          >
-            뒤로
-          </button>
+      <div class="consoleBox">
+        <div id="console" @click="changePhase()" v-show="phase === 'start'">
+          <p>{{ msg }}</p>
+          <font-awesome-icon
+            class="triangle triangle--top"
+            icon="fa-solid fa-caret-down"
+            style="font-size: 50px"
+          />
         </div>
-      </div>
 
-      <div
-        id="console"
-        v-show="phase === 'itemResult'"
-        @click="changePhase()"
-        style="cursor: url('@/assets/selector.cur'), pointer"
-      >
-        <p>{{ msg }}</p>
-        <div class="triangle triangle--top"></div>
-      </div>
+        <div id="console" @click="changePhase()" v-show="phase === 'ready'">
+          <p>{{ msg }}</p>
+          <font-awesome-icon
+            class="triangle triangle--top"
+            icon="fa-solid fa-caret-down"
+            style="font-size: 50px"
+          />
+        </div>
 
-      <div id="console" v-show="phase === 'sacrifice'">
-        <p>{{ msg }}</p>
-      </div>
+        <div id="console" v-show="phase === 'selectAct'">
+          <div class="btn__console">
+            <div class="select__btn" v-for="(act, idx) in actList" :key="idx">
+              <button @click="doSelectAct(act)">
+                {{ act }}
+              </button>
+            </div>
+          </div>
+        </div>
 
-      <div id="console" v-show="phase === 'poison'" @click="changePhase()">
-        <p>{{ msg }}</p>
-        <div class="triangle triangle--top"></div>
+        <div id="console" v-show="phase === 'showAct'">
+          <p>{{ msg }}</p>
+        </div>
+
+        <div id="console" v-show="phase === 'actResult'">
+          <p>{{ msg }}</p>
+        </div>
+
+        <div id="console" v-show="phase === 'showEnemyAct'">
+          <p>{{ msg }}</p>
+        </div>
+
+        <div id="console" v-show="phase === 'enemyActResult'">
+          <p>{{ msg }}</p>
+        </div>
+
+        <div id="console" v-show="phase === 'noHappen'">
+          <p>{{ msg }}</p>
+        </div>
+
+        <div id="console" v-show="phase === 'end'">
+          <p>{{ msg }}</p>
+        </div>
+
+        <div class="item__console" id="console" v-show="phase === 'selectItem'">
+          <div class="item__item" v-for="(item, idx) in itemList" :key="idx">
+            <div @click="doSelectItem(item)" class="tooltip">
+              <img
+                :src="require('@/assets/item/' + item.itemId + '.png')"
+                alt=""
+                class="item__image"
+              />
+              <p>{{ item.itemName }} x {{ item.count }}</p>
+
+              <span class="tooltiptext">{{ item.description }}</span>
+            </div>
+          </div>
+          <br />
+          <div style="float: right">
+            <button @click="itemToSelect()">뒤로</button>
+          </div>
+        </div>
+
+        <div
+          id="console"
+          v-show="phase === 'itemResult'"
+          @click="changePhase()"
+        >
+          <p>{{ msg }}</p>
+          <font-awesome-icon
+            class="triangle triangle--top"
+            icon="fa-solid fa-caret-down"
+            style="font-size: 50px"
+          />
+        </div>
+
+        <div id="console" v-show="phase === 'sacrifice'">
+          <p>{{ msg }}</p>
+        </div>
+
+        <div id="console" v-show="phase === 'poison'" @click="changePhase()">
+          <p>{{ msg }}</p>
+          <font-awesome-icon
+            class="triangle triangle--top"
+            icon="fa-solid fa-caret-down"
+            style="font-size: 50px"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -1799,50 +1798,117 @@ canvas {
 }
 
 #consoleDiv {
-  position: absolute;
+  position: fixed;
   top: 71%;
-  left: 10%;
+  left: 15%;
 
-  width: 80%;
-  height: 20%;
-  background-color: #55e1b0;
+  width: 70%;
+  height: 25%;
+  background-color: rgb(229, 224, 196);
   z-index: 1;
+  border-top-right-radius: 10vw;
+  border-top-left-radius: 10vw;
+  border-bottom-right-radius: 6vw;
+  border-bottom-left-radius: 6vw;
+  box-shadow: 10px 10px 10px #00000092;
+  cursor: url('@/assets/selector.cur'), pointer;
+}
 
-  border: 2px solid black;
-  border-radius: 10px;
+.consoleBox {
 }
 
 #console {
-  position: absolute;
+  /* position: absolute;
 
   top: 6%;
   left: 7%;
-  padding: 1%;
+  padding: 1%; */
 
-  background-color: white;
-  width: 83%;
+  /* background-color: white; */
+  width: 70%;
   height: 70%;
   z-index: 2;
-
-  border-radius: 10px;
+  margin-top: 5vh;
+  margin-left: 7vw;
+  margin-right: 7vw;
+  font-size: 1.4rem;
+  letter-spacing: 0.3px;
+  word-spacing: 5px;
+  cursor: url('@/assets/selector.cur'), pointer;
+  /* border-radius: 10px; */
 }
 
+p {
+  cursor: url('@/assets/selector.cur'), pointer;
+}
+
+.btn__console {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-left: 4vw;
+}
+.select__btn {
+  display: inline;
+  margin-left: 1vw;
+  margin-right: 1vw;
+  cursor: url('@/assets/selector.cur'), pointer;
+  margin-top: 2vh;
+}
+
+.select__btn button {
+  height: 6vh;
+  border-radius: 50px;
+  border: none;
+  width: 10vw;
+  cursor: url('@/assets/selector.cur'), pointer;
+  font-size: 1.2rem;
+  background-color: #d5d5d5;
+}
+
+.select__btn button:hover {
+  background-color: #6bfa8d;
+  font-weight: bold;
+}
 .triangle {
   position: absolute;
-  top: 80%;
-  left: 96%;
+  top: 50%;
+  right: 10%;
 
   display: inline-block;
-  border: 12px solid transparent;
+  /* border: 12px solid transparent; */
 }
 
 .triangle--top {
-  border-top-color: black;
+  /* border-top-color: black; */
   animation: blink-effect 1s step-end infinite;
 }
 
+.item__console {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+}
+
+.item__item {
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  /* margin-bottom: 3vh; */
+  cursor: url('@/assets/selector.cur'), pointer;
+}
+.item__item p {
+  font-size: 0.7rem;
+}
+.item__image {
+  width: 95%;
+}
 @keyframes blink-effect {
-  50% {
+  0% {
+    opacity: 1;
+  }
+  100% {
     opacity: 0;
   }
 }
@@ -1851,11 +1917,11 @@ canvas {
   position: relative;
   display: inline-block;
 
-  border-radius: 50px;
+  /* border-radius: 50px;
   border: none;
   background-color: rgb(171, 171, 171);
   margin: 5px;
-  padding: 10px;
+  padding: 10px; */
 }
 
 .tooltip .tooltiptext {
@@ -1884,7 +1950,7 @@ canvas {
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: rgb(171, 171, 171) transparent transparent transparent;
+  border-color: rgb(0, 0, 0) transparent transparent transparent;
 }
 
 .tooltip:hover .tooltiptext {
