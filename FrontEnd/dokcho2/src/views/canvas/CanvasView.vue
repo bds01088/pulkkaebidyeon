@@ -158,6 +158,7 @@ export default {
     quizStart(isOpen) {
       if (isOpen) {
         this.audio.pause()
+        this.quizAudio.loop = true
         this.quizAudio.play()
       } else {
         this.quizAudio.pause()

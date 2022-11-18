@@ -31,7 +31,7 @@ import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
-import TalkComponent from '../script/TalkComponent2.vue'
+import TalkComponent from '../script/TalkComponent.vue'
 import QuizComponent from '../script/QuizComponent.vue'
 import { ref, watchEffect } from 'vue'
 import Swal from 'sweetalert2'
@@ -549,6 +549,7 @@ Toast.fire({
 
           // 대표풀깨비 따라오기
           if (myMoster.moving) {
+            myMoster.actions[0].play()
             angle = Math.atan2(
               player.modelMesh.position.z - myMoster.modelMesh.position.z,
               player.modelMesh.position.x - myMoster.modelMesh.position.x
