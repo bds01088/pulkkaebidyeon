@@ -14,7 +14,11 @@
         v-if="fullPage === true"
       />
     </div>
-    <NavBar @changeNavbar="changeNavbar" @quizStart="quizStart" />
+    <NavBar
+      @changeNavbar="changeNavbar"
+      @quizStart="quizStart"
+      v-show="this.ending !== 1"
+    />
     <LoadingPage
       v-if="this.isGameStart === 0"
       @gameStart="gameStart"
