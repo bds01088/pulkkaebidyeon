@@ -159,7 +159,7 @@ export default {
 input {
   display: block;
   width: 15vw;
-  height: 6vh;
+  height: 3vh;
   margin: 8px 0 8px 0;
   padding: 10px 15px 10px 25px;
   font-size: 16px;
@@ -198,13 +198,14 @@ input:focus {
   margin-top: 0;
   margin-left: 1vw;
   text-align: center;
-  width: 15vh;
+  width: 12vh;
 }
 
 .login__btn {
   /* margin-top: 5%; */
-  width: 80%;
+  width: 100%;
   margin-top: 2vh;
+  margin-left: 1vh;
 }
 
 .login__btn:hover {
@@ -229,7 +230,7 @@ input:focus {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin-top: 5vmin;
+  margin-top: 2vmin;
   margin-right: 3vw;
 }
 

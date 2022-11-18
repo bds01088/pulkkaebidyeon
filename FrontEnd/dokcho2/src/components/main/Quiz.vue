@@ -778,7 +778,7 @@ export default {
   margin: 0;
   margin-left: 1.3vw;
   height: 2.5vw;
-  width: 85%;
+  width: 75%;
   font-size: 1rem;
   border-color: #d9ac73;
   background-color: #efdcc3;
