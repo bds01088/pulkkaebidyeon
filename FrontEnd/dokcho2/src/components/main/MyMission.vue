@@ -108,6 +108,18 @@
               class="item__image"
             />
           </div>
+                    <div
+            v-else-if="mission.characters === '호랑이'"
+            class="mission__item"
+          >
+            <p>✨보상 &nbsp; &nbsp;</p>
+
+            <img
+              :src="require('@/assets/item/18.png')"
+              alt=""
+              class="item__image"
+            />
+          </div>
           <div v-else class="mission__item">
             <p>✨보상 &nbsp; &nbsp;</p>
             <img
