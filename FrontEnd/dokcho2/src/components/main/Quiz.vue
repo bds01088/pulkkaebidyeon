@@ -383,7 +383,7 @@ export default {
     socket.on('dontStartQuiz', () => {
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(교수)',
+        nickname: '김구현(훈장)',
         content: `친구가 없니? 한명은 더 모아오렴.`
       })
       goToScrollBottom()
@@ -392,20 +392,20 @@ export default {
     socket.on('startQuiz', (data) => {
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(교수)',
+        nickname: '김구현(훈장)',
         content: `퀴즈가 5초뒤에 시작된다.`
       })
       goToScrollBottom()
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(교수)',
+        nickname: '김구현(훈장)',
         content: `5..`
       })
       goToScrollBottom()
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `4..`
         })
         goToScrollBottom()
@@ -413,7 +413,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `3..`
         })
         goToScrollBottom()
@@ -421,7 +421,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `2..`
         })
         goToScrollBottom()
@@ -429,7 +429,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `1..`
         })
         goToScrollBottom()
@@ -437,7 +437,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `퀴즈시작!`
         })
         goToScrollBottom()
@@ -457,7 +457,7 @@ export default {
           correctUser.value.correctUser = user.nickname
           allMsg.value.allMsg.push({
             socketId: '',
-            nickname: '김구현(교수)',
+            nickname: '김구현(훈장)',
             content: `${user.nickname}(이)가 정답을 맞히었구나!`
           })
           goToScrollBottom()
@@ -470,7 +470,7 @@ export default {
       for (let winner of data) {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `${winner.nickname}가 이겼노라!`
         })
         goToScrollBottom()
@@ -515,20 +515,20 @@ export default {
     socket.on('fuckoff', () => {
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(교수)',
+        nickname: '김구현(훈장)',
         content: `이 방은 5초뒤에 폭파된다.`
       })
       goToScrollBottom()
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(교수)',
+        nickname: '김구현(훈장)',
         content: `5..`
       })
       goToScrollBottom()
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `4..`
         })
         goToScrollBottom()
@@ -536,7 +536,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `3..`
         })
         goToScrollBottom()
@@ -544,7 +544,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `2..`
         })
         goToScrollBottom()
@@ -552,7 +552,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `1..`
         })
         goToScrollBottom()
@@ -560,7 +560,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(교수)',
+          nickname: '김구현(훈장)',
           content: `폭발은 예술이다!`
         })
         goToScrollBottom()
