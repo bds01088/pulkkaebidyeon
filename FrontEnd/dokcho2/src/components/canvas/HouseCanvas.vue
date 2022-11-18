@@ -417,7 +417,7 @@ export default {
           // 엔딩 테스트
           if (item.object.name === 'furniture_and_household_assets009_2') {
             isPressed = false
-            // emit('startEndingCredits')
+            emit('startEndingCredits')
           }
 
           // 몬1_2 형태로 object.name 옴 / 몬스터 눌렀을때 detail 받아서 저장
