@@ -30,7 +30,9 @@ export default {
   name: 'HouseCanvas',
   props: {
     nowPage: Number,
-    nowNavbar: Boolean
+    nowNavbar: Boolean,
+
+    ending: Number
   },
   components: {
     monsterDetail: monsterDetail,
@@ -411,6 +413,13 @@ export default {
             onClick()
             isPressed = false
           }
+
+          // 엔딩 테스트
+          if (item.object.name === 'furniture_and_household_assets009_2') {
+            isPressed = false
+            // emit('startEndingCredits')
+          }
+
           // 몬1_2 형태로 object.name 옴 / 몬스터 눌렀을때 detail 받아서 저장
           if (item.object.name[0] === '몬') {
             isPressed = false

@@ -240,7 +240,8 @@ export default {
         ['공민왕', { x: 35, y: 0, z: 0 }],
         ['세종대왕', { x: -44, y: 0, z: 20 }],
         ['이순신', { x: -15, y: 0, z: 45 }],
-        ['유관순', { x: 45, y: 0, z: 42 }]
+        ['유관순', { x: 45, y: 0, z: 42 }],
+        ['허준', { x: -30, y: 0, z: -60 }]
       ]
       Greats.forEach((element) => {
         new Character({
@@ -580,24 +581,46 @@ export default {
             talkStart(item.object.name.slice(1, 2))
             isTalk.value.name = item.object.name.slice(2, -2)
             isPressed = false
-            const status = ['NOT_YET', 'READY', 'BATTLE_WIN', 'FINISHED']
 
-            setTimeout(() => {
-              if (status.includes(isTalk.value.content.status)) {
-                isTalk.value.talk = true
-                gsap.to(camera, {
-                  duration: 1,
-                  zoom: 0.35,
-                  onUpdate: function () {
-                    camera.updateProjectionMatrix()
-                  }
-                })
-                gsap.to(camera.position, {
-                  duration: 1,
-                  y: 20
-                })
-              }
-            }, 500)
+            if (isTalk.value.name === '허준') {
+              let status = ['BATTLE_WIN', 'FINISHED']
+
+              setTimeout(() => {
+                if (status.includes(isTalk.value.content.status)) {
+                  isTalk.value.talk = true
+                  gsap.to(camera, {
+                    duration: 1,
+                    zoom: 0.35,
+                    onUpdate: function () {
+                      camera.updateProjectionMatrix()
+                    }
+                  })
+                  gsap.to(camera.position, {
+                    duration: 1,
+                    y: 20
+                  })
+                }
+              }, 500)
+            } else {
+              let status = ['NOT_YET', 'READY', 'BATTLE_WIN', 'FINISHED']
+
+              setTimeout(() => {
+                if (status.includes(isTalk.value.content.status)) {
+                  isTalk.value.talk = true
+                  gsap.to(camera, {
+                    duration: 1,
+                    zoom: 0.35,
+                    onUpdate: function () {
+                      camera.updateProjectionMatrix()
+                    }
+                  })
+                  gsap.to(camera.position, {
+                    duration: 1,
+                    y: 20
+                  })
+                }
+              }, 500)
+            }
           }
           if (item.object.name.slice(0, 1) === '빌') {
             talkStart(item.object.name.slice(1, 2))
@@ -605,9 +628,14 @@ export default {
             isPressed = false
 
             if (isTalk.value.name === '성빈몬') {
-              isTalk.value.talk = true
+              let status = ['NOT_YET', 'READY', 'STARTED', 'QUIZ_PASSED']
+              if (status.includes(isTalk.value.content.status)) {
+                isTalk.value.talk = true
+              } else {
+                isTalk.value.talk = false
+              }
             } else {
-              const status = ['STARTED', 'QUIZ_PASSED']
+              let status = ['STARTED', 'QUIZ_PASSED']
               setTimeout(() => {
                 if (status.includes(isTalk.value.content.status)) {
                   isTalk.value.talk = true
@@ -897,6 +925,17 @@ export default {
         duration: 1,
         y: 30
       })
+
+      const missionId = JSON.parse(
+        localStorage.getItem('userInfo')
+      ).nowMissionId
+
+      // 엔딩
+      if (missionId === 8 && isTalk.value.content.status === 'BATTLE_WIN') {
+        console.log('ending!!!!!!!!!!!!!!')
+
+        emit('startEndingCredits')
+      }
     }
 
     function quizStart() {
