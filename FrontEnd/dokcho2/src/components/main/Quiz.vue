@@ -734,7 +734,7 @@ export default {
 
 .radio input[type='radio'] + label {
   display: inline-block;
-  cursor: url(http://localhost:8080/da0004d92b7c37a7.cur), pointer;
+  cursor: url('@/assets/selector.cur'), pointer;
   height: 24px;
   width: 45%;
   border: 1px solid #333;

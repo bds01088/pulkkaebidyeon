@@ -34,6 +34,7 @@ import * as CANNON from 'cannon-es'
 import TalkComponent from '../script/TalkComponent2.vue'
 import QuizComponent from '../script/QuizComponent.vue'
 import { ref, watchEffect } from 'vue'
+import Swal from 'sweetalert2'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 
@@ -69,6 +70,16 @@ export default {
       miniGame2: false,
       miniGame3: false
     })
+
+    // toast 설정
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    })
+
     const camera = new THREE.OrthographicCamera(
       -(window.innerWidth / window.innerHeight), // left
       window.innerWidth / window.innerHeight, // right,
@@ -436,6 +447,10 @@ export default {
             ) {
               if (!house.visible) {
                 house.visible = true
+Toast.fire({
+          icon: 'success',
+          title: '문을 두드려 집에 들어가세요 !'
+        })
                 gsap.to(house.modelMesh.position, {
                   duration: 1,
                   y: 1,
