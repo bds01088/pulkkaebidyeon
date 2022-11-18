@@ -99,7 +99,7 @@ export default {
 
       function fetchMonster() {
         const monsterId = userInfo.representMonster
-        const monsterImg = require(`@/assets/starting/${monsterId}.png`)
+        // const monsterImg = require(`@/assets/starting/${monsterId}.png`)
         axios({
           url: BASE_URL + '/api/v1/monster/' + monsterId,
           method: 'GET',
@@ -113,7 +113,9 @@ export default {
             Swal.fire({
               title: 'Level Up!!🎉',
               html: `<div style="text-align:center;">
-                  <img  style="height:200px;width:150px;text-align:center;" src=${monsterImg}/>
+                  <img  style="height:200px;width:150px;text-align:center;" src="${require('@/assets/starting/' +
+                    monsterId +
+                    '.png')}"/>
                   <p style="font-size: 1.2rem;"><b>${
                     monster.name
                   }</b>이</p><br /> <p style="font-size: 1.2rem;"> <b>Lv.${
