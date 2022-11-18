@@ -136,7 +136,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 button {
   height: 4vh;
   border-radius: 50px;

@@ -253,8 +253,8 @@ export default {
     let correctUser = ref({ correctUser: '정답자' })
 
     let userInfo = JSON.parse(localStorage.getItem('userInfo'))
-    const socket = io('https://k7e203.p.ssafy.io/')
-    // const socket = io('http://localhost:3001/')
+    // const socket = io('https://k7e203.p.ssafy.io/')
+    const socket = io('http://localhost:3001/')
 
     function disconnect() {
       socket.disconnect()
@@ -620,12 +620,14 @@ export default {
 <style scoped>
 .quizComponent {
   position: fixed;
+  top: 0;
   width: 100vw;
   height: 100vh;
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('../../assets/seodang.png');
   background-size: cover;
   background-repeat: no-repeat;
+  z-index: 1;
 }
 
 .waitingRoom {
