@@ -218,6 +218,24 @@ export default {
             z: 1
           })
 
+          const player = new EndingAnimation({
+            scene,
+            gltfLoader,
+            modelSrc: '/ending/player.glb',
+            x: -2,
+            y: 0,
+            z: -1.5
+          })
+
+          const monster = new EndingAnimation({
+            scene,
+            gltfLoader,
+            modelSrc: '/ending/1.glb',
+            x: -4,
+            y: 0,
+            z: 5
+          })
+
           const clock = new THREE.Clock()
 
           function draw() {
@@ -268,6 +286,16 @@ export default {
               cow.modelMesh.lookAt(3, 0, 3)
             }
             if (cow.mixer) cow.mixer.update(delta)
+
+            if (player.modelMesh) {
+              player.modelMesh.lookAt(3, 0, 3)
+            }
+            if (player.mixer) player.mixer.update(delta)
+
+            if (monster.modelMesh) {
+              monster.modelMesh.lookAt(3, 0, 3)
+            }
+            if (monster.mixer) monster.mixer.update(delta)
 
             renderer.render(scene, camera)
             renderer.setAnimationLoop(draw)

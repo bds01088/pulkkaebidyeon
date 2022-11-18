@@ -391,7 +391,7 @@ export default {
 
         if (isLoading === 0 && scene.children.length >= 167) {
           isLoading = 1
-          console.log('로딩 끝1')
+          // console.log('로딩 끝1')
           emit('loadingEnd')
         }
 
@@ -447,10 +447,10 @@ export default {
             ) {
               if (!house.visible) {
                 house.visible = true
-Toast.fire({
-          icon: 'success',
-          title: '문을 두드려 집에 들어가세요 !'
-        })
+                Toast.fire({
+                  icon: 'success',
+                  title: '문을 두드려 집에 들어가세요 !'
+                })
                 gsap.to(house.modelMesh.position, {
                   duration: 1,
                   y: 1,
@@ -580,7 +580,7 @@ Toast.fire({
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
         for (const item of intersects) {
-          console.log(item)
+          // console.log(item)
           // if (item.object.name === 'floor') {
           //   destinationPoint.x = item.point.x
           //   destinationPoint.z = item.point.z
@@ -603,7 +603,7 @@ Toast.fire({
             isPressed = false
 
             if (isTalk.value.name === '허준') {
-              let status = ['BATTLE_WIN', 'FINISHED']
+              let status = ['BATTLE_WIN']
 
               setTimeout(() => {
                 if (status.includes(isTalk.value.content.status)) {
@@ -649,11 +649,11 @@ Toast.fire({
 
             if (isTalk.value.name === '성빈몬') {
               let status = ['NOT_YET', 'READY', 'STARTED', 'QUIZ_PASSED']
-              if (status.includes(isTalk.value.content.status)) {
-                isTalk.value.talk = true
-              } else {
-                isTalk.value.talk = false
-              }
+              setTimeout(() => {
+                if (status.includes(isTalk.value.content.status)) {
+                  isTalk.value.talk = true
+                }
+              }, 100)
             } else {
               let status = ['STARTED', 'QUIZ_PASSED']
               setTimeout(() => {
@@ -877,7 +877,7 @@ Toast.fire({
 
       // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
       watchEffect(() => {
-        console.log(props.nowPage)
+        // console.log(props.nowPage)
         if (myMoster.modelMesh) {
           const id = JSON.parse(
             localStorage.getItem('userInfo')
@@ -925,7 +925,7 @@ Toast.fire({
         }
       })
         .then((res) => {
-          console.log(res.data)
+          // console.log(res.data)
           isTalk.value.content = res.data
           isTalk.value.content.line = res.data.line.split('\\t')
         })
