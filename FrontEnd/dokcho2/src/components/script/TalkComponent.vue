@@ -269,7 +269,7 @@ export default {
 
         if (content.missionId === 8) {
           Swal.fire({
-            title: `${content.characters}의 고민 해결 완료 ✨`,
+            title: `${content.characters}를 물리쳤어요! 🏆`,
             html:
               `<div style="display:flex; flex-direction: row; justify-content:center">
 
@@ -403,7 +403,7 @@ export default {
             }
           }).catch((err) => console.log(err))
           Swal.fire({
-            title: `${content.characters}의 고민 해결 완료 ✨`,
+            title: `${content.characters}를 물리쳤어요! 🏆`,
             html:
               `<div style="display:flex; flex-direction: row; justify-content:center">
 
