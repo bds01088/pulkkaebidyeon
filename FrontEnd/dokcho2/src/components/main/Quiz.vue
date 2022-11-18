@@ -312,6 +312,14 @@ export default {
       // console.log(allMsg.value.allMsg)
     })
 
+    socket.on('dontStartQuiz', () => {
+      allMsg.value.allMsg.push({
+        socketId: '',
+        nickname: '김구현(교수)',
+        content: `친구가 없니? 한명은 더 모아오렴.`
+      })
+    })
+
     socket.on('startQuiz', (data) => {
       allMsg.value.allMsg.push({
         socketId: '',

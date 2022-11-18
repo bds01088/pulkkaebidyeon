@@ -189,14 +189,22 @@ try {
           io.to(`${roomInfo.roomId}`).emit("endQuiz");
           roomInfo.quizing = false;
         } else {
-          // 퀴즈시작
-          roomInfo.quizing = true;
-          if (data[3] === "독초는 퀴즈를 뿌려라") {
-            io.to(`${roomInfo.roomId}`).emit(
-              "startQuiz",
-              roomInfo.roomQuiz[roomInfo.nowQuizNumber]
-            );
+          if (
+            data[3] === "독초는 퀴즈를 뿌려라" &&
+            roomInfo.currentUser.length < 2
+          ) {
+            io.to(`${roomInfo.roomId}`).emit("dontStartQuiz");
+          } else {
+            // 퀴즈시작
+            if (data[3] === "독초는 퀴즈를 뿌려라") {
+              roomInfo.quizing = true;
+              io.to(`${roomInfo.roomId}`).emit(
+                "startQuiz",
+                roomInfo.roomQuiz[roomInfo.nowQuizNumber]
+              );
+            }
           }
+
           // 받은 메세지 정답 검사
           if (roomInfo) {
             if (
