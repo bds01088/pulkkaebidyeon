@@ -1,7 +1,7 @@
 <template>
   <div class="talk">
     <div class="talk__box">
-      <div class="box" v-if="this.isTalk.content.line">
+      <div class="box" v-if="this.text.text">
         <div
           class="content__box"
           @click="nextTalk()"
@@ -9,31 +9,32 @@
         >
           <div class="name">{{ this.isTalk.name }}</div>
           <div class="content">
-            <!-- {{ this.isTalk.content }} -->
-            {{ this.isTalk.content.line[nowPage.nowPage] }}
+            {{ this.text.text }}
           </div>
         </div>
         <div
           class="content__box"
           v-else-if="this.isTalk.content.line.length === nowPage.nowPage + 1"
-          @click="endTalk()"
+          @click="nextTalk()"
         >
           <div class="name">{{ this.isTalk.name }}</div>
           <div class="content">
-            <!-- {{ this.isTalk.content }} -->
-            {{ this.isTalk.content.line[nowPage.nowPage] }}
+            {{ this.text.text }}
           </div>
         </div>
         <div class="btn__box">
           <font-awesome-icon
             class="icon"
             @click="nextTalk()"
-            v-if="this.isTalk.content.line.length !== nowPage.nowPage + 1"
+            v-if="
+              this.isTalk.content.line.length !== nowPage.nowPage + 1 &&
+              this.text.textArray.length <= this.text.textIdx
+            "
             icon="fa-solid fa-caret-down"
             style="font-size: 50px"
           />
           <font-awesome-icon
-            v-else
+            v-else-if="this.isTalk.content.line.length === nowPage.nowPage + 1"
             class="icon"
             icon="fa-solid fa-xmark"
             @click="endTalk()"
@@ -61,8 +62,17 @@ export default {
   },
   setup(props, { emit }) {
     let nowPage = ref({ nowPage: 0 })
+    let text = ref({ text: '', textIdx: 0, textArray: [] })
     const store = useStore()
     const audio = new Audio('audio/button.mp3')
+    text.value.textArray = props.isTalk.content.line[0].split('')
+
+    setInterval(() => {
+      if (text.value.textArray.length > text.value.textIdx) {
+        text.value.text += text.value.textArray[text.value.textIdx]
+        text.value.textIdx += 1
+      }
+    }, 50)
 
     // toast 설정
     const Toast = Swal.mixin({
@@ -78,8 +88,20 @@ export default {
 
     // nexttalk 다음 대화로 넘기기
     function nextTalk() {
-      nowPage.value.nowPage += 1
-      audio.play()
+      if (text.value.textArray.length > text.value.textIdx) {
+        text.value.textIdx = text.value.textArray.length
+        text.value.text = props.isTalk.content.line[nowPage.value.nowPage]
+      } else if (
+        props.isTalk.content.line.length !==
+        nowPage.value.nowPage + 1
+      ) {
+        nowPage.value.nowPage += 1
+        text.value.textArray =
+          props.isTalk.content.line[nowPage.value.nowPage].split('')
+        text.value.textIdx = 0
+        text.value.text = ''
+        audio.play()
+      }
     }
 
     // endtalk
@@ -556,6 +578,7 @@ export default {
 
     return {
       nowPage,
+      text,
       endTalk,
       nextTalk
     }
