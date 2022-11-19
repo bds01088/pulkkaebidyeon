@@ -49,7 +49,7 @@
                   value="character"
                   id="character"
                 />
-                <label for="character">인물퀴즈</label>
+                <label for="character">위인퀴즈</label>
               </div>
               <input
                 type="text"
@@ -115,7 +115,30 @@
           alt=""
         />
         <img class="info__btn" src="@/assets/navbar/infoButton.png" alt="" />
-        <div class="info__text">인포~</div>
+        <div class="info__text">
+          <div class="subTitle">게임방법</div>
+          <div class="content">
+            '독초는 퀴즈를 뿌려라' 라고 채팅창에 치면 게임이 시작되요 <br />
+            2명 이상이 모여야 게임 진행이 가능해요 <br />
+            10문제가 주어지는데 가장 많은 문제를 맞춘 플레이어에게 보상이
+            주어져요
+          </div>
+          <div class="subTitle">사자성어</div>
+          <div class="content">
+            문제에 있는 두글자를 보고 다음에 이어질 두글자를 맞춰주세요 <br />
+            힌트를 통해 사자성어의 뜻을 알 수 있어요
+          </div>
+          <div class="subTitle">초성퀴즈</div>
+          <div class="content">
+            해당 유물의 초성을 보고 유물의 이름을 맞춰주세요 <br />
+            힌트를 통해 유물의 정보를 알 수 있어요
+          </div>
+          <div class="subTitle">위인퀴즈</div>
+          <div class="content">
+            5초마다 위인에 대한 정보가 주어져요 <br />
+            주어진 정보로 위인의 이름을 맞춰주세요
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1013,24 +1036,43 @@ export default {
 }
 
 .info__text {
-  width: 10vw;
-  height: 10vh;
   background-color: rgb(192, 192, 192);
   border-radius: 15px;
+  padding: 15px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
   position: absolute;
+  height: 0;
   top: 12vh;
   left: 4vw;
   opacity: 0;
   cursor: url('@/assets/selector.cur'), pointer;
 }
 
-.info__btn:hover + .info__text {
-  opacity: 1;
+.subTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px 0;
+  display: none;
 }
 
+.content {
+  font-size: 17px;
+  line-height: 22px;
+  display: none;
+}
+
+.info__btn:hover + .info__text {
+  transition: 0.3s linear;
+  opacity: 0.9;
+  height: auto;
+}
+
+.info__btn:hover + .info__text > div {
+  display: block;
+  opacity: 1;
+}
 .inGame {
   width: 100vw;
   height: 100vh;
