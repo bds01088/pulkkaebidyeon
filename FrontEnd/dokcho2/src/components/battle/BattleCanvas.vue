@@ -73,21 +73,24 @@
         </div>
 
         <div class="item__console" id="console" v-show="phase === 'selectItem'">
-          <div class="item__item" v-for="(item, idx) in itemList" :key="idx">
-            <div @click="doSelectItem(item)" class="tooltip">
-              <img
-                :src="require('@/assets/item/' + item.itemId + '.png')"
-                alt=""
-                class="item__image"
-              />
-              <p>{{ item.itemName }} x {{ item.count }}</p>
+          <div class="item__body">
+            <div class="item__item" v-for="(item, idx) in itemList" :key="idx">
+              <div @click="doSelectItem(item)" class="tooltip">
+                <img
+                  :src="require('@/assets/item/' + item.itemId + '.png')"
+                  alt=""
+                  class="item__image"
+                />
+                <p>{{ item.itemName }}X{{ item.count }}</p>
 
-              <span class="tooltiptext">{{ item.description }}</span>
+                <span class="tooltiptext">{{ item.description }}</span>
+              </div>
             </div>
           </div>
-          <br />
-          <div style="float: right">
-            <button @click="itemToSelect()">뒤로</button>
+
+          <!-- <br /> -->
+          <div>
+            <button class="item__btn" @click="itemToSelect()">뒤로</button>
           </div>
         </div>
 
@@ -1812,11 +1815,11 @@ canvas {
 
 #consoleDiv {
   position: fixed;
-  top: 71%;
+  top: 68%;
   left: 15%;
 
   width: 70%;
-  height: 25%;
+  height: 28%;
   background-color: rgb(229, 224, 196);
   z-index: 1;
   border-top-right-radius: 10vw;
@@ -1838,16 +1841,16 @@ canvas {
   padding: 1%; */
 
   /* background-color: white; */
-  width: 70%;
+  width: 80%;
   height: 70%;
   z-index: 2;
-  margin-top: 5vh;
+  margin-top: 6vh;
   margin-left: 7vw;
   margin-right: 7vw;
   font-size: 1.4rem;
   letter-spacing: 0.3px;
   word-spacing: 5px;
-  cursor: url('@/assets/selector.cur'), pointer;
+  /* cursor: url('@/assets/selector.cur'), pointer; */
   /* border-radius: 10px; */
 }
 
@@ -1860,14 +1863,14 @@ p {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-left: 4vw;
+  margin-left: 3vw;
 }
 .select__btn {
   display: inline;
   margin-left: 1vw;
   margin-right: 1vw;
   cursor: url('@/assets/selector.cur'), pointer;
-  margin-top: 2vh;
+  margin-top: 4vh;
 }
 
 .select__btn button {
@@ -1893,35 +1896,83 @@ p {
   /* border: 12px solid transparent; */
 }
 
+.triangle:hover {
+  scale: 1.1;
+  color: #467302;
+}
+
 .triangle--top {
   /* border-top-color: black; */
-  animation: blink-effect 1s step-end infinite;
+  /* animation: blink-effect 1s step-end infinite; */
+  animation: blinker 1s cubic-bezier(1, 1, 1, 1) infinite alternate;
 }
 
 .item__console {
+  /* display: grid;
+  grid-template-columns: repeat(9, 1fr); */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.item__body {
   display: grid;
-  grid-template-columns: repeat(9, 1fr);
+  grid-template-columns: repeat(8, 1fr);
 }
 
 .item__item {
   align-items: center;
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 10px;
-  /* margin-bottom: 3vh; */
+  margin-bottom: 1vh;
+  margin-right: 1vh;
   cursor: url('@/assets/selector.cur'), pointer;
+  text-align: center;
+  transition: 0.5s;
 }
+
 .item__item p {
-  font-size: 0.7rem;
+  font-size: 0.6rem;
 }
 .item__image {
-  width: 95%;
+  width: 90%;
 }
-@keyframes blink-effect {
+
+.item__item:hover {
+  scale: 1.05;
+}
+
+.item__btn {
+  margin-top: 4vh;
+  height: 6vh;
+  border-radius: 30px;
+  border: none;
+  width: 6vw;
+  cursor: url('@/assets/selector.cur'), pointer;
+  font-size: 1rem;
+  background-color: #d5d5d5;
+}
+
+.item__btn:hover {
+  background-color: #6bfa8d;
+  font-weight: bold;
+}
+
+/* @keyframes blink-effect {
   0% {
     opacity: 1;
   }
   100% {
+    opacity: 0;
+  }
+} */
+
+@keyframes blinker {
+  from {
+    opacity: 1;
+  }
+  to {
     opacity: 0;
   }
 }
