@@ -99,6 +99,7 @@ export default {
     function nextQuiz(answer) {
       audio.play()
       if (answer === quiz.value.content[quiz.value.nowPage].right_answer) {
+        quiz.value.nowPage += 1
         if (quiz.value.nowPage !== quiz.value.content.length) {
           swal({
             title: '정답!!!',
@@ -107,10 +108,7 @@ export default {
             buttons: false,
             timer: 800
           })
-          quiz.value.nowPage += 1
-        }
-
-        if (quiz.value.nowPage === quiz.value.content.length) {
+        } else if (quiz.value.nowPage === quiz.value.content.length) {
           endQuiz()
         }
       } else {
