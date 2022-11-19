@@ -246,7 +246,7 @@ export default {
     function showResult() {
       let isValid = true
       inputAnswer.value.forEach((el) => {
-        if (el < 0 || el > 9 || !el.isInteger) {
+        if (el < 1 || el > 9 || isNaN(el)) {
           isValid = false
         }
       })
