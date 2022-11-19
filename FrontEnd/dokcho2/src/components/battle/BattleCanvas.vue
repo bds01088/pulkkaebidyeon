@@ -14,6 +14,7 @@
       :enemyHp="enemyHp"
       :myName="myName"
       :enemyName="enemyName"
+      :myLevel="myLevel"
     ></battle-status>
 
     <div id="battleDiv"><div id="battle"></div></div>
@@ -180,6 +181,7 @@ export default {
 
     const myName = ref('')
     const myMaxHp = ref(100)
+    const myLevel = ref(1)
     const myHp = ref(100)
     const myAttack = ref(20)
     const myDefense = ref(10)
@@ -1792,12 +1794,13 @@ export default {
           }
         })
         .then((res) => {
-          // console.log(res.data)
+          console.log('풀깨비 인포', res.data)
           myName.value = res.data.name
           myMaxHp.value = res.data.hp
           myHp.value = res.data.hp
           myAttack.value = res.data.attack
           myDefense.value = res.data.defence
+          myLevel.value = res.data.level
         })
         .catch((err) => console.log(err))
     }
@@ -1891,7 +1894,8 @@ export default {
       itemToSelect,
       myName,
       enemyName,
-      isloading
+      isloading,
+      myLevel
     }
   }
 }

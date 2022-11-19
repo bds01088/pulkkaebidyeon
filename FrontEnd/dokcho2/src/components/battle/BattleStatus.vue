@@ -20,7 +20,7 @@
     <div id="myStatus">
       <div class="mystatus__header">
         <p>{{ myName }}</p>
-        <p>Lv.{{ this.monsterDetail.level }}</p>
+        <p>Lv.{{ myLevel }}</p>
       </div>
 
       <div class="Hp__container" id="myMaxHp">
@@ -39,18 +39,13 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { BASE_URL } from '@/constant/BASE_URL'
-
 export default {
   data() {
     return {
       time: 0,
 
       getEnemyHpBar: 100,
-      getmyHpBar: 100,
-      userInfo: JSON.parse(localStorage.getItem('userInfo')),
-      monsterDetail: {}
+      getmyHpBar: 100
     }
   },
 
@@ -64,14 +59,14 @@ export default {
     enemyMaxHp: Number,
     enemyHp: Number,
     myName: String,
-    enemyName: String
+    enemyName: String,
+    myLevel: Number
   },
 
   created() {
-    this.fetchrepresentMonster(),
-      setInterval(() => {
-        this.time += 1
-      }, 30)
+    setInterval(() => {
+      this.time += 1
+    }, 30)
   },
 
   watch: {
@@ -110,28 +105,11 @@ export default {
     }
   },
 
-  methods: {
-    fetchrepresentMonster() {
-      const id = this.userInfo.representMonster
-      axios({
-        url: BASE_URL + '/api/v1/monster/' + id,
-        method: 'GET',
-        headers: {
-          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-        }
-      })
-        .then((res) => {
-          this.monsterDetail = res.data
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    }
-  }
+  methods: {}
 }
 </script>
 
-<style>
+<style scoped>
 #enemyStatus {
   position: absolute;
   top: 10%;
