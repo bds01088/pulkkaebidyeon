@@ -254,7 +254,7 @@ export default {
             const user = JSON.parse(localStorage.getItem('userInfo'))
             const monsterId = user.representMonster
             let monster = []
-            const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
+            // const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
 
             axios({
               url: BASE_URL + '/api/v1/monster/' + monsterId,
@@ -269,7 +269,9 @@ export default {
                 Swal.fire({
                   title: 'Level Up!!🎉',
                   html: `<div style="text-align:center;">
-                  <img  style="height:100px;width:100px;text-align:center;" src=${monsterImg}/>
+                  <img  style="height:100px;width:100px;text-align:center;" src="${require('@/assets/starting/' +
+                    monsterId +
+                    '.png')}"/>
                   <p><b>${monster.name}</b>이</p><br /> <p> <b>Lv.${
                     monster.level - 1
                   } 👉 Lv.${monster.level}</b>로 성장했어요!</p>

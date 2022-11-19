@@ -68,6 +68,9 @@ export default {
     const Toast = Swal.mixin({
       toast: true,
       position: 'top',
+      customClass: {
+        popup: 'mission-toast'
+      },
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true
@@ -99,7 +102,7 @@ export default {
 
       function fetchMonster() {
         const monsterId = userInfo.representMonster
-        const monsterImg = require(`@/assets/starting/${monsterId}.png`)
+        // const monsterImg = require(`@/assets/starting/${monsterId}.png`)
         axios({
           url: BASE_URL + '/api/v1/monster/' + monsterId,
           method: 'GET',
@@ -113,7 +116,9 @@ export default {
             Swal.fire({
               title: 'Level Up!!🎉',
               html: `<div style="text-align:center;">
-                  <img  style="height:200px;width:150px;text-align:center;" src=${monsterImg}/>
+                  <img  style="height:200px;width:150px;text-align:center;" src="${require('@/assets/starting/' +
+                    monsterId +
+                    '.png')}"/>
                   <p style="font-size: 1.2rem;"><b>${
                     monster.name
                   }</b>이</p><br /> <p style="font-size: 1.2rem;"> <b>Lv.${
@@ -149,7 +154,7 @@ export default {
                     '.png')}"/>
                     <p style="font-size:0.9rem;">${content.itemName}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
           imageUrl: clearImg,
           imageWidth: 300,
@@ -178,7 +183,7 @@ export default {
                     '.png')}"/>
                     <p style="font-size:0.9rem;">${content.itemName}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
           imageUrl: clearImg,
           imageWidth: 300,
@@ -221,7 +226,7 @@ export default {
                       '.png')}"/>
                     <p style="font-size:0.9rem;">${monsters[0].name}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -257,7 +262,34 @@ export default {
                       '.png')}"/>
                     <p style="font-size:0.9rem;">${monsters[1].name}</p>
                   </div>
-                    
+
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+            imageUrl: clearImg,
+            imageWidth: 300,
+            imageHeight: 100,
+            imageAlt: 'Custom image',
+            background: 'rgba(255, 255, 255)'
+          })
+        }
+
+        if (content.missionId === 8) {
+          Swal.fire({
+            title: `${content.characters}를 물리쳤어요! 🏆`,
+            html:
+              `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/18.png')}"/>
+                    <p style="font-size:0.9rem;">동의보감</p>
+                  </div>
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -270,13 +302,13 @@ export default {
 
       function levelUpMonsterAlert() {
         if (content.missionId === 2) {
-          axios({
-            url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
-            method: 'POST',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          }).catch((err) => console.log(err))
+          // axios({
+          //   url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
+          //   method: 'POST',
+          //   headers: {
+          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          //   }
+          // }).catch((err) => console.log(err))
           Swal.fire({
             title: `${content.characters}의 고민 해결 완료 ✨`,
             html:
@@ -302,7 +334,7 @@ export default {
                       '.png')}"/>
                     <p style="font-size:0.9rem;">${monsters[0].name}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -319,13 +351,13 @@ export default {
         }
 
         if (content.missionId === 5) {
-          axios({
-            url: BASE_URL + '/api/v1/monster/' + monsters[1].id,
-            method: 'POST',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          }).catch((err) => console.log(err))
+          // axios({
+          //   url: BASE_URL + '/api/v1/monster/' + monsters[1].id,
+          //   method: 'POST',
+          //   headers: {
+          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          //   }
+          // }).catch((err) => console.log(err))
           Swal.fire({
             title: `${content.characters}의 고민 해결 완료 ✨`,
             html:
@@ -351,7 +383,47 @@ export default {
                       '.png')}"/>
                     <p style="font-size:0.9rem;">${monsters[1].name}</p>
                   </div>
-                    
+
+                  </div>` + `<p>🔍 ${content.next}</p>`,
+            imageUrl: clearImg,
+            imageWidth: 300,
+            imageHeight: 100,
+            imageAlt: 'Custom image',
+            background: 'rgba(255, 255, 255)'
+          })
+            .then((res) => {
+              if (res.value) {
+                fetchMonster()
+              }
+            })
+            .catch((err) => console.log(err))
+        }
+
+        if (content.missionId === 8) {
+          // axios({
+          //   url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
+          //   method: 'POST',
+          //   headers: {
+          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          //   }
+          // }).catch((err) => console.log(err))
+          Swal.fire({
+            title: `${content.characters}를 물리쳤어요! 🏆`,
+            html:
+              `<div style="display:flex; flex-direction: row; justify-content:center">
+
+                  <div style="margin: 1vw">
+                    <img  style="height:60px;width:60px;text-align:center;margin-bottom:1vh;" src="${require('@/assets/mission/exp.png')}"/>
+                    <p style="font-size:0.9rem;">경험치 <b>${
+                      content.exp
+                    }</b></p>
+                  </div>
+
+                  <div style="margin: 1vw">
+                  <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/18.png')}"/>
+                    <p style="font-size:0.9rem;">동의보감</p>
+                  </div>
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -390,10 +462,8 @@ export default {
                 emit('talkClose')
                 Toast.fire({
                   icon: 'success',
-                  html:
-                    `<p><b>유물 도둑을 찾아라!</b></p>` +
-                    '<br />' +
-                    `<p>${content.next}</p>`
+                  title: '유물 도둑을 찾아라!',
+                  html: `<p>${content.next}</p>`
                 })
               })
               .catch((err) => console.log(err))
@@ -406,7 +476,11 @@ export default {
             })
             emit('enterBattle')
           } else if (content.status === 'BATTLE_WIN') {
-            if (content.missionId === 2 || content.missionId === 5) {
+            if (
+              content.missionId === 2 ||
+              content.missionId === 5 ||
+              content.missionId === 8
+            ) {
               // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
               axios({
                 url: BASE_URL + '/api/v1/mission/',
@@ -417,10 +491,35 @@ export default {
               }).then((res) => {
                 // console.log()
                 store.dispatch('fetchnowUserInfo')
+                if (content.missionId === 2) {
+                  const monster1 = { id: 2, name: '도꼬마리몬' }
+                  axios({
+                    url: BASE_URL + '/api/v1/monster/' + monster1.id,
+                    method: 'POST',
+                    headers: {
+                      AUTHORIZATION:
+                        'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                  }).catch((err) => console.log(err))
+                }
+                if (content.missionId === 5) {
+                  const monster2 = { id: 3, name: '마늘몬' }
+
+                  axios({
+                    url: BASE_URL + '/api/v1/monster/' + monster2.id,
+                    method: 'POST',
+                    headers: {
+                      AUTHORIZATION:
+                        'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                  }).catch((err) => console.log(err))
+                }
                 if (res.data === true) {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   levelUpMonsterAlert()
                 } else {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   defaultMonsterAlert()
                 }
@@ -436,9 +535,11 @@ export default {
               }).then((res) => {
                 store.dispatch('fetchnowUserInfo')
                 if (res.data === true) {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   levelUpAlert()
                 } else {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   defaultAlert()
                 }
@@ -552,6 +653,9 @@ export default {
   color: #467302;
 }
 
+.colored-toast {
+  width: 900px;
+}
 /* 타이핑 애니메이션 : 첫번째 줄 시작에만 적용돼서 주석처리 */
 /* @keyframes typing {
   from {

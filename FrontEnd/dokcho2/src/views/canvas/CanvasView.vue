@@ -14,7 +14,11 @@
         v-if="fullPage === true"
       />
     </div>
-    <NavBar @changeNavbar="changeNavbar" @quizStart="quizStart" />
+    <NavBar
+      @changeNavbar="changeNavbar"
+      @quizStart="quizStart"
+      v-show="this.ending !== 1 && this.isBattle === 0"
+    />
     <LoadingPage
       v-if="this.isGameStart === 0"
       @gameStart="gameStart"
@@ -125,6 +129,7 @@ export default {
       if (this.nowPage === 0 && this.isBattle === 0) {
         this.isBattle = 1
         this.startBattle()
+        console.log(this.isBattle)
       } else {
         this.isBattle = 0
         this.audio.play()
@@ -158,6 +163,7 @@ export default {
     quizStart(isOpen) {
       if (isOpen) {
         this.audio.pause()
+        this.quizAudio.loop = true
         this.quizAudio.play()
       } else {
         this.quizAudio.pause()

@@ -31,9 +31,10 @@ import { Wall } from '../modules/Wall'
 import { KeyController } from '../modules/CharacterControl'
 import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
-import TalkComponent from '../script/TalkComponent2.vue'
+import TalkComponent from '../script/TalkComponent.vue'
 import QuizComponent from '../script/QuizComponent.vue'
 import { ref, watchEffect } from 'vue'
+import Swal from 'sweetalert2'
 
 import { BASE_URL } from '@/constant/BASE_URL'
 
@@ -69,6 +70,16 @@ export default {
       miniGame2: false,
       miniGame3: false
     })
+
+    // toast 설정
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    })
+
     const camera = new THREE.OrthographicCamera(
       -(window.innerWidth / window.innerHeight), // left
       window.innerWidth / window.innerHeight, // right,
@@ -380,7 +391,7 @@ export default {
 
         if (isLoading === 0 && scene.children.length >= 167) {
           isLoading = 1
-          console.log('로딩 끝1')
+          // console.log('로딩 끝1')
           emit('loadingEnd')
         }
 
@@ -436,6 +447,10 @@ export default {
             ) {
               if (!house.visible) {
                 house.visible = true
+                Toast.fire({
+                  icon: 'success',
+                  title: '문을 두드려 집에 들어가세요 !'
+                })
                 gsap.to(house.modelMesh.position, {
                   duration: 1,
                   y: 1,
@@ -534,6 +549,7 @@ export default {
 
           // 대표풀깨비 따라오기
           if (myMoster.moving) {
+            myMoster.actions[0].play()
             angle = Math.atan2(
               player.modelMesh.position.z - myMoster.modelMesh.position.z,
               player.modelMesh.position.x - myMoster.modelMesh.position.x
@@ -564,7 +580,7 @@ export default {
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
         for (const item of intersects) {
-          console.log(item)
+          // console.log(item)
           // if (item.object.name === 'floor') {
           //   destinationPoint.x = item.point.x
           //   destinationPoint.z = item.point.z
@@ -587,7 +603,7 @@ export default {
             isPressed = false
 
             if (isTalk.value.name === '허준') {
-              let status = ['BATTLE_WIN', 'FINISHED']
+              let status = ['BATTLE_WIN']
 
               setTimeout(() => {
                 if (status.includes(isTalk.value.content.status)) {
@@ -633,11 +649,11 @@ export default {
 
             if (isTalk.value.name === '성빈몬') {
               let status = ['NOT_YET', 'READY', 'STARTED', 'QUIZ_PASSED']
-              if (status.includes(isTalk.value.content.status)) {
-                isTalk.value.talk = true
-              } else {
-                isTalk.value.talk = false
-              }
+              setTimeout(() => {
+                if (status.includes(isTalk.value.content.status)) {
+                  isTalk.value.talk = true
+                }
+              }, 100)
             } else {
               let status = ['STARTED', 'QUIZ_PASSED']
               setTimeout(() => {
@@ -861,7 +877,7 @@ export default {
 
       // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
       watchEffect(() => {
-        console.log(props.nowPage)
+        // console.log(props.nowPage)
         if (myMoster.modelMesh) {
           const id = JSON.parse(
             localStorage.getItem('userInfo')
@@ -909,7 +925,7 @@ export default {
         }
       })
         .then((res) => {
-          console.log(res.data)
+          // console.log(res.data)
           isTalk.value.content = res.data
           isTalk.value.content.line = res.data.line.split('\\t')
         })
