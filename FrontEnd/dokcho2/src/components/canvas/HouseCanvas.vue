@@ -27,6 +27,7 @@ import myPage from '@/components/accounts/myPage.vue'
 import { Furniture } from '../modules/Furniture'
 import { Door } from '../modules/Door'
 import { Body, Box, Vec3 } from 'cannon-es'
+import { HouseMonster } from '../modules/HouseMonster'
 
 export default {
   name: 'HouseCanvas',
@@ -145,50 +146,68 @@ export default {
       const gltfLoader = new GLTFLoader()
       let myMonsters = []
       const monsterPos = [
-        { x: 0, y: 0.2, z: 0 },
-        { x: 1.5, y: 0.2, z: 1.5 },
-        { x: -3, y: 0.2, z: -2 },
-        { x: -1, y: 0.2, z: -1.5 }
+        { x: 0, y: 0, z: 0 },
+        { x: 1.5, y: 0, z: 1.5 },
+        { x: -3, y: 0, z: -2 },
+        { x: -1, y: 0, z: -1.5 }
       ]
 
       // 내가 가진 풀깨비 넣기
       for (let monsterID in userMonster.value.userMonster) {
         let id = Number(monsterID) + 1
         console.log('풀깨비 아이디', id)
-        gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
-          const monster = item.scene
-          monster.name = ['monster', `${id}`]
-          monster.position.x = monsterPos[id].x
-          monster.position.y = monsterPos[id].y
-          monster.position.z = monsterPos[id].z
-          monster.scale.set(0.5, 0.5, 0.5)
 
-          const shape = new Box(new Vec3(0.08, 0.08, 0.08))
-
-          monster.cannonBody = new Body({
-            mass: 0,
-            position: new Vec3(
-              monster.position.x,
-              monster.position.y,
-              monster.position.z
-            ),
-            shape
-          })
-
-          monster.cannonBody.quaternion.setFromAxisAngle(
-            new Vec3(0, 1, 0), // y축
-            0
-          )
-
-          console.log(monster.cannonBody)
-
-          cannonWorld.addBody(monster.cannonBody)
-
-          scene.add(monster)
-          // meshes.push(monster)
-          myMonsters.push(monster)
+        const monster = new HouseMonster({
+          scene,
+          meshes,
+          cannonWorld,
+          gltfLoader,
+          modelSrc: `/models/Monsters/${id}.glb`,
+          position: {
+            x: monsterPos[id].x,
+            y: monsterPos[id].y,
+            z: monsterPos[id].z
+          },
+          name: `${id}`
         })
+        console.log(monster)
       }
+
+      // gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
+      //   const monster = item.scene
+      //   monster.castShadow = true
+      //   monster.name = ['monster', `${id}`]
+      //   monster.position.x = monsterPos[id].x
+      //   monster.position.y = monsterPos[id].y
+      //   monster.position.z = monsterPos[id].z
+      //   monster.scale.set(0.5, 0.5, 0.5)
+
+      //   const shape = new Box(new Vec3(0.08, 0.08, 0.08))
+
+      //   monster.cannonBody = new Body({
+      //     mass: 0,
+      //     position: new Vec3(
+      //       monster.position.x,
+      //       monster.position.y,
+      //       monster.position.z
+      //     ),
+      //     shape
+      //   })
+
+      //   monster.cannonBody.quaternion.setFromAxisAngle(
+      //     new Vec3(0, 1, 0), // y축
+      //     0
+      //   )
+
+      //   console.log(monster.cannonBody)
+
+      //   cannonWorld.addBody(monster.cannonBody)
+
+      //   scene.add(monster)
+      //   // meshes.push(monster)
+      //   myMonsters.push(monster)
+      // })
+      // }
 
       // 내가 가진 풀깨비 넣기
       // axios({
