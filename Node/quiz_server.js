@@ -51,12 +51,11 @@ axios({
   });
 
 axios({
-  url: BASE_URL + "/api/v1/game/characterquiz/auth/18",
+  url: BASE_URL + "/api/v1/game/characterquiz/auth/30",
   method: "GET",
 })
   .then((res) => {
     characterQuizs = res.data;
-    console.log(res.data);
   })
   .catch((err) => {
     console.log(err);
