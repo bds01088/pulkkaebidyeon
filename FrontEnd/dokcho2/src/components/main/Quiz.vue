@@ -43,6 +43,13 @@
                   id="chosung"
                 />
                 <label for="chosung">초성퀴즈</label>
+                <input
+                  type="radio"
+                  v-model="inputGameType.inputGameType"
+                  value="character"
+                  id="character"
+                />
+                <label for="character">인물퀴즈</label>
               </div>
               <input
                 type="text"
@@ -102,6 +109,8 @@
           src="@/assets/navbar/ExitButton.png"
           alt=""
         />
+        <img class="info__btn" src="@/assets/navbar/infoButton.png" alt="" />
+        <div class="info__text">인포~</div>
       </div>
     </div>
 
@@ -120,10 +129,23 @@
         </div>
         <div class="inGame__quizBox">
           <div v-if="this.quizing.quizing === true && this.nextQuiz.nextQuiz">
-            <div>문제 : {{ this.nextQuiz.nextQuiz.question }}</div>
-            <div>
-              힌트 :
-              {{ this.nextQuiz.nextQuiz.description }}
+            <div v-if="this.characterQuiz.quiz === []">
+              <div>문제 : {{ this.nextQuiz.nextQuiz.question }}</div>
+              <div>
+                힌트 :
+                {{ this.nextQuiz.nextQuiz.description }}
+              </div>
+            </div>
+            <div v-else>
+              <div>
+                {{ this.characterQuiz.quiz[0] }}
+              </div>
+              <div v-if="this.characterQuiz.nowPage >= 1">
+                {{ this.characterQuiz.quiz[1] }}
+              </div>
+              <div v-if="this.characterQuiz.nowPage >= 2">
+                {{ this.characterQuiz.quiz[2] }}
+              </div>
             </div>
           </div>
           <div v-else>
@@ -251,6 +273,7 @@ export default {
     let nextQuiz = ref({ nextQuiz: '' })
     const item = ref({ item: {} })
     let correctUser = ref({ correctUser: '정답자' })
+    let characterQuiz = ref({ quiz: [], timer: 0, nowPage: 0 })
 
     let userInfo = JSON.parse(localStorage.getItem('userInfo'))
     const socket = io('https://k7e203.p.ssafy.io/')
@@ -341,6 +364,8 @@ export default {
       QuizRoomEntered.value.QuizRoomEntered = false
       correctUser.value.correctUser = '정답자'
       nextQuiz.value.nextQuiz = ''
+      characterQuiz.value.timer = -1
+      characterQuiz.value.quiz = []
     }
 
     socket.on('leaveRoomOK', (payload) => {
@@ -365,6 +390,29 @@ export default {
             chattingBox[0].scrollHeight - chattingBox[0].clientHeight
         }
       }, 100)
+    }
+
+    function startTimer() {
+      characterQuiz.value.timer = 0
+      characterQuiz.value.nowPage = 0
+      let gameTimer = setInterval(() => {
+        characterQuiz.value.timer += 1
+        if (characterQuiz.value.timer === -1) {
+          clearInterval(gameTimer)
+          characterQuiz.value.timer = 0
+        }
+        if (characterQuiz.value.nowPage === 2) {
+          clearInterval(gameTimer)
+          characterQuiz.value.timer = 0
+        }
+        if (
+          characterQuiz.value.timer === 5 &&
+          characterQuiz.value.nowPage < 3
+        ) {
+          characterQuiz.value.timer = 0
+          characterQuiz.value.nowPage += 1
+        }
+      }, 1000)
     }
 
     socket.on('msg', (msgpayload) => {
@@ -451,12 +499,23 @@ export default {
         })
         goToScrollBottom()
         quizing.value.quizing = true
-        nextQuiz.value.nextQuiz = data
+        nextQuiz.value.nextQuiz = data[1]
+        // if 넣을 자리
+        if (data[0] === 'character') {
+          characterQuiz.value.quiz =
+            nextQuiz.value.nextQuiz.question.split('\\t')
+          startTimer()
+        }
       }, 5000)
     })
 
     socket.on('nextQuiz', (data) => {
-      nextQuiz.value.nextQuiz = data
+      nextQuiz.value.nextQuiz = data[1]
+      // if 넣을 자리
+      if (data[0] === 'character') {
+        characterQuiz.value.quiz = nextQuiz.value.nextQuiz.question.split('\\t')
+        startTimer()
+      }
     })
 
     socket.on('correct', (payload) => {
@@ -476,11 +535,13 @@ export default {
 
     socket.on('endQuiz', (data) => {
       quizing.value.quizing = false
+      characterQuiz.value.timer = -1
+      characterQuiz.value.quiz = []
       for (let winner of data) {
         allMsg.value.allMsg.push({
           socketId: '',
           nickname: '김구현(훈장)',
-          content: `${winner.nickname}가 이겼노라!`
+          content: `${winner.nickname}(이)가 이겼노라!`
         })
         goToScrollBottom()
       }
@@ -620,7 +681,8 @@ export default {
       sendMsg,
       closeQuiz,
       isCorrectUser,
-      imageNumber
+      imageNumber,
+      characterQuiz
     }
   }
 }
@@ -747,7 +809,7 @@ export default {
   display: inline-block;
   cursor: url('@/assets/selector.cur'), pointer;
   height: 24px;
-  width: 45%;
+  width: 30%;
   border: 1px solid #333;
   line-height: 24px;
   text-align: center;
@@ -932,6 +994,36 @@ export default {
   top: 4vh;
   right: 4vw;
   cursor: url('@/assets/selector.cur'), pointer;
+}
+
+.info__btn {
+  width: 3vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 4vh;
+  left: 4vw;
+  cursor: url('@/assets/selector.cur'), pointer;
+}
+
+.info__text {
+  width: 10vw;
+  height: 10vh;
+  background-color: rgb(192, 192, 192);
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 12vh;
+  left: 4vw;
+  opacity: 0;
+  cursor: url('@/assets/selector.cur'), pointer;
+}
+
+.info__btn:hover + .info__text {
+  opacity: 1;
 }
 
 .inGame {

@@ -277,7 +277,7 @@ export default {
 
           setTimeout(() => {
             isloading.value = false
-          }, 500)
+          }, 1000)
 
           battleAudio.load()
           battleAudio.play()
