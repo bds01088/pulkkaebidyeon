@@ -1758,7 +1758,7 @@ export default {
       begin.value = 0
 
       phase.value = 'start'
-      // msg.value = `${enemyName.value}과(와) 만났다!`
+      msg.value = '적과 만났다!'
 
       actList.value = ['공격', '아이템']
       myAct.value = ''
@@ -1928,9 +1928,6 @@ canvas {
   border-bottom-left-radius: 6vw;
   box-shadow: 10px 10px 10px #00000092;
   cursor: url('@/assets/selector.cur'), pointer;
-}
-
-.consoleBox {
 }
 
 #console {
