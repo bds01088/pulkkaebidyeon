@@ -81,7 +81,12 @@
                     src="@/assets/quiz/saja.png"
                     alt=""
                   />
-                  <img v-else src="@/assets/quiz/chosung.png" alt="" />
+                  <img
+                    v-else-if="room.gameType === 'chosung'"
+                    src="@/assets/quiz/chosung.png"
+                    alt=""
+                  />
+                  <img v-else src="@/assets/quiz/character.png" alt="" />
                 </div>
               </div>
               <div class="roomRight">
