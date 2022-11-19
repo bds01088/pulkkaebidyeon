@@ -14,7 +14,11 @@
         v-if="fullPage === true"
       />
     </div>
-    <NavBar @changeNavbar="changeNavbar" @quizStart="quizStart" />
+    <NavBar
+      @changeNavbar="changeNavbar"
+      @quizStart="quizStart"
+      v-show="this.ending !== 1"
+    />
     <LoadingPage
       v-if="this.isGameStart === 0"
       @gameStart="gameStart"
@@ -29,12 +33,16 @@
       :isGameStart="this.isGameStart"
       :nowPage="this.nowPage"
       :nowNavbar="this.nowNavbar"
+      :ending="ending"
+      @startEndingCredits="startEndingCredits"
     />
     <HouseCanvas
       v-show="this.nowPage === 1"
       @changeCanvas="changeCanvas"
       :nowPage="this.nowPage"
       :nowNavbar="this.nowNavbar"
+      :ending="ending"
+      @startEndingCredits="startEndingCredits"
     />
     <BattleCanvas
       v-show="this.isBattle === 1"
@@ -44,6 +52,11 @@
       :nowNavbar="this.nowNavbar"
       :startSignal="this.startSignal"
     />
+    <EndingCredits
+      v-show="this.ending === 1"
+      @startEndingCredits="startEndingCredits"
+      :ending="ending"
+    />
   </div>
 </template>
 
@@ -52,8 +65,9 @@ import WorldCanvas from '../../components/canvas/WorldCanvas.vue'
 import HouseCanvas from '../../components/canvas/HouseCanvas.vue'
 import NavBar from '../../components/main/NavBar.vue'
 import LoadingPage from '../../components/main/LoadingPage.vue'
-
 import BattleCanvas from '../../components/battle/BattleCanvas.vue'
+
+import EndingCredits from '../../components/ending/EndingCredits.vue'
 
 export default {
   data() {
@@ -66,7 +80,8 @@ export default {
       isGameStart: 0,
       audio: new Audio('audio/oursound.mp3'),
       quizAudio: new Audio('audio/future.mp3'),
-      fullPage: false
+      fullPage: false,
+      ending: 0
     }
   },
   components: {
@@ -74,7 +89,9 @@ export default {
     HouseCanvas: HouseCanvas,
     NavBar: NavBar,
     BattleCanvas: BattleCanvas,
-    LoadingPage: LoadingPage
+    LoadingPage: LoadingPage,
+
+    EndingCredits: EndingCredits
   },
   mounted() {
     this.audio.loop = true
@@ -145,11 +162,16 @@ export default {
     quizStart(isOpen) {
       if (isOpen) {
         this.audio.pause()
+        this.quizAudio.loop = true
         this.quizAudio.play()
       } else {
         this.quizAudio.pause()
         this.audio.play()
       }
+    },
+
+    startEndingCredits() {
+      this.ending += 1
     }
   }
 }

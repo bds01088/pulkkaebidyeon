@@ -185,7 +185,7 @@ export default {
 
     const msg = ref(`적과 만났다!`)
 
-    const actList = ref(['공격', '방어', '아이템'])
+    const actList = ref(['공격', '아이템'])
     const myAct = ref('')
     const status = ref('대기')
 
@@ -488,7 +488,7 @@ export default {
               player.modelMesh.lookAt(-0.5, 0, -3)
 
               if (status.value == '공격') {
-                player.cannonBody.position.y += 0.04
+                player.cannonBody.position.y += 0.05
 
                 if (player.cannonBody.position.y >= 0.6) {
                   status.value = '대기'
@@ -545,7 +545,7 @@ export default {
               if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
                 if (enemyStatus.value == '공격') {
                   if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
-                    enemy.cannonBody.position.y += 0.04
+                    enemy.cannonBody.position.y += 0.05
 
                     if (enemy.cannonBody.position.y >= 0.6) {
                       attackAudio.play()
@@ -705,7 +705,12 @@ export default {
       enemySelectAct()
 
       if (myAct.value == '공격') {
-        enemyDamage.value = enemyAttack.value
+        // enemyDamage.value = enemyAttack.value
+        enemyDamage.value = enemyAttack.value - myDefense.value
+
+        if (enemyDamage.value < 0) {
+          enemyDamage.value = 0
+        }
 
         msg.value = item + '을 선택했습니다.'
         phase.value = 'showAct'
@@ -769,7 +774,12 @@ export default {
             }
           }, 1000)
         } else {
-          myDamage.value = myAttack.value
+          // myDamage.value = myAttack.value
+          myDamage.value = myAttack.value - enemyDefense.value
+
+          if (myDamage.value < 0) {
+            myDamage.value = 0
+          }
 
           setTimeout(() => {
             showActResult()
@@ -830,11 +840,14 @@ export default {
     function enemySelectAct() {
       const num = Math.floor(Math.random() * 10)
 
-      if (num <= 7) {
+      if (num <= 8) {
         enemyAct.value = '공격'
-      } else if (num <= 8) {
-        enemyAct.value = '방어'
-      } else {
+      }
+
+      // else if (num <= 8) {
+      //   enemyAct.value = '방어'
+      // }
+      else {
         enemyAct.value = '버프'
       }
     }
@@ -1371,7 +1384,7 @@ export default {
           }, 1000)
         }
       } else if (enemyAct.value == '버프') {
-        const buff = Math.round(enemyAttack.value * 0.2)
+        const buff = Math.round(enemyAttack.value * 0.5)
         enemyAttack.value += buff
 
         msg.value = buff.toString() + '만큼 공격력 상승!'
@@ -1651,7 +1664,7 @@ export default {
       phase.value = 'start'
       // msg.value = `${enemyName.value}과(와) 만났다!`
 
-      actList.value = ['공격', '방어', '아이템']
+      actList.value = ['공격', '아이템']
       myAct.value = ''
       status.value = '대기'
       enemyAct.value = ''
