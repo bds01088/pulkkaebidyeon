@@ -302,13 +302,13 @@ export default {
 
       function levelUpMonsterAlert() {
         if (content.missionId === 2) {
-          axios({
-            url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
-            method: 'POST',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          }).catch((err) => console.log(err))
+          // axios({
+          //   url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
+          //   method: 'POST',
+          //   headers: {
+          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          //   }
+          // }).catch((err) => console.log(err))
           Swal.fire({
             title: `${content.characters}의 고민 해결 완료 ✨`,
             html:
@@ -351,13 +351,13 @@ export default {
         }
 
         if (content.missionId === 5) {
-          axios({
-            url: BASE_URL + '/api/v1/monster/' + monsters[1].id,
-            method: 'POST',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          }).catch((err) => console.log(err))
+          // axios({
+          //   url: BASE_URL + '/api/v1/monster/' + monsters[1].id,
+          //   method: 'POST',
+          //   headers: {
+          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          //   }
+          // }).catch((err) => console.log(err))
           Swal.fire({
             title: `${content.characters}의 고민 해결 완료 ✨`,
             html:
@@ -400,13 +400,13 @@ export default {
         }
 
         if (content.missionId === 8) {
-          axios({
-            url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
-            method: 'POST',
-            headers: {
-              AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-            }
-          }).catch((err) => console.log(err))
+          // axios({
+          //   url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
+          //   method: 'POST',
+          //   headers: {
+          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+          //   }
+          // }).catch((err) => console.log(err))
           Swal.fire({
             title: `${content.characters}를 물리쳤어요! 🏆`,
             html:
@@ -491,6 +491,29 @@ export default {
               }).then((res) => {
                 // console.log()
                 store.dispatch('fetchnowUserInfo')
+                if (content.missionId === 2) {
+                  const monster1 = { id: 2, name: '도꼬마리몬' }
+                  axios({
+                    url: BASE_URL + '/api/v1/monster/' + monster1.id,
+                    method: 'POST',
+                    headers: {
+                      AUTHORIZATION:
+                        'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                  }).catch((err) => console.log(err))
+                }
+                if (content.missionId === 5) {
+                  const monster2 = { id: 3, name: '마늘몬' }
+
+                  axios({
+                    url: BASE_URL + '/api/v1/monster/' + monster2.id,
+                    method: 'POST',
+                    headers: {
+                      AUTHORIZATION:
+                        'Bearer ' + localStorage.getItem('accessToken')
+                    }
+                  }).catch((err) => console.log(err))
+                }
                 if (res.data === true) {
                   console.log('res.data', res.data)
                   emit('talkClose')
