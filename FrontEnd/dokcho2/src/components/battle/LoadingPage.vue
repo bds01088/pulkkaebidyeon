@@ -1,6 +1,7 @@
 <template>
   <div class="loadingPage">
     <div class="loading__false">
+      <p class="entering">전장으로 이동중...</p>
       <div class="loading">
         <img class="img1" src="@/assets/loading/1.png" alt="1" />
         <img class="img2" src="@/assets/loading/2.png" alt="2" />
@@ -8,7 +9,6 @@
         <img class="img4" src="@/assets/loading/4.png" alt="4" />
       </div>
     </div>
-    <p class="entering">전장으로 이동중...</p>
   </div>
 </template>
 
@@ -43,7 +43,7 @@ export default {}
   justify-content: center;
   align-items: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('../../assets/forest2.png');
+    url('../../assets/battleLoading.png');
   background-size: cover;
 }
 
@@ -100,8 +100,10 @@ export default {}
 }
 
 .entering {
+  margin: 3vh;
+  margin-top: 30vh;
   color: white;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
 }
 
