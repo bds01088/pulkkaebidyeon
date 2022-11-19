@@ -217,5 +217,10 @@ ul {
 
 .navbar__item {
   text-align: center;
+  transition: 0.5s;
+}
+
+.navbar__item:hover {
+  scale: 1.2;
 }
 </style>
