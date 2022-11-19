@@ -399,6 +399,7 @@ export default {
       nextQuiz.value.nextQuiz = ''
       characterQuiz.value.timer = -2
       characterQuiz.value.quiz = []
+      inputMsg.value.inputMsg = ''
     }
 
     socket.on('leaveRoomOK', (payload) => {
