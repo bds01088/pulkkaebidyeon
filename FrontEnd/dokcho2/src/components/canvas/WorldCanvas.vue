@@ -877,7 +877,7 @@ export default {
 
       // props.nowPage가 바뀔 때 마다 대표 풀깨비 씬에서 제거후 추가
       watchEffect(() => {
-        // console.log(props.nowPage)
+        console.log(props.nowPage)
         if (myMoster.modelMesh) {
           const id = JSON.parse(
             localStorage.getItem('userInfo')
