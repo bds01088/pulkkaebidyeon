@@ -68,6 +68,9 @@ export default {
     const Toast = Swal.mixin({
       toast: true,
       position: 'top',
+      customClass: {
+        popup: 'mission-toast'
+      },
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true
@@ -151,7 +154,7 @@ export default {
                     '.png')}"/>
                     <p style="font-size:0.9rem;">${content.itemName}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
           imageUrl: clearImg,
           imageWidth: 300,
@@ -180,7 +183,7 @@ export default {
                     '.png')}"/>
                     <p style="font-size:0.9rem;">${content.itemName}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
           imageUrl: clearImg,
           imageWidth: 300,
@@ -223,7 +226,7 @@ export default {
                       '.png')}"/>
                     <p style="font-size:0.9rem;">${monsters[0].name}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -259,7 +262,7 @@ export default {
                       '.png')}"/>
                     <p style="font-size:0.9rem;">${monsters[1].name}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -286,7 +289,7 @@ export default {
                   <img  style="height:60px;width:60px;text-align:center;" src="${require('@/assets/item/18.png')}"/>
                     <p style="font-size:0.9rem;">동의보감</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -331,7 +334,7 @@ export default {
                       '.png')}"/>
                     <p style="font-size:0.9rem;">${monsters[0].name}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -380,7 +383,7 @@ export default {
                       '.png')}"/>
                     <p style="font-size:0.9rem;">${monsters[1].name}</p>
                   </div>
-                    
+
                   </div>` + `<p>🔍 ${content.next}</p>`,
             imageUrl: clearImg,
             imageWidth: 300,
@@ -459,10 +462,8 @@ export default {
                 emit('talkClose')
                 Toast.fire({
                   icon: 'success',
-                  html:
-                    `<p><b>유물 도둑을 찾아라!</b></p>` +
-                    '<br />' +
-                    `<p>${content.next}</p>`
+                  title: '유물 도둑을 찾아라!',
+                  html: `<p>${content.next}</p>`
                 })
               })
               .catch((err) => console.log(err))
@@ -629,6 +630,9 @@ export default {
   color: #467302;
 }
 
+.colored-toast {
+  width: 900px;
+}
 /* 타이핑 애니메이션 : 첫번째 줄 시작에만 적용돼서 주석처리 */
 /* @keyframes typing {
   from {
