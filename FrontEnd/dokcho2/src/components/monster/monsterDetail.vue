@@ -18,15 +18,18 @@
         </div>
 
         <div class="monster__detail">
-          <div v-if="this.monsterDetail.name === 개나리몬" class="detail">
+          <div v-if="this.monsterDetail.name === '개나리몬'" class="detail">
             <p>속성</p>
             <p>균형</p>
           </div>
-                    <div v-else-if="this.monsterDetail.name === 도꼬마리몬" class="detail">
+          <div
+            v-else-if="this.monsterDetail.name === '도꼬마리몬'"
+            class="detail"
+          >
             <p>속성</p>
             <p>방어</p>
           </div>
-                    <div v-else class="detail">
+          <div v-else class="detail">
             <p>속성</p>
             <p>공격</p>
           </div>
