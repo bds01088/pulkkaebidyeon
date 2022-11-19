@@ -215,7 +215,10 @@ try {
             io.to(`${roomInfo.roomId}`).emit("dontStartQuiz");
           } else {
             // 퀴즈시작
-            if (data[3] === "독초는 퀴즈를 뿌려라") {
+            if (
+              data[3] === "독초는 퀴즈를 뿌려라" &&
+              roomInfo.quizing == false
+            ) {
               roomInfo.quizing = true;
               let payload = [
                 roomInfo.gameType,
