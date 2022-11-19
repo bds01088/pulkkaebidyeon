@@ -1,46 +1,56 @@
 <template>
   <div>
     <div id="enemyStatus">
-      <p style="margin-left: 10px">{{ enemyName }}</p>
-      <div
-        id="enemyMaxHp"
-        style="border: 5px solid black; height: 30px; width: 88%"
-      >
-        <div
-          id="enemyHp"
-          style="background-color: green; height: 31px; width: 100%"
-        ></div>
+      <div class="status__header">
+        <p>{{ enemyName }}</p>
       </div>
-      <p style="margin-top: 5px; margin-left: 75%">
-        {{ enemyHp }} / {{ enemyMaxHp }}
-      </p>
+
+      <div class="Hp__container" id="enemyMaxHp">
+        <div class="Hp__title">
+          <img src="@/assets/battle/hp.png" />
+        </div>
+
+        <div class="Hp__blood" id="enemyHp"></div>
+      </div>
+
+      <div class="status__footer">
+        <p>{{ enemyHp }} / {{ enemyMaxHp }}</p>
+      </div>
     </div>
     <div id="myStatus">
-      <p style="margin-left: 10px">{{ myName }}</p>
-      <div
-        id="myMaxHp"
-        style="border: 5px solid black; height: 30px; width: 88%"
-      >
-        <div
-          id="myHp"
-          style="background-color: green; height: 31px; width: 100%"
-        ></div>
+      <div class="mystatus__header">
+        <p>{{ myName }}</p>
+        <p>Lv.{{ this.monsterDetail.level }}</p>
       </div>
-      <p style="margin-top: 5px; margin-left: 75%">
-        {{ myHp }} / {{ myMaxHp }}
-      </p>
+
+      <div class="Hp__container" id="myMaxHp">
+        <div class="Hp__title">
+          <img src="@/assets/battle/hp.png" />
+        </div>
+
+        <div class="Hp__blood" id="myHp"></div>
+      </div>
+
+      <div class="status__footer">
+        <p>{{ myHp }} / {{ myMaxHp }}</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+import { BASE_URL } from '@/constant/BASE_URL'
+
 export default {
   data() {
     return {
       time: 0,
 
       getEnemyHpBar: 100,
-      getmyHpBar: 100
+      getmyHpBar: 100,
+      userInfo: JSON.parse(localStorage.getItem('userInfo')),
+      monsterDetail: {}
     }
   },
 
@@ -58,9 +68,10 @@ export default {
   },
 
   created() {
-    setInterval(() => {
-      this.time += 1
-    }, 30)
+    this.fetchrepresentMonster(),
+      setInterval(() => {
+        this.time += 1
+      }, 30)
   },
 
   watch: {
@@ -99,40 +110,141 @@ export default {
     }
   },
 
-  methods: {}
+  methods: {
+    fetchrepresentMonster() {
+      const id = this.userInfo.representMonster
+      axios({
+        url: BASE_URL + '/api/v1/monster/' + id,
+        method: 'GET',
+        headers: {
+          AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
+        }
+      })
+        .then((res) => {
+          this.monsterDetail = res.data
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+  }
 }
 </script>
 
 <style>
 #enemyStatus {
   position: absolute;
-  top: 15%;
-  left: 15%;
+  top: 10%;
+  left: 17%;
 
-  padding: 10px;
-  padding-right: 0px;
-  width: 28%;
-  height: 12%;
-  background-color: white;
+  padding: 1vw;
+  width: 22%;
+  height: 11%;
+  background-color: rgb(248, 242, 234);
   z-index: 1;
-
-  border: 2px solid black;
-  border-radius: 10px;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.16), 0 4px 6px rgba(0, 0, 0, 0.45);
+  border-radius: 15px;
 }
 
 #myStatus {
   position: absolute;
-  top: 55%;
+  top: 45%;
   left: 60%;
 
-  padding: 10px;
-  padding-right: 0px;
-  width: 28%;
-  height: 12%;
-  background-color: white;
+  padding: 1vw;
+  width: 22%;
+  height: 11%;
+  background-color: rgb(248, 242, 234);
   z-index: 1;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.16), 0 4px 6px rgba(0, 0, 0, 0.45);
+  border-radius: 15px;
+}
 
-  border: 2px solid black;
+.status__header {
+  margin-left: 2vh;
+  margin-bottom: 1vh;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.mystatus__header {
+  margin-left: 2vh;
+  margin-right: 3vh;
+  margin-bottom: 1vh;
+  font-size: 1.1rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+}
+
+.Hp__container {
+  height: 30%;
+  width: 95%;
+  border-style: ridge;
+  /* border-color: black; */
+  /* border: 3px outset black; */
+  background-color: gray;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
   border-radius: 10px;
+  margin-bottom: 1vh;
+  /* box-shadow: inset 0px 2px 0px rgba(255, 255, 255, 0.75),
+    inset 0px 0px 2px rgba(255, 255, 255, 0.7), 0px 3px 3px rgba(0, 0, 0, 0.3); */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23),
+    0 0 5px #aaa inset;
+}
+
+.Hp__title {
+  display: inline-block;
+  width: 10%;
+  background-color: rgba(0, 0, 0, 0.656);
+  height: 100%;
+  margin: 0%;
+  padding-left: 1vh;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+  align-items: center;
+}
+
+.Hp__title img {
+  width: 70%;
+  margin-top: 0.5vh;
+  margin-left: 0.5vh;
+}
+
+.Hp__blood {
+  height: 100%;
+  width: 80%;
+  /* background: rgb(254, 223, 84);
+  background: linear-gradient(
+    64deg,
+    rgba(254, 223, 84, 1) 0%,
+    rgba(107, 250, 141, 1) 100%
+  ); */
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  background: linear-gradient(271deg, #fedf54, #6bfa8d);
+  background-size: 200% 200%;
+  animation: gradientblood 4s ease infinite;
+}
+
+.status__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 1vw;
+  font-size: 0.8rem;
+}
+
+@keyframes gradientblood {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 </style>

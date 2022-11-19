@@ -49,10 +49,9 @@
             />
             <span class="tooltiptext"> {{ item.description }}</span>
             <div class="battle__item">
-              <p>{{ item.itemName }} <br /></p>
+              <p>{{ item.itemName }} X <br /></p>
               <p>
-                <span class="battle__count">{{ item.count }}</span
-                >개
+                <span class="battle__count">{{ item.count }}</span>
               </p>
             </div>
           </div>
@@ -210,12 +209,9 @@ h3 {
 .item__item {
   width: 70px;
   height: 68px;
-  /* background-color: #ffffff; */
   border-radius: 10px;
   margin-bottom: 3vh;
   cursor: url('@/assets/selector.cur'), pointer;
-  /* margin-left: 0.5vh;
-  margin-right: 0.5vh; */
 }
 
 .item__image {

@@ -86,7 +86,7 @@
                     src="@/assets/quiz/chosung.png"
                     alt=""
                   />
-                  <img v-else src="@/assets/quiz/character.png" alt="" />
+                  <img v-else src="@/assets/quiz/people.png" alt="" />
                 </div>
               </div>
               <div class="roomRight">
