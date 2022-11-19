@@ -8,7 +8,23 @@
     />
     <myPage v-if="myPage.myPage" @mypageClose="mypageClose" />
     <img class="info__btn" src="@/assets/navbar/infoButton.png" alt="" />
-    <div class="info__text">인포~</div>
+    <div class="info__text">
+      <div class="subTitle">개인정보</div>
+      <div class="content">
+        책상 위의 책을 클릭하여 개인정보를 볼 수 있어요. <br />
+        - 비밀번호 변경 : 비밀번호를 변경할 수 있어요 <br />
+        - 초기화 : 진행도를 초기화 할 수 있어요 <br />
+        - 탈퇴 : 회원 탈퇴를 할 수 있어요
+      </div>
+      <div class="subTitle">풀깨비 정보</div>
+      <div class="content">
+        풀깨비를 클릭해 풀깨비의 정보를 볼 수 있어요 <br />
+        - 대표 풀깨비로 설정 : 나를 따라다니고 배틀을 하는 풀깨비로 설정할 수
+        있어요
+      </div>
+      <div class="subTitle">우리집에서 나가기</div>
+      <div class="content">문을 클릭해 나갈 수 있어요</div>
+    </div>
   </div>
 </template>
 
@@ -743,21 +759,41 @@ canvas {
 }
 
 .info__text {
-  width: 10vw;
-  height: 10vh;
   background-color: rgb(192, 192, 192);
   border-radius: 15px;
+  padding: 15px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
   position: absolute;
+  height: 0;
   top: 12vh;
   left: 4vw;
   opacity: 0;
   cursor: url('@/assets/selector.cur'), pointer;
 }
 
+.subTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px 0;
+  display: none;
+}
+
+.content {
+  font-size: 17px;
+  line-height: 22px;
+  display: none;
+}
+
 .info__btn:hover + .info__text {
+  transition: 0.3s linear;
+  opacity: 0.7;
+  height: auto;
+}
+
+.info__btn:hover + .info__text > div {
+  display: block;
   opacity: 1;
 }
 </style>
