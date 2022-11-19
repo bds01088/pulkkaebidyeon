@@ -34,7 +34,10 @@
             style="font-size: 50px"
           />
           <font-awesome-icon
-            v-else-if="this.isTalk.content.line.length === nowPage.nowPage + 1"
+            v-else-if="
+              this.isTalk.content.line.length === nowPage.nowPage + 1 &&
+              this.text.textArray.length <= this.text.textIdx
+            "
             class="icon"
             icon="fa-solid fa-xmark"
             @click="endTalk()"
