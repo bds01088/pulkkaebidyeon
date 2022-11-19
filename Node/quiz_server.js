@@ -56,6 +56,7 @@ axios({
 })
   .then((res) => {
     characterQuizs = res.data;
+    console.log(res.data);
   })
   .catch((err) => {
     console.log(err);
@@ -217,10 +218,11 @@ try {
             // 퀴즈시작
             if (data[3] === "독초는 퀴즈를 뿌려라") {
               roomInfo.quizing = true;
-              io.to(`${roomInfo.roomId}`).emit(
-                "startQuiz",
-                roomInfo.roomQuiz[roomInfo.nowQuizNumber]
-              );
+              let payload = [
+                roomInfo.gameType,
+                roomInfo.roomQuiz[roomInfo.nowQuizNumber],
+              ];
+              io.to(`${roomInfo.roomId}`).emit("startQuiz", payload);
             }
           }
 
@@ -263,10 +265,11 @@ try {
                 }
                 io.to(`${roomInfo.roomId}`).emit("fuckoff");
               } else {
-                io.to(`${roomInfo.roomId}`).emit(
-                  "nextQuiz",
-                  roomInfo.roomQuiz[roomInfo.nowQuizNumber]
-                );
+                let payload = [
+                  roomInfo.gameType,
+                  roomInfo.roomQuiz[roomInfo.nowQuizNumber],
+                ];
+                io.to(`${roomInfo.roomId}`).emit("nextQuiz", payload);
               }
             }
           }
