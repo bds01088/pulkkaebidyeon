@@ -475,7 +475,11 @@ export default {
             })
             emit('enterBattle')
           } else if (content.status === 'BATTLE_WIN') {
-            if (content.missionId === 2 || content.missionId === 5 || content.missionId === 8) {
+            if (
+              content.missionId === 2 ||
+              content.missionId === 5 ||
+              content.missionId === 8
+            ) {
               // battle win : 배틀 이긴 상태 -> 위인한테 유물 가져다준다 / 미션 마지막!
               axios({
                 url: BASE_URL + '/api/v1/mission/',
@@ -487,9 +491,11 @@ export default {
                 // console.log()
                 store.dispatch('fetchnowUserInfo')
                 if (res.data === true) {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   levelUpMonsterAlert()
                 } else {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   defaultMonsterAlert()
                 }
@@ -505,9 +511,11 @@ export default {
               }).then((res) => {
                 store.dispatch('fetchnowUserInfo')
                 if (res.data === true) {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   levelUpAlert()
                 } else {
+                  console.log('res.data', res.data)
                   emit('talkClose')
                   defaultAlert()
                 }
