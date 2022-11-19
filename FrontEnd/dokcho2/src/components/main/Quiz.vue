@@ -174,9 +174,6 @@
               <div v-if="this.characterQuiz.nowPage >= 2">
                 {{ this.characterQuiz.quiz[2] }}
               </div>
-              <div>
-                {{ this.characterQuiz.timer }}
-              </div>
             </div>
           </div>
           <div v-else>
