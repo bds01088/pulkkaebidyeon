@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="battlecanvas">
     <loading-page v-show="isloading === true"></loading-page>
 
     <battle-status
@@ -1808,6 +1808,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.battlecanvas {
+  width: 100vw;
+  height: 100vh;
+}
+
 canvas {
   width: 100vw;
   height: 100vh;
