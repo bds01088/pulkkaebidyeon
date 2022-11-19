@@ -7,6 +7,8 @@
       @monsterClose="monsterClose"
     />
     <myPage v-if="myPage.myPage" @mypageClose="mypageClose" />
+    <img class="info__btn" src="@/assets/navbar/infoButton.png" alt="" />
+    <div class="info__text">인포~</div>
   </div>
 </template>
 
@@ -708,5 +710,35 @@ export default {
 canvas {
   width: 100vw;
   height: 100vh;
+}
+
+.info__btn {
+  width: 3vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 4vh;
+  left: 4vw;
+  cursor: url('@/assets/selector.cur'), pointer;
+}
+
+.info__text {
+  width: 10vw;
+  height: 10vh;
+  background-color: rgb(192, 192, 192);
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 12vh;
+  left: 4vw;
+  opacity: 0;
+  cursor: url('@/assets/selector.cur'), pointer;
+}
+
+.info__btn:hover + .info__text {
+  opacity: 1;
 }
 </style>
