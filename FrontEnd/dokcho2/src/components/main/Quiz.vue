@@ -157,7 +157,7 @@
         </div>
         <div class="inGame__quizBox">
           <div v-if="this.quizing.quizing === true && this.nextQuiz.nextQuiz">
-            <div v-if="this.characterQuiz.quiz === []">
+            <div v-if="!this.characterQuiz.isCharacter">
               <div>문제 : {{ this.nextQuiz.nextQuiz.question }}</div>
               <div>
                 힌트 :
@@ -173,6 +173,9 @@
               </div>
               <div v-if="this.characterQuiz.nowPage >= 2">
                 {{ this.characterQuiz.quiz[2] }}
+              </div>
+              <div>
+                {{ this.characterQuiz.timer }}
               </div>
             </div>
           </div>
@@ -301,7 +304,12 @@ export default {
     let nextQuiz = ref({ nextQuiz: '' })
     const item = ref({ item: {} })
     let correctUser = ref({ correctUser: '정답자' })
-    let characterQuiz = ref({ quiz: [], timer: 0, nowPage: 0 })
+    let characterQuiz = ref({
+      isCharacter: false,
+      quiz: [],
+      timer: 0,
+      nowPage: 0
+    })
 
     let userInfo = JSON.parse(localStorage.getItem('userInfo'))
     const socket = io('https://k7e203.p.ssafy.io/')
@@ -392,7 +400,7 @@ export default {
       QuizRoomEntered.value.QuizRoomEntered = false
       correctUser.value.correctUser = '정답자'
       nextQuiz.value.nextQuiz = ''
-      characterQuiz.value.timer = -1
+      characterQuiz.value.timer = -2
       characterQuiz.value.quiz = []
     }
 
@@ -532,6 +540,7 @@ export default {
         if (data[0] === 'character') {
           characterQuiz.value.quiz =
             nextQuiz.value.nextQuiz.question.split('\\t')
+          characterQuiz.value.isCharacter = true
           startTimer()
         }
       }, 5000)
@@ -542,7 +551,10 @@ export default {
       // if 넣을 자리
       if (data[0] === 'character') {
         characterQuiz.value.quiz = nextQuiz.value.nextQuiz.question.split('\\t')
-        startTimer()
+        characterQuiz.value.nowPage = 0
+        setTimeout(() => {
+          startTimer()
+        }, 1000)
       }
     })
 
@@ -556,6 +568,7 @@ export default {
             nickname: '김구현(훈장)',
             content: `${user.nickname}(이)가 정답을 맞히었구나!`
           })
+          characterQuiz.value.timer = -2
           goToScrollBottom()
         }
       }
