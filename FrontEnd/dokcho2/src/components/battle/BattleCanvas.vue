@@ -145,6 +145,10 @@ import { BASE_URL } from '@/constant/BASE_URL'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
+import JSConfetti from 'js-confetti'
+
+const jsConfetti = new JSConfetti()
+
 export default {
   name: 'BattleCanvas',
 
@@ -270,6 +274,18 @@ export default {
     const defenseBossAudio = new Audio('audio/moove.mp3')
     battleAudio.loop = false
     defenseAudio.volume = 1
+
+    const winAudio = new Audio('audio/win.mp3')
+    winAudio.loop = false
+    winAudio.volume = 1
+
+    const loseAudio = new Audio('audio/lose.mp3')
+    loseAudio.loop = false
+    loseAudio.volume = 1
+
+    function startConfetti() {
+      jsConfetti.addConfetti()
+    }
 
     watch(
       () => props.startSignal,
@@ -751,6 +767,8 @@ export default {
 
                     if (enemyHp.value <= 0) {
                       battleAudio.pause()
+                      winAudio.play()
+                      startConfetti()
 
                       phase.value = 'end'
                       status.value = 'win'
@@ -763,9 +781,11 @@ export default {
                       })
 
                       setTimeout(() => {
+                        winAudio.pause()
                         emit('changeBattle')
+                        jsConfetti.clearCanvas()
                         isloading.value = true
-                      }, 2000)
+                      }, 3000)
                     }
                   }
                 } else {
@@ -891,6 +911,9 @@ export default {
             setTimeout(() => {
               if (enemyHp.value <= 0) {
                 battleAudio.pause()
+                winAudio.play()
+                startConfetti()
+
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
@@ -901,9 +924,11 @@ export default {
                 })
 
                 setTimeout(() => {
+                  winAudio.pause()
                   emit('changeBattle')
+                  jsConfetti.clearCanvas()
                   isloading.value = true
-                }, 2000)
+                }, 3000)
               } else {
                 status.value = '공격'
                 doubleAttack.value = false
@@ -916,6 +941,8 @@ export default {
             setTimeout(() => {
               if (enemyHp.value <= 0) {
                 battleAudio.pause()
+                winAudio.play()
+                startConfetti()
                 phase.value = 'end'
                 status.value = 'win'
                 winBattle()
@@ -926,9 +953,11 @@ export default {
                 })
 
                 setTimeout(() => {
+                  winAudio.pause()
                   emit('changeBattle')
+                  jsConfetti.clearCanvas()
                   isloading.value = true
-                }, 2000)
+                }, 3000)
               } else {
                 phase.value = 'ready'
               }
@@ -965,6 +994,8 @@ export default {
             setTimeout(() => {
               if (enemyHp.value <= 0) {
                 battleAudio.pause()
+                winAudio.play()
+                startConfetti()
 
                 phase.value = 'end'
                 status.value = 'win'
@@ -976,9 +1007,11 @@ export default {
                 })
 
                 setTimeout(() => {
+                  winAudio.pause()
                   emit('changeBattle')
+                  jsConfetti.clearCanvas()
                   isloading.value = true
-                }, 2000)
+                }, 3000)
               } else {
                 status.value = '공격'
                 doubleAttack.value = false
@@ -991,6 +1024,8 @@ export default {
             setTimeout(() => {
               if (enemyHp.value <= 0) {
                 battleAudio.pause()
+                winAudio.play()
+                startConfetti()
 
                 phase.value = 'end'
                 status.value = 'win'
@@ -1002,9 +1037,11 @@ export default {
                 })
 
                 setTimeout(() => {
+                  winAudio.pause()
                   emit('changeBattle')
+                  jsConfetti.clearCanvas()
                   isloading.value = true
-                }, 2000)
+                }, 3000)
               } else {
                 if (stun.value == true) {
                   stun.value = false
@@ -1030,6 +1067,8 @@ export default {
 
                         if (enemyHp.value <= 0) {
                           battleAudio.pause()
+                          winAudio.play()
+                          startConfetti()
 
                           phase.value = 'end'
                           status.value = 'win'
@@ -1041,9 +1080,11 @@ export default {
                           })
 
                           setTimeout(() => {
+                            winAudio.pause()
                             emit('changeBattle')
+                            jsConfetti.clearCanvas()
                             isloading.value = true
-                          }, 2000)
+                          }, 3000)
                         }
                       }
                     } else {
@@ -1060,6 +1101,8 @@ export default {
       } else {
         if (enemyHp.value <= 0) {
           battleAudio.pause()
+          winAudio.play()
+          startConfetti()
 
           phase.value = 'end'
           status.value = 'win'
@@ -1071,9 +1114,11 @@ export default {
           })
 
           setTimeout(() => {
+            winAudio.pause()
             emit('changeBattle')
+            jsConfetti.clearCanvas()
             isloading.value = true
-          }, 2000)
+          }, 3000)
         }
       }
     }
@@ -1112,6 +1157,8 @@ export default {
 
                   if (enemyHp.value <= 0) {
                     battleAudio.pause()
+                    winAudio.play()
+                    startConfetti()
 
                     phase.value = 'end'
                     status.value = 'win'
@@ -1123,9 +1170,11 @@ export default {
                     })
 
                     setTimeout(() => {
+                      winAudio.pause()
                       emit('changeBattle')
+                      jsConfetti.clearCanvas()
                       isloading.value = true
-                    }, 2000)
+                    }, 3000)
                   }
                 }
               } else {
@@ -1186,6 +1235,8 @@ export default {
 
                 if (enemyHp.value <= 0) {
                   battleAudio.pause()
+                  winAudio.play()
+                  startConfetti()
 
                   phase.value = 'end'
                   status.value = 'win'
@@ -1197,9 +1248,11 @@ export default {
                   })
 
                   setTimeout(() => {
+                    winAudio.pause()
                     emit('changeBattle')
+                    jsConfetti.clearCanvas()
                     isloading.value = true
-                  }, 2000)
+                  }, 3000)
                 }
               }
             } else {
@@ -1244,6 +1297,7 @@ export default {
           setTimeout(() => {
             if (myHp.value <= 0) {
               battleAudio.pause()
+              loseAudio.play()
 
               phase.value = 'end'
               status.value = 'lose'
@@ -1255,6 +1309,7 @@ export default {
               })
 
               setTimeout(() => {
+                loseAudio.pause()
                 emit('changeBattle')
                 isloading.value = true
               }, 2000)
@@ -1278,6 +1333,8 @@ export default {
 
                 if (enemyHp.value <= 0) {
                   battleAudio.pause()
+                  winAudio.play()
+                  startConfetti()
 
                   phase.value = 'end'
                   status.value = 'win'
@@ -1289,9 +1346,11 @@ export default {
                   })
 
                   setTimeout(() => {
+                    winAudio.pause()
                     emit('changeBattle')
+                    jsConfetti.clearCanvas()
                     isloading.value = true
-                  }, 2000)
+                  }, 3000)
                 }
               }
             } else {
@@ -1331,6 +1390,7 @@ export default {
           setTimeout(() => {
             if (myHp.value <= 0) {
               battleAudio.pause()
+              loseAudio.play()
 
               phase.value = 'end'
               status.value = 'lose'
@@ -1342,6 +1402,7 @@ export default {
               })
 
               setTimeout(() => {
+                loseAudio.pause()
                 emit('changeBattle')
                 isloading.value = true
               }, 2000)
@@ -1365,6 +1426,8 @@ export default {
 
                 if (enemyHp.value <= 0) {
                   battleAudio.pause()
+                  winAudio.play()
+                  startConfetti()
 
                   phase.value = 'end'
                   status.value = 'win'
@@ -1376,9 +1439,11 @@ export default {
                   })
 
                   setTimeout(() => {
+                    winAudio.pause()
                     emit('changeBattle')
+                    jsConfetti.clearCanvas()
                     isloading.value = true
-                  }, 2000)
+                  }, 3000)
                 }
               }
             } else {
@@ -1414,6 +1479,8 @@ export default {
 
               if (enemyHp.value <= 0) {
                 battleAudio.pause()
+                winAudio.play()
+                startConfetti()
 
                 phase.value = 'end'
                 status.value = 'win'
@@ -1425,9 +1492,11 @@ export default {
                 })
 
                 setTimeout(() => {
+                  winAudio.pause()
                   emit('changeBattle')
+                  jsConfetti.clearCanvas()
                   isloading.value = true
-                }, 2000)
+                }, 3000)
               }
             }
           } else {
@@ -1578,6 +1647,8 @@ export default {
 
                       if (enemyHp.value <= 0) {
                         battleAudio.pause()
+                        winAudio.play()
+                        startConfetti()
 
                         phase.value = 'end'
                         status.value = 'win'
@@ -1589,9 +1660,11 @@ export default {
                         })
 
                         setTimeout(() => {
+                          winAudio.pause()
                           emit('changeBattle')
+                          jsConfetti.clearCanvas()
                           isloading.value = true
-                        }, 2000)
+                        }, 3000)
                       }
                     }
                   } else {
@@ -1628,6 +1701,8 @@ export default {
 
         if (enemyHp.value <= 0) {
           battleAudio.pause()
+          winAudio.play()
+          startConfetti()
 
           phase.value = 'end'
           status.value = 'win'
@@ -1639,9 +1714,11 @@ export default {
           })
 
           setTimeout(() => {
+            winAudio.pause()
             emit('changeBattle')
+            jsConfetti.clearCanvas()
             isloading.value = true
-          }, 2000)
+          }, 3000)
         } else {
           phase.value = 'itemResult'
           poison.value = true
