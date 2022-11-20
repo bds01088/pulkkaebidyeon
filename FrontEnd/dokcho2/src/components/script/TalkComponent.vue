@@ -672,6 +672,7 @@ export default {
   font-size: 1vw; */
   cursor: url('@/assets/selector.cur'), pointer;
   transition: 0.5s;
+  animation: blinker 1s cubic-bezier(1, 1, 1, 1) infinite alternate;
 }
 
 .icon:hover {
@@ -682,6 +683,16 @@ export default {
 .colored-toast {
   width: 900px;
 }
+
+@keyframes blinker {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 /* 타이핑 애니메이션 : 첫번째 줄 시작에만 적용돼서 주석처리 */
 /* @keyframes typing {
   from {
