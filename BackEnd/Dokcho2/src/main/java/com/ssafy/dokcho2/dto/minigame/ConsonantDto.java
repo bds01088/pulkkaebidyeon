@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 public class ConsonantDto {
     private String question;
     private String hint;
-    private String answer;
+    private String right_answer;
     private String description;
 
     public static ConsonantDto from(Consonant entity){
         return ConsonantDto.builder()
                 .question(entity.getQuestion())
                 .hint(entity.getHint())
-                .answer(entity.getAnswer())
+                .right_answer(entity.getRight_answer())
                 .description(entity.getDescription())
                 .build();
     }
