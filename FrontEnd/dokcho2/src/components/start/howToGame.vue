@@ -1,7 +1,6 @@
 <template>
   <div class="howTo__container">
     <div class="howTo">
-      <!-- <div class="title">게임설명</div> -->
       <div class="subTitle">이동 및 상호작용 🏃‍♂️</div>
       <div class="content">
         - <b>W,A,S,D 또는 방향키</b>를 이용하여 캐릭터를 움직일 수 있어요.
@@ -52,7 +51,6 @@ button {
 .howTo__container {
   width: 100vw;
   height: 100vh;
-  /* backdrop-filter: blur(4px); */
   z-index: 30;
   top: 0;
   left: 0;
@@ -74,7 +72,6 @@ button {
   width: 40%;
   height: 90%;
   background: rgba(225, 225, 225, 0.8);
-  /* background-image: url('@/assets/Paper.png'); */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

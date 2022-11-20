@@ -175,7 +175,7 @@ export default {
       this.audio.play()
       swalWithBootstrapButtons
         .fire({
-          title: '호랑이섬에서 떠나시겠어요?',
+          title: '풀깨비섬에서 떠나시겠어요?',
           text: `${this.userInfo.nickname}님이 없으면 우리의 역사가 위험해요 😥`,
           icon: 'question',
           showCancelButton: true,
@@ -329,7 +329,6 @@ button {
 .myPage__container {
   width: 100vw;
   height: 100vh;
-  /* backdrop-filter: blur(4px); */
   z-index: 30;
   top: 0;
   left: 0;
@@ -351,7 +350,6 @@ button {
   width: 50%;
   height: 90%;
   background: rgba(225, 225, 225, 0.714);
-  /* background-image: url('@/assets/Paper.png'); */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -391,7 +389,6 @@ button {
   width: 100%;
   height: 40%;
   padding: 1vh;
-  /* border: 1px solid black; */
   text-align: end;
   margin-bottom: 2vh;
   margin-top: 1vh;
@@ -416,7 +413,6 @@ button {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  /* background-color: rgb(255, 223, 228); */
   border-radius: 10px;
   padding: 2vw;
 }
@@ -439,7 +435,6 @@ button {
 }
 
 .myPage__mission {
-  /* background-image: url(https://www.mozilla.org/media/img/logos/firefox/logo-quantum.9c5e96634f92.png); */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

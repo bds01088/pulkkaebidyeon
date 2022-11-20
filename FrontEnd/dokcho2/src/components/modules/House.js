@@ -16,7 +16,6 @@ export class House {
       this.modelMesh.name = 'house'
       info.scene.add(this.modelMesh)
       info.meshes.push(this.modelMesh)
-      console.log(info.meshes)
     })
   }
 }

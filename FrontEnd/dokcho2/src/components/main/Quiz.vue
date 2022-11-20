@@ -64,10 +64,6 @@
         </div>
         <div class="waitingRoom__right">
           <div class="roomList">
-            <!-- <div class="roomList__header">
-              <p>방 리스트</p>
-            </div> -->
-
             <div
               @click="enterRoom(room.roomId)"
               v-for="room in this.rooms.rooms"
@@ -231,9 +227,6 @@
             </div>
           </div>
           <div class="playersBox">
-            <!-- <p class="players__room">
-              "{{ this.nowRoomInfo.nowRoomInfo.roomName }}"
-            </p> -->
             <div class="players">
               <div
                 v-for="(user, i) in this.nowRoomUser.nowRoomUser"
@@ -254,15 +247,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <li
-        v-for="quiz in this.nowRoomInfo.nowRoomInfo.roomQuiz"
-        v-bind:key="quiz"
-      >
-        {{ quiz.quiestion }}
-        {{ quiz.description }}
-        {{ quiz.right_answer }}
-      </li> -->
     </div>
   </div>
 </template>
@@ -274,7 +258,6 @@ import axios from 'axios'
 import swal from 'sweetalert'
 import Swal from 'sweetalert2'
 import { BASE_URL } from '@/constant/BASE_URL'
-// import QuizRoomCanvas from './QuizRoomCanvas.vue'
 import _ from 'lodash'
 
 export default {
@@ -310,17 +293,10 @@ export default {
 
     let userInfo = JSON.parse(localStorage.getItem('userInfo'))
     const socket = io('https://k7e203.p.ssafy.io/')
-    // const socket = io('http://localhost:3001/')
 
     function disconnect() {
       socket.disconnect()
     }
-
-    // onBeforeUnmount(() => {
-    //   socket.disconnect()
-    //   leaveRoom()
-    //   console.log('디스커넥트으으으ㅡ으으')
-    // })
 
     socket.emit('sendNickname', JSON.parse(localStorage.getItem('userInfo')))
 
@@ -351,7 +327,7 @@ export default {
       } else {
         swal({
           title: '방 제목을 입력해주세요!',
-          text: '좋은 말 할때!',
+          text: '이름이 없으면 방을 만들 수 없어요..',
           icon: 'warning',
           buttons: false,
           timer: 1500
@@ -361,12 +337,7 @@ export default {
 
     socket.on('createRoomOK', (payload) => {
       nowRoomInfo.value.nowRoomInfo = payload[0]
-      // console.log(nowRoomInfo.value.nowRoomInfo)
       nowRoomUser.value.nowRoomUser = payload[0].currentUser
-      // console.log(nowRoomInfo.value.nowRoomInfo.roomQuiz)
-      // nowQuizAnswer.value.nowQuizAnswer =
-      //   nowRoomInfo.value.nowRoomInfo.roomQuiz[0].right_answer
-      // console.log(nowQuizAnswer.value.nowQuizAnswer)
     })
 
     function enterRoom(data) {
@@ -450,7 +421,6 @@ export default {
     }
 
     socket.on('msg', (msgpayload) => {
-      // msgSocketId.value.msgSocketId = msgpayload[1]
       msgNickname.value.msgNickname = msgpayload[2]
       msgContent.value.msgContent = msgpayload[3]
       allMsg.value.allMsg.push({
@@ -459,14 +429,13 @@ export default {
         content: msgContent.value.msgContent
       })
       goToScrollBottom()
-      // console.log(allMsg.value.allMsg)
     })
 
     socket.on('dontStartQuiz', () => {
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(훈장)',
-        content: `친구가 없니? 한명은 더 모아오렴.`
+        nickname: '김구현 (훈장)',
+        content: `혼자서는 게임을 할 수 없단다.`
       })
       goToScrollBottom()
     })
@@ -474,8 +443,8 @@ export default {
     socket.on('whyAlone', () => {
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(훈장)',
-        content: `혼자서 중얼중얼 뭐라는거니? 친구를 데려오렴.`
+        nickname: '김구현 (훈장)',
+        content: `혼자서 뭐하는거니? 어서 친구를 데려오렴.`
       })
       goToScrollBottom()
     })
@@ -483,20 +452,20 @@ export default {
     socket.on('startQuiz', (data) => {
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(훈장)',
+        nickname: '김구현 (훈장)',
         content: `퀴즈가 5초뒤에 시작된다.`
       })
       goToScrollBottom()
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(훈장)',
+        nickname: '김구현 (훈장)',
         content: `5..`
       })
       goToScrollBottom()
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `4..`
         })
         goToScrollBottom()
@@ -504,7 +473,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `3..`
         })
         goToScrollBottom()
@@ -512,7 +481,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `2..`
         })
         goToScrollBottom()
@@ -520,7 +489,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `1..`
         })
         goToScrollBottom()
@@ -528,8 +497,8 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
-          content: `퀴즈시작!`
+          nickname: '김구현 (훈장)',
+          content: `퀴즈 시작!`
         })
         goToScrollBottom()
         quizing.value.quizing = true
@@ -563,8 +532,8 @@ export default {
           correctUser.value.correctUser = user.nickname
           allMsg.value.allMsg.push({
             socketId: '',
-            nickname: '김구현(훈장)',
-            content: `${user.nickname}(이)가 정답을 맞히었구나!`
+            nickname: '김구현 (훈장)',
+            content: `${user.nickname}(이)가 정답을 맞혔구나!`
           })
           characterQuiz.value.timer = -2
           goToScrollBottom()
@@ -579,7 +548,7 @@ export default {
       for (let winner of data) {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `${winner.nickname}(이)가 이겼노라!`
         })
         goToScrollBottom()
@@ -595,10 +564,8 @@ export default {
         }
       })
         .then((res) => {
-          // console.log(res.data)
           item.value.item = res.data.itemDto
           const content = item.value.item
-          console.log(item.value.item)
           Swal.fire({
             title: `🎊축하합니다🎊`,
             html: `<div style="display:flex; flex-direction: column; justify-content:center">
@@ -613,8 +580,6 @@ export default {
                   </div>
                     
               </div>`,
-            // showConfirmButton: false,
-            // timer: 2500,
             background: 'rgba(255, 255, 255)'
           })
         })
@@ -624,20 +589,20 @@ export default {
     socket.on('fuckoff', () => {
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(훈장)',
-        content: `이 방은 5초뒤에 폭파된다.`
+        nickname: '김구현 (훈장)',
+        content: `이 방은 5초뒤에 사라진단다.`
       })
       goToScrollBottom()
       allMsg.value.allMsg.push({
         socketId: '',
-        nickname: '김구현(훈장)',
+        nickname: '김구현 (훈장)',
         content: `5..`
       })
       goToScrollBottom()
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `4..`
         })
         goToScrollBottom()
@@ -645,7 +610,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `3..`
         })
         goToScrollBottom()
@@ -653,7 +618,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `2..`
         })
         goToScrollBottom()
@@ -661,7 +626,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `1..`
         })
         goToScrollBottom()
@@ -669,7 +634,7 @@ export default {
       setTimeout(() => {
         allMsg.value.allMsg.push({
           socketId: '',
-          nickname: '김구현(훈장)',
+          nickname: '김구현 (훈장)',
           content: `폭발은 예술이다!`
         })
         goToScrollBottom()
@@ -692,7 +657,6 @@ export default {
     }
 
     let imageNumber = _.random(1, 4)
-    // const images =
 
     return {
       inputRoomName,
@@ -777,7 +741,6 @@ export default {
   align-items: center;
   border-radius: 10px;
   opacity: 1;
-  /* background-color: white; */
 }
 
 .myProfile > img {
@@ -790,8 +753,6 @@ export default {
   display: flex;
   align-items: center;
   font-size: 1.1rem;
-  /* font-weight: bold; */
-  /* margin: 0; */
 }
 
 .myName p {
@@ -804,27 +765,21 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* align-items: center; */
   background-color: #e4c49b;
   border-radius: 10px;
-  /* border: 1px black solid; */
   margin-bottom: 3vh;
 }
 
 .makeRoomTitle {
   height: 25%;
   display: flex;
-  /* justify-content: center; */
   align-items: center;
 }
 
 .makeRoomTitle > p {
   font-size: 1.3rem;
   margin-left: 1.5vw;
-  /* margin: 0 5px 0 0; */
-  /* margin: 0; */
   font-weight: bold;
-  /* font-family: 'DungGeunMo'; */
 }
 
 .makeRoomDetail {
@@ -833,7 +788,6 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  /* align-items: center; */
 }
 
 .radio {
@@ -852,9 +806,7 @@ export default {
   border: 1px solid #333;
   line-height: 24px;
   text-align: center;
-  /* font-weight: bold; */
   font-size: 0.9rem;
-  /* margin-left: 1.5vw; */
 }
 
 .radio input[type='radio'] + label {
@@ -929,7 +881,6 @@ export default {
 }
 
 .roomList__header {
-  /* position: fixed; */
   font-size: 1.4rem;
   font-weight: bold;
   margin-left: 0.5vw;
@@ -955,9 +906,6 @@ export default {
 }
 
 .roomPic {
-  /* width: 100%;
-  height: 100%;
-  border: 1px black solid; */
   align-items: center;
   display: flex;
   justify-content: center;
@@ -1099,12 +1047,7 @@ export default {
   margin-top: 5vh;
   display: flex;
   justify-content: space-between;
-  /* align-items: center; */
 }
-
-/* .inGame__header > div {
-  text-align: center;
-} */
 
 .inGame__roomName {
   font-size: 2.5rem;
@@ -1224,12 +1167,6 @@ export default {
   margin: 10px;
 }
 
-/* .texts > div {
-  font-size: 20px;
-  letter-spacing: 0.3px;
-  width: fit-content;
-} */
-
 .myText {
   justify-content: flex-end;
 }
@@ -1273,9 +1210,6 @@ export default {
 .players {
   width: 80%;
   height: 80%;
-  /* display: flex;
-  flex-direction: column;
-  justify-content: flex-start; */
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
@@ -1285,7 +1219,6 @@ export default {
   font-size: 1.2rem;
   font-weight: bold;
   text-align: center;
-  /* margin: 25px 0; */
   margin-top: 2vh;
   margin: auto;
   background-color: white;
@@ -1305,7 +1238,6 @@ export default {
 
 .player__score {
   font-size: 1rem;
-  /* margin: 1vh; */
 }
 
 .correctUser {

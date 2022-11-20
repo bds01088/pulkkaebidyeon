@@ -1,7 +1,6 @@
 <template>
   <div class="background">
     <div class="findpasswordpage">
-      <!-- <img class="findpasswordpage__img" src="" alt="" /> -->
       <div class="findpasswordpage__text">
         회원가입할 때 입력하신 이메일로 비밀번호 변경 메일을 보내드릴게요 🐯
       </div>
@@ -138,7 +137,6 @@ button {
   height: 60%;
   width: 60vw;
   background-color: rgba(255, 255, 255, 0.8);
-  /* background-image: url('@/assets/Paper.png'); */
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
@@ -179,36 +177,4 @@ input:focus {
   align-items: center;
   margin-top: 3vh;
 }
-
-/* @media screen and (max-width: 850px) {
-  button {
-    height: 6vh;
-    border-radius: 50px;
-    border: none;
-    width: 35vw;
-    margin: 10px;
-  }
-
-  .findpasswordpage {
-    height: 95%;
-    border-radius: 40px;
-  }
-
-  .findpasswordpage__img {
-    width: 80vw;
-  }
-
-  .findpasswordpage__text {
-    font-size: 5vw;
-    text-align: center;
-    margin: 3vw;
-  }
-  input {
-    width: 70vw;
-    height: 8vh;
-    font-size: 2vh;
-    background-size: 3vw 3vw;
-    padding-left: 4vw;
-  }
-} */
 </style>

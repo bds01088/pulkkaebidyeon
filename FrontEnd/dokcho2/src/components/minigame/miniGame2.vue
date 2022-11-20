@@ -61,7 +61,6 @@
       <!-- 게임 내용 >.<  -->
       <div v-else class="game__play">
         <div class="input__answer">
-          <!-- <span> 숫자 입력 : </span> -->
           <input
             type="number"
             v-model="inputAnswer[0]"
@@ -145,36 +144,6 @@
           </table>
         </div>
       </div>
-
-      <!-- <div class="game__result" v-if="nowStrike">
-        <img class="success__img" src="@/assets/minigame/success.png" alt="" />
-        <div class="game__get">
-          <div class="result__point">
-            <p>총 경험치 <b>15</b> 포인트 획득🌿</p>
-          </div>
-          <h3>🎁 성공 보수 아이템 🎁</h3>
-          <div class="tooltip">
-            <span class="tooltiptext"> {{ item.item.description }}</span>
-            <img
-              :src="require('@/assets/item/' + item.item.itemId + '.png')"
-              alt=""
-              class="item__image"
-            />
-
-            <div class="battle__item">
-              <p>{{ item.item.itemName }} <br /></p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-      <div class="game__result" v-if="nowFinished">
-        <img class="success__img" src="@/assets/minigame/fail.png" alt="" />
-        <div class="game__dontget">
-          <h3>숫자를 맞추지 못해서 아무것도 획득하지 못했어요 .. 😥</h3>
-          <p>다시 한 번 도전해보세요!</p>
-        </div>
-      </div> -->
 
       <img
         class="exit__btn"
@@ -291,14 +260,12 @@ export default {
               }
             })
               .then((res) => {
-                // console.log(res.data)
                 item.value.item = res.data.itemDto
                 // levelup이 true로 들어오면 현재 representMonster -> detail 받아서 레벨업 alert 띄우기
                 if (res.data.levelup === true) {
                   const user = JSON.parse(localStorage.getItem('userInfo'))
                   const monsterId = user.representMonster
                   let monster = []
-                  // const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
 
                   axios({
                     url: BASE_URL + '/api/v1/monster/' + monsterId,
@@ -364,7 +331,6 @@ export default {
         if (turn.value >= 8 && strike.value != 3) {
           // 실패 메시지
           nowFinished.value.nowFinished = true
-          // emit('miniGame2Close')
         }
       } else {
         swal({
@@ -377,13 +343,6 @@ export default {
       }
     }
 
-    // // input 체크 : 최대 길이, 문자 ; not defined 떠서 일단 안씀
-    // function maxLengthChk(object) {
-    //   if (object.value.length > object.maxLength) {
-    //     object.value = object.value.slice(0, object.maxLength)
-    //   }
-    // }
-
     return {
       nowStrike,
       nowFinished,
@@ -394,7 +353,6 @@ export default {
       inputAnswer,
       showResult,
       scoreBoard
-      // maxLengthChk
     }
   }
 }
@@ -411,7 +369,6 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  /* background-color: rgb(212, 212, 212, 0.5); */
 }
 
 .miniGame {
@@ -505,9 +462,6 @@ export default {
   margin-right: 0.5vw;
   width: 4vw;
   height: 4vw;
-  /*
-  margin-left: 10px; */
-  /* margin: 0; */
   font-size: 2rem;
   text-align: center;
 }
@@ -521,7 +475,7 @@ export default {
   width: 5vw;
   cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
-  background-color: #d5d5d5; /* margin-left: 20px; */
+  background-color: #d5d5d5;
 }
 
 .do__input:hover {
@@ -537,7 +491,6 @@ th,
 td {
   border: 1px solid #d1d1d1;
   border-collapse: separate !important;
-  /* border-radius: 0px; */
 }
 
 table {
@@ -571,7 +524,6 @@ tr {
 .game__result {
   width: 100%;
   height: 50vh;
-  /* background-color: white; */
   border-radius: 20px;
   text-align: center;
   margin-top: 15vh;
@@ -585,7 +537,6 @@ tr {
 .game__result {
   width: 100%;
   height: 50vh;
-  /* background-color: white; */
   border-radius: 20px;
   text-align: center;
   margin-top: 15vh;
@@ -645,8 +596,6 @@ tr {
   border-radius: 6px;
   padding: 5px 0;
   font-size: 0.8rem;
-
-  /* Position the tooltip */
   position: absolute;
   z-index: 1;
   top: 100%;

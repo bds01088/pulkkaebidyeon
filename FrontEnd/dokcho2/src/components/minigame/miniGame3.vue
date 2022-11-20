@@ -50,8 +50,6 @@
               <p>{{ reward.item.itemName }} <br /></p>
             </div>
           </div>
-
-          <!-- <div @click="$emit('miniGame3Close')">확인</div> -->
         </div>
       </div>
 
@@ -148,7 +146,6 @@ export default {
               }!</b></h3>` +
               '<br />' +
               `<p>${chosung.value.quiz[chosung.value.nowPage].description}</p>`
-            // timer: 2000
           })
           clearInterval(gameTimer)
           setTimeout(() => {
@@ -166,7 +163,6 @@ export default {
     }
 
     function submitInput() {
-      console.log(chosung.value.quiz)
       if (
         chosung.value.input ===
         chosung.value.quiz[chosung.value.nowPage].right_answer
@@ -196,7 +192,6 @@ export default {
             }
           })
             .then((res) => {
-              console.log(res.data)
               reward.value.item = res.data.itemDto
 
               // levelup이 true로 들어오면 현재 representMonster -> detail 받아서 레벨업 alert 띄우기
@@ -204,7 +199,6 @@ export default {
                 const user = JSON.parse(localStorage.getItem('userInfo'))
                 const monsterId = user.representMonster
                 let monster = []
-                // const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
 
                 axios({
                   url: BASE_URL + '/api/v1/monster/' + monsterId,
@@ -267,7 +261,6 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  /* background-color: rgb(212, 212, 212, 0.5); */
 }
 
 .miniGame {
@@ -338,7 +331,6 @@ export default {
 .game__result {
   width: 100%;
   height: 50vh;
-  /* background-color: white; */
   border-radius: 20px;
   text-align: center;
   margin-top: 15vh;
@@ -398,8 +390,6 @@ export default {
   border-radius: 6px;
   padding: 5px 0;
   font-size: 0.8rem;
-
-  /* Position the tooltip */
   position: absolute;
   z-index: 1;
   top: 100%;
@@ -426,7 +416,6 @@ export default {
 }
 
 .play__body {
-  /* background-color: #d5d5d5; */
   border-radius: 10px;
   padding: 3vw;
 }
@@ -435,7 +424,6 @@ export default {
   background-color: white;
   border-radius: 10px;
   text-align: center;
-  /* height: 15vh; */
   width: 80%;
   margin: auto;
   letter-spacing: 0.5rem;
@@ -468,7 +456,6 @@ input[type='text'] {
   cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1rem;
   background-color: #d5d5d5;
-  /* font-weight: bold; */
 }
 
 .ans:hover {

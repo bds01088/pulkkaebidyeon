@@ -157,7 +157,6 @@ button {
 .changePw_container {
   width: 100vw;
   height: 100vh;
-  /* backdrop-filter: blur(4px); */
   z-index: 50;
   top: 0;
   left: 0;
@@ -169,7 +168,6 @@ button {
 .myPassword {
   width: 70%;
   height: 38%;
-  /* backdrop-filter: blur(4px); */
   z-index: 60;
   flex-direction: column;
   position: fixed;
