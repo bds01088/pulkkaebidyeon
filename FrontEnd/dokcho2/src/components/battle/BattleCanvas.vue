@@ -461,7 +461,7 @@ export default {
               player.modelMesh.lookAt(-0.5, 0, -3)
 
               if (status.value == '공격') {
-                player.cannonBody.position.y += 0.05
+                player.cannonBody.position.y += 0.06
 
                 if (player.cannonBody.position.y >= 0.6) {
                   status.value = '대기'
@@ -493,11 +493,11 @@ export default {
                 scene.remove(defenseEnemyText.modelMesh)
                 scene.remove(buffEnemyText.modelMesh)
 
-                player.cannonBody.position.x -= 0.05
-                player.cannonBody.position.y += 0.05
-                player.cannonBody.position.z += 0.05
+                player.cannonBody.position.x -= 0.1
+                player.cannonBody.position.y += 0.1
+                player.cannonBody.position.z += 0.1
 
-                if (player.cannonBody.position.y >= 15) {
+                if (player.cannonBody.position.y >= 40) {
                   status.value = '대기'
                 }
               }
@@ -511,7 +511,7 @@ export default {
               if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
                 if (enemyStatus.value == '공격') {
                   if (noMotion.includes(userInfo.value.nowMissionId - 1)) {
-                    enemy.cannonBody.position.y += 0.05
+                    enemy.cannonBody.position.y += 0.06
 
                     if (enemy.cannonBody.position.y >= 0.6) {
                       attackAudio.play()
@@ -595,11 +595,11 @@ export default {
                 scene.remove(defenseEnemyText.modelMesh)
                 scene.remove(buffEnemyText.modelMesh)
 
-                enemy.cannonBody.position.x += 0.05
-                enemy.cannonBody.position.y += 0.05
-                enemy.cannonBody.position.z -= 0.05
+                enemy.cannonBody.position.x += 0.1
+                enemy.cannonBody.position.y += 0.1
+                enemy.cannonBody.position.z -= 0.1
 
-                if (enemy.cannonBody.position.y >= 15) {
+                if (enemy.cannonBody.position.y >= 40) {
                   enemyStatus.value = '대기'
                 }
               }
