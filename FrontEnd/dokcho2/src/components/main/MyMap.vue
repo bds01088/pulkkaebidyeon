@@ -25,9 +25,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
-// import { BASE_URL } from '@/constant/BASE_URL'
-
 export default {
   setup(props, { emit }) {
     function closeModal3() {
@@ -52,7 +49,6 @@ export default {
 .myMap__container {
   width: 100%;
   height: 100%;
-  /* backdrop-filter: blur(4px); */
   z-index: 30;
   flex-direction: column;
   align-items: center;
@@ -79,7 +75,6 @@ export default {
   width: 50%;
   height: 90%;
   background: rgba(169, 170, 150, 0.714);
-  /* background-image: url('@/assets/Paper.png'); */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

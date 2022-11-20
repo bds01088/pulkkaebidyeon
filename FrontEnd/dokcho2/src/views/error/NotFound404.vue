@@ -77,7 +77,6 @@ button:hover {
 .img__404 {
   width: 25vw;
   margin-left: 5vw;
-  /* margin-top: 30vh; */
 }
 
 p {

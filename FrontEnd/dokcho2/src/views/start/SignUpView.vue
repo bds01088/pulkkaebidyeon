@@ -44,18 +44,13 @@
           />
         </div>
         <div class="checkbox__text">
-          <!-- <span class="allowedtext" v-if="termsAgreed"
-            >회원가입을 계속해서 진행해주세요😎</span
-          > -->
           <span class="warningtext" v-if="!termsAgreed"
             >약관 동의가 필요합니다.</span
           >
         </div>
       </div>
       <div class="signuppage__right">
-        <div class="logo">
-          <!-- <img class="logo__img" src="@/assets/logo.png" alt="" /> -->
-        </div>
+        <div class="logo"></div>
         <div class="description">
           <span> 💚 아이디 : 영문자나 숫자의 조합으로 5~20자리</span>
         </div>
@@ -442,14 +437,6 @@ export default {
       }
     }
   }
-  // watch: {
-  //   username(newUsername) {
-  //     this.usernameDuplicate = true
-  //   },
-  //   email(newEmail) {
-  //     this.emailDuplicate = true
-  //   }
-  // }
 }
 </script>
 
@@ -555,7 +542,6 @@ button {
   align-items: center;
 }
 .duplicate__button {
-  /* display: table-cell; */
   height: 5vh;
   text-align: center;
   vertical-align: middle;
@@ -599,7 +585,6 @@ input {
   flex-direction: column;
   justify-content: center;
   line-height: 1.5rem;
-  /* padding: 1.5vh; */
   margin-bottom: 4vh;
   font-size: 0.9rem;
 }
@@ -677,7 +662,6 @@ input {
     margin: 5vw;
     margin-top: 10vh;
     margin-bottom: 0;
-    /* background-image: url('@/assets/hanji.jpeg'); */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -689,7 +673,6 @@ input {
   .termsofservice__text {
     overflow: auto;
     height: 35vh;
-    /* margin: 5vw; */
     flex-direction: column;
     justify-content: center;
     text-align: center;

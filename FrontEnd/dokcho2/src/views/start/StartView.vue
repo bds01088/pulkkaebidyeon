@@ -23,14 +23,6 @@
         />
       </div>
     </div>
-    <!-- <div class="kakao__button">
-      <img
-        class="kakaologin__btn"
-        @click="kakaoLogin()"
-        src="../../assets/kakao_narrow.png"
-        alt=""
-      />
-    </div> -->
     <div class="other__btn">
       <img
         class="howto__btn"
@@ -104,7 +96,6 @@ export default {
     },
     async login() {
       this.buttonAudio.play()
-      console.log(this.username)
 
       try {
         const result = await axios.post(
@@ -173,7 +164,6 @@ input::placeholder {
 
 input:focus {
   outline: none;
-  /* border: #6bfa8d solid 3px; */
 }
 .loginpage {
   display: flex;
@@ -202,7 +192,6 @@ input:focus {
 }
 
 .login__btn {
-  /* margin-top: 5%; */
   width: 100%;
   margin-top: 2vh;
   margin-left: 1vh;
@@ -243,8 +232,6 @@ input:focus {
 .howto__btn:hover,
 .signup__btn:hover {
   cursor: url('@/assets/selector.cur'), pointer;
-  /* box-shadow: 0px 0px 2px 5px yellow; */
-  /* border-radius: 100%; */
   scale: 1.05;
 }
 

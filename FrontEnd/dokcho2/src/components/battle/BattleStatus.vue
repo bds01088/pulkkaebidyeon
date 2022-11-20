@@ -159,16 +159,12 @@ export default {
   height: 30%;
   width: 95%;
   border-style: ridge;
-  /* border-color: black; */
-  /* border: 3px outset black; */
   background-color: gray;
   margin: auto;
   display: flex;
   flex-direction: row;
   border-radius: 10px;
   margin-bottom: 1vh;
-  /* box-shadow: inset 0px 2px 0px rgba(255, 255, 255, 0.75),
-    inset 0px 0px 2px rgba(255, 255, 255, 0.7), 0px 3px 3px rgba(0, 0, 0, 0.3); */
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23),
     0 0 5px #aaa inset;
 }
@@ -204,12 +200,6 @@ export default {
 .Hp__blood__mine {
   height: 100%;
   width: 80%;
-  /* background: rgb(254, 223, 84);
-  background: linear-gradient(
-    64deg,
-    rgba(254, 223, 84, 1) 0%,
-    rgba(107, 250, 141, 1) 100%
-  ); */
   border-top-right-radius: 7px;
   border-bottom-right-radius: 7px;
   background: linear-gradient(271deg, #fedf54, #6bfa8d);

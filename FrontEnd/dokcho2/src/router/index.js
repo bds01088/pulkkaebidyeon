@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { BASE_URL } from '@/constant/BASE_URL'
 import axios from 'axios'
 import StartView from '../views/start/StartView'
-import EndingCredits from '../components/ending/EndingCredits'
 
 // webpackPrefetch:true 가 추가되어있으면 제일 처음에 데이터 받아옴
 // 빈도가 많거나 사이즈가 크면 추가
@@ -61,12 +60,6 @@ const doRefreshToken = async function doRefreshToken() {
 const routes = [
   // 시작 (로그인 페이지)
   {
-    path: '/e',
-    name: 'ending',
-    component: EndingCredits
-  },
-  // 시작 (로그인 페이지)
-  {
     path: '/',
     name: 'start',
     component: StartView
@@ -87,15 +80,6 @@ const routes = [
     component: () =>
       import(
         /* webpackChunkName: "signup", webpackPrefetch:true */ '../views/start/SignUpView.vue'
-      )
-  },
-  // 카카오로그인 약관동의
-  {
-    path: '/kakaologinagreement',
-    name: 'kakaologinagreement',
-    component: () =>
-      import(
-        /* webpackChunkName: "signup", webpackPrefetch:true */ '../views/start/KakaoLoginAgreementView.vue'
       )
   },
   // 닉네임지정
@@ -135,14 +119,6 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     redirect: '/404'
-  },
-  {
-    path: '/oauth',
-    name: 'oauth',
-    component: () =>
-      import(
-        /* webpackChunkName: "oauth" */ '../components/start/KakaoLogin.vue'
-      )
   }
 ]
 
@@ -167,11 +143,6 @@ router.beforeEach(async (to, from, next) => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'))
     if (localStorage.getItem('accessToken') && userInfo.nickname !== '') {
       return router.push({ path: '/main' })
-      // if (!JSON.parse(localStorage.getItem('userInfo')).newbie) {
-      //   return router.push({ path: '/main' })
-      // } else {
-      //   next()
-      // }
     }
     next()
   } else if (token) {
@@ -184,39 +155,5 @@ router.beforeEach(async (to, from, next) => {
     return next({ path: '/' })
   }
 })
-
-// router.beforeEach(async (to, from, next) => {
-//   let token = ''
-//   if (localStorage.getItem('accessToken')) {
-//     token = localStorage.getItem('accessToken')
-//   }
-//   if (
-//     to.path === '/' ||
-//     to.path === '/signup' ||
-//     to.path === '/findpassword' ||
-//     to.path === '/startingcard' ||
-//     // to.path === '/oauth' ||
-//     // to.path === '/oauth2/authorization/kakao' ||
-//     // to.path === '/kakaologinagreement' ||
-//     to.path === '/set/nickname'
-//   ) {
-//     if (localStorage.getItem('accessToken')) {
-//       if (!JSON.parse(localStorage.getItem('userInfo')).newbie) {
-//         return router.push({ path: '/main' })
-//       } else {
-//         next()
-//       }
-//     }
-//     next()
-//   } else if (token) {
-//     if (!isAccessTokenExpired()) {
-//       return next()
-//     } else {
-//       doRefreshToken()
-//     }
-//   } else {
-//     return next({ path: '/' })
-//   }
-// })
 
 export default router

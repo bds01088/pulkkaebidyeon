@@ -77,8 +77,6 @@
             </div>
           </div>
         </div>
-
-        <!-- <button>닫기</button> -->
       </div>
       <div class="game__result" v-if="lastStage.lastStage && point.point <= 0">
         <img class="success__img" src="@/assets/minigame/fail.png" alt="" />
@@ -86,8 +84,6 @@
           <h3>총 점수가 {{ point.point }}점이라 아무것도.. 얻지 못했어요</h3>
           <p>다시 한 번 도전해보세요!</p>
         </div>
-
-        <!-- <button>닫기</button> -->
       </div>
     </div>
   </div>
@@ -136,13 +132,8 @@ export default {
       axios({
         url: BASE_URL + '/api/v1/game/words/auth/5',
         method: 'GET'
-        // headers: {
-        //   AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-        // }
       })
         .then((res) => {
-          // console.log(res.data)
-          // console.log('index 쓸 수 있나 확인', res.data[1])
           quizs.value.quizs = res.data
         })
         .catch((err) => console.log(err))
@@ -246,7 +237,6 @@ export default {
         }
       })
         .then((res) => {
-          // console.log(res.data)
           item.value.item = res.data.itemDto
 
           // levelup이 true로 들어오면 현재 representMonster -> detail 받아서 레벨업 alert 띄우기
@@ -254,7 +244,6 @@ export default {
             const user = JSON.parse(localStorage.getItem('userInfo'))
             const monsterId = user.representMonster
             let monster = []
-            // const monsterImg = require(`@/assets/monsters/${monsterId}.png`)
 
             axios({
               url: BASE_URL + '/api/v1/monster/' + monsterId,
@@ -312,7 +301,6 @@ export default {
   z-index: 40;
   width: 100%;
   height: 100%;
-  /* background-color: rgb(212, 212, 212, 0.5); */
 }
 
 .on__game {
@@ -320,7 +308,6 @@ export default {
   flex-direction: column;
   justify-content: center;
   width: 80%;
-  /* margin-top: 10vh; */
   margin: 15% auto;
 }
 
@@ -362,7 +349,6 @@ export default {
   cursor: url('@/assets/selector.cur'), pointer;
   font-size: 1.2rem;
   background-color: #d5d5d5;
-  /* font-weight: bold; */
 }
 
 .ans:hover {
@@ -373,7 +359,6 @@ export default {
 .game__result {
   width: 100%;
   height: 50vh;
-  /* background-color: white; */
   border-radius: 20px;
   text-align: center;
 }
@@ -446,8 +431,6 @@ export default {
   border-radius: 6px;
   padding: 5px 0;
   font-size: 0.8rem;
-
-  /* Position the tooltip */
   position: absolute;
   z-index: 1;
   top: 100%;

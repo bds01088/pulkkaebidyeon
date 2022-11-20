@@ -122,14 +122,12 @@ export default {
       } else {
         this.nowPage = 0
       }
-      console.log(this.nowPage)
     },
 
     changeBattle() {
       if (this.nowPage === 0 && this.isBattle === 0) {
         this.isBattle = 1
         this.startBattle()
-        console.log(this.isBattle)
       } else {
         this.isBattle = 0
         this.audio.play()
@@ -151,7 +149,6 @@ export default {
 
     loadingEnd() {
       setTimeout(() => {
-        console.log('로딩끝?')
         this.isloading = 1
       }, 5000)
     },

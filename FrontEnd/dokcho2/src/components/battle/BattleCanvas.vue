@@ -89,7 +89,6 @@
             </div>
           </div>
 
-          <!-- <br /> -->
           <div>
             <button class="item__btn" @click="itemToSelect()">뒤로</button>
           </div>
@@ -133,7 +132,6 @@ import { Monster } from '../modules/Monster'
 import { Boss } from '../modules/Boss'
 import { AnimationBoss } from '../modules/AnimationBoss'
 
-// import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
 
 import BattleStatus from './BattleStatus.vue'
@@ -161,8 +159,6 @@ export default {
   components: { BattleStatus, LoadingPage },
 
   setup(props, { emit }) {
-    // console.log(JSON.parse(localStorage.getItem('userInfo')))
-
     const Toast = Swal.mixin({
       toast: true,
       position: 'top',
@@ -204,21 +200,6 @@ export default {
     const myDamage = ref(0)
     const enemyDamage = ref(0)
 
-    // const itemList = ref([
-    //   '회복 물약(소)',
-    //   '회복 물약(중)',
-    //   '회복 물약(대)',
-    //   '공격 무효화',
-    //   '더블 어택',
-    //   '공격력 증가',
-    //   '방어력 증가',
-    //   '희생',
-    //   '생존',
-    //   '기절',
-    //   '흡혈',
-    //   '독극물',
-    //   '무력화'
-    // ])
     const itemList = ref([])
 
     const useItem = ref('')
@@ -417,14 +398,6 @@ export default {
             z: 3
           })
 
-          // const defensePlayerText = new CreateText({
-          //   content: '방어',
-          //   scene: scene,
-          //   x: -0.5,
-          //   y: -10,
-          //   z: 3
-          // })
-
           const villain = [
             '지현몬',
             '효근몬',
@@ -435,19 +408,6 @@ export default {
             '하민몬',
             '성빈몬'
           ]
-
-          // const enemy = new Boss({
-          //   scene,
-          //   meshes,
-          //   cannonWorld,
-          //   gltfLoader,
-          //   modelSrc: `/models/Villain/${
-          //     villain[userInfo.value.nowMissionId - 1]
-          //   }.glb`,
-          //   x: -0.125,
-          //   y: 2,
-          //   z: -0.75
-          // })
 
           const noMotion = [0, 1, 4]
 
@@ -481,14 +441,6 @@ export default {
             })
           }
 
-          // const defenseEnemyText = new CreateText({
-          //   content: '방어',
-          //   scene: scene,
-          //   x: -0.125,
-          //   y: -10,
-          //   z: -0.75
-          // })
-
           scene.add(defensePlayerText.modelMesh)
           scene.add(defenseEnemyText.modelMesh)
           scene.add(buffEnemyText.modelMesh)
@@ -518,7 +470,6 @@ export default {
               }
 
               if (status.value == '방어') {
-                // console.log(defenseText.modelMesh.position)
                 defensePlayerText.modelMesh.position.y =
                   player.modelMesh.position.y + 1
                 status.value = '대기'
@@ -541,12 +492,6 @@ export default {
                 scene.remove(defensePlayerText.modelMesh)
                 scene.remove(defenseEnemyText.modelMesh)
                 scene.remove(buffEnemyText.modelMesh)
-                // gsap.to(player.cannonBody.position, {
-                //   duration: 5,
-                //   x: -20,
-                //   y: 10,
-                //   z: 10
-                // })
 
                 player.cannonBody.position.x -= 0.05
                 player.cannonBody.position.y += 0.05
@@ -577,7 +522,6 @@ export default {
                 }
 
                 if (enemyStatus.value == '방어') {
-                  // console.log(defenseEnemyText.modelMesh.position)
                   defenseEnemyText.modelMesh.position.y =
                     enemy.modelMesh.position.y + 1.48
                   enemyStatus.value = '대기'
@@ -597,7 +541,6 @@ export default {
                 }
 
                 if (enemyStatus.value == '버프') {
-                  // console.log(buffEnemyText.modelMesh.position)
                   buffEnemyText.modelMesh.position.y =
                     enemy.modelMesh.position.y + 1.48
                   enemyStatus.value = '대기'
@@ -627,10 +570,6 @@ export default {
 
                   setTimeout(() => {
                     attackBossAudio.pause()
-
-                    // setTimeout(() => {
-                    //   attackBossAudio.load()
-                    // }, 100)
                   }, 1000)
 
                   setTimeout(() => {
@@ -643,10 +582,6 @@ export default {
 
                   setTimeout(() => {
                     defenseBossAudio.pause()
-
-                    // setTimeout(() => {
-                    //   defenseBossAudio.load()
-                    // }, 100)
                   }, 1000)
 
                   setTimeout(() => {
@@ -659,12 +594,6 @@ export default {
                 scene.remove(defensePlayerText.modelMesh)
                 scene.remove(defenseEnemyText.modelMesh)
                 scene.remove(buffEnemyText.modelMesh)
-                // gsap.to(enemy.cannonBody.position, {
-                //   duration: 5,
-                //   x: 20,
-                //   y: 10,
-                //   z: -15
-                // })
 
                 enemy.cannonBody.position.x += 0.05
                 enemy.cannonBody.position.y += 0.05
@@ -726,7 +655,6 @@ export default {
       enemySelectAct()
 
       if (myAct.value == '공격') {
-        // enemyDamage.value = enemyAttack.value
         enemyDamage.value = enemyAttack.value - myDefense.value
 
         if (enemyDamage.value < 0) {
@@ -746,7 +674,6 @@ export default {
           setTimeout(() => {
             if (stun.value == true) {
               stun.value = false
-              // phase.value = 'selectAct'
 
               setTimeout(() => {
                 if (poison.value == true) {
@@ -800,7 +727,6 @@ export default {
             }
           }, 1000)
         } else {
-          // myDamage.value = myAttack.value
           myDamage.value = myAttack.value - enemyDefense.value
 
           if (myDamage.value < 0) {
@@ -823,7 +749,6 @@ export default {
         setTimeout(() => {
           if (stun.value == true) {
             stun.value = false
-            // phase.value = 'selectAct'
             setTimeout(() => {
               if (poison.value == true) {
                 poisonCnt.value += 1
@@ -868,12 +793,7 @@ export default {
 
       if (num <= 8) {
         enemyAct.value = '공격'
-      }
-
-      // else if (num <= 8) {
-      //   enemyAct.value = '방어'
-      // }
-      else {
+      } else {
         enemyAct.value = '버프'
       }
     }
@@ -1052,7 +972,6 @@ export default {
               } else {
                 if (stun.value == true) {
                   stun.value = false
-                  // phase.value = 'selectAct'
                   setTimeout(() => {
                     if (poison.value == true) {
                       poisonCnt.value += 1
@@ -1144,7 +1063,6 @@ export default {
           setTimeout(() => {
             phase.value = 'noHappen'
             msg.value = '아무일도 일어나지 않았다...'
-            // phase.value = 'ready'
             setTimeout(() => {
               if (poison.value == true) {
                 poisonCnt.value += 1
@@ -1296,15 +1214,6 @@ export default {
 
           myAct.value = ''
 
-          // setTimeout(() => {
-          //   if (myHp.value <= 0) {
-          //     phase.value = 'end'
-          //     status.value = 'lose'
-          //   } else {
-          //     phase.value = 'ready'
-          //   }
-          // }, 1000)
-
           setTimeout(() => {
             if (myHp.value <= 0) {
               battleAudio.pause()
@@ -1316,7 +1225,7 @@ export default {
 
               Toast.fire({
                 icon: 'error',
-                title: '유물을 획득하지 못했어요 💦 다시 도전!'
+                title: '유물을 획득하지 못했어요💦 다시 도전!'
               })
 
               setTimeout(() => {
@@ -1390,15 +1299,6 @@ export default {
 
           myHpBar.value = Math.round((myHp.value / myMaxHp.value) * 100)
 
-          // setTimeout(() => {
-          //   if (myHp.value <= 0) {
-          //     phase.value = 'end'
-          //     status.value = 'lose'
-          //   } else {
-          //     phase.value = 'ready'
-          //   }
-          // }, 1000)
-
           setTimeout(() => {
             if (myHp.value <= 0) {
               battleAudio.pause()
@@ -1410,7 +1310,7 @@ export default {
 
               Toast.fire({
                 icon: 'error',
-                title: '유물을 획득하지 못했어요 💦 다시 도전!'
+                title: '유물을 획득하지 못했어요💦 다시 도전!'
               })
 
               setTimeout(() => {
@@ -1639,7 +1539,6 @@ export default {
 
               if (stun.value == true) {
                 stun.value = false
-                // phase.value = 'selectAct'
                 setTimeout(() => {
                   if (poison.value == true) {
                     poisonCnt.value += 1
@@ -1794,7 +1693,6 @@ export default {
           }
         })
         .then((res) => {
-          console.log('풀깨비 인포', res.data)
           myName.value = res.data.name
           myMaxHp.value = res.data.hp
           myHp.value = res.data.hp
@@ -1813,7 +1711,6 @@ export default {
           }
         })
         .then((res) => {
-          // console.log(res.data)
           enemyName.value = res.data.name
           enemyMaxHp.value = res.data.hp
           enemyHp.value = res.data.hp
@@ -1831,7 +1728,6 @@ export default {
           }
         })
         .then((res) => {
-          // console.log(res.data)
           const useItemList = []
           res.data.forEach((d) => {
             if (d.type == 'USE_ITEM') {
@@ -1858,12 +1754,6 @@ export default {
 
     function winBattle() {
       msg.value = '배틀에서 이겼다!!!!'
-
-      // axios.put(BASE_URL + '/api/v1/mission/', {
-      //   headers: {
-      //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-      //   }
-      // })
 
       axios({
         url: BASE_URL + '/api/v1/mission/',
@@ -1901,7 +1791,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .battlecanvas {
   width: 100vw;
@@ -1917,7 +1806,6 @@ canvas {
   position: fixed;
   top: 68%;
   left: 15%;
-
   width: 70%;
   height: 28%;
   background-color: rgb(229, 224, 196);
@@ -1931,13 +1819,6 @@ canvas {
 }
 
 #console {
-  /* position: absolute;
-
-  top: 6%;
-  left: 7%;
-  padding: 1%; */
-
-  /* background-color: white; */
   width: 80%;
   height: 70%;
   z-index: 2;
@@ -1947,8 +1828,6 @@ canvas {
   font-size: 1.4rem;
   letter-spacing: 0.3px;
   word-spacing: 5px;
-  /* cursor: url('@/assets/selector.cur'), pointer; */
-  /* border-radius: 10px; */
 }
 
 p {
@@ -1989,9 +1868,7 @@ p {
   top: 50%;
   right: 10%;
   transition: 0.5s;
-
   display: inline-block;
-  /* border: 12px solid transparent; */
 }
 
 .triangle:hover {
@@ -2000,14 +1877,10 @@ p {
 }
 
 .triangle--top {
-  /* border-top-color: black; */
-  /* animation: blink-effect 1s step-end infinite; */
   animation: blinker 1s cubic-bezier(1, 1, 1, 1) infinite alternate;
 }
 
 .item__console {
-  /* display: grid;
-  grid-template-columns: repeat(9, 1fr); */
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -2057,15 +1930,6 @@ p {
   font-weight: bold;
 }
 
-/* @keyframes blink-effect {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-} */
-
 @keyframes blinker {
   from {
     opacity: 1;
@@ -2078,12 +1942,6 @@ p {
 .tooltip {
   position: relative;
   display: inline-block;
-
-  /* border-radius: 50px;
-  border: none;
-  background-color: rgb(171, 171, 171);
-  margin: 5px;
-  padding: 10px; */
 }
 
 .tooltip .tooltiptext {

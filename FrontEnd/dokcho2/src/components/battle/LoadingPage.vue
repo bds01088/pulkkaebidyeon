@@ -26,7 +26,6 @@ export default {}
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* background-color: white; */
 }
 
 .loading__img {
@@ -50,16 +49,12 @@ export default {}
 .loading__true {
   width: 100%;
   height: 100%;
-  /* background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('../../assets/startimg.png');
-  background-size: cover; */
   background-color: rgba(0, 0, 0, 0.785);
   text-align: center;
 }
 
 .story {
   text-align: center;
-  /* margin: 10px; */
   margin: 5vw 5vw 5vw 5vw;
   font-size: 18px;
   color: white;
@@ -84,7 +79,6 @@ export default {}
   width: 50vw;
   height: 25vh;
   display: flex;
-  /* position: fixed; */
   bottom: 5vh;
   flex-direction: column;
   justify-content: center;
@@ -93,7 +87,6 @@ export default {}
 
 .loading {
   width: 50vw;
-  /* height: 10vh; */
   display: flex;
   justify-content: center;
   align-items: center;

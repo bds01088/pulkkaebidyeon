@@ -59,16 +59,9 @@
         <button class="monster__btn" @click="setrepresentMonster()">
           대표 풀깨비로 설정
         </button>
-        <!-- <button @click="$emit('monsterClose')">닫기</button> -->
       </div>
 
       <p class="exit__btn" @click="$emit('monsterClose')"><b>X</b></p>
-      <!-- <img
-        class="exit__btn"
-        @click="$emit('monsterClose')"
-        src="@/assets/navbar/ExitButton.png"
-        alt=""
-      /> -->
     </div>
   </div>
 </template>
@@ -114,7 +107,6 @@ export default {
 .monsterDetail__container {
   width: 100vw;
   height: 100vh;
-  /* backdrop-filter: blur(4px); */
   z-index: 30;
   top: 0;
   left: 0;
@@ -162,7 +154,6 @@ export default {
   background-color: #fffdbf;
   width: 50%;
   height: 30%;
-  /* border: 3px solid black; */
   border-radius: 10px;
   padding: 5%;
   text-align: center;
@@ -206,5 +197,11 @@ p {
   top: 3vh;
   right: 1vw;
   cursor: url('@/assets/selector.cur'), pointer;
+  font-size: 1.2rem;
+  transition: 0.5s;
+}
+
+.exit__btn:hover {
+  scale: 1.1;
 }
 </style>
