@@ -1,6 +1,6 @@
 # [풀깨비뎐](https://k7e203.p.ssafy.io/ "풀깨비뎐 바로가기!") 🌿
 
-![풀깨비뎐](./README.assets/독초도감.png)
+![풀깨비뎐](./README.assets/풀깨비뎐.png)
 
 ## 목차
 
