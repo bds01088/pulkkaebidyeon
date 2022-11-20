@@ -1,8 +1,20 @@
 package com.ssafy.dokcho2.service.user;
 
+import com.ssafy.dokcho2.domain.enums.MissionStatus;
 import com.ssafy.dokcho2.domain.enums.Role;
+import com.ssafy.dokcho2.domain.mission.Mission;
+import com.ssafy.dokcho2.domain.mission.MissionRepository;
+import com.ssafy.dokcho2.domain.mission.UserMission;
+import com.ssafy.dokcho2.domain.mission.UserMissionRepository;
+import com.ssafy.dokcho2.domain.monster.Monster;
+import com.ssafy.dokcho2.domain.monster.MonsterRepository;
 import com.ssafy.dokcho2.domain.user.User;
 import com.ssafy.dokcho2.domain.user.UserRepository;
+import com.ssafy.dokcho2.domain.userItem.UserItemRepository;
+import com.ssafy.dokcho2.domain.userMonster.UserMonster;
+import com.ssafy.dokcho2.domain.userMonster.UserMonsterRepository;
+import com.ssafy.dokcho2.dto.exception.mission.MissionNotFoundException;
+import com.ssafy.dokcho2.dto.exception.monster.MonsterNotFoundException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateEmailException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateNicknameException;
 import com.ssafy.dokcho2.dto.exception.user.DuplicateUsernameException;
@@ -15,6 +27,7 @@ import com.ssafy.dokcho2.dto.user.UserResponseDto;
 import com.ssafy.dokcho2.jwt.TokenProvider;
 import com.ssafy.dokcho2.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -23,19 +36,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserServiceImpl implements UserService{
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final UserRepository userRepository;
+    private final UserMissionRepository userMissionRepository;
+    private final MissionRepository missionRepository;
+    private final MonsterRepository monsterRepository;
+    private final UserMonsterRepository userMonsterRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final UserItemRepository userItemRepository;
 
     @Override
     public boolean checkEmail(String email) {
@@ -125,8 +142,42 @@ public class UserServiceImpl implements UserService{
                 .email(requestDto.getEmail())
                 .nickname("")
                 .password(passwordEncoder.encode(requestDto.getPassword()))
+                .representMonster(monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new))
                 .role(Role.ROLE_USER)
+                //현재 진행중인 미션 id 초기값으로 1줌
+                .nowMissionId((long)1)
                 .build();
+        userRepository.save(user);
+
+        // 유저-미션 테이블에 8개 넣는 코드
+        for(int i=1; i<=8; i++){
+            Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
+            UserMission um;
+            //맨처음 단군 미션만 READY로 바꿈
+            if (i == 1) {
+                um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.READY)
+                        .build();
+            } else {
+                um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.NOT_YET)
+                        .build();
+            }
+            userMissionRepository.save(um);
+        }
+
+        // 기본 풀깨비 지급
+        Monster monster = monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new);
+        UserMonster um = UserMonster.builder()
+                .user(user)
+                .monster(monster)
+                .build();
+
+        userMonsterRepository.save(um);
 
         return UserResponseDto.from(user);
     }
@@ -238,5 +289,66 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByNickname(keyword).orElseThrow(UserNotFoundException::new);
 
         return UserResponseDto.from(user);
+    }
+
+    @Override
+    @Transactional
+    public void changeRepresentMonster(Long monsterId) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+
+        Monster monster = monsterRepository.findById(monsterId).orElseThrow(MonsterNotFoundException::new);
+
+        Optional<UserMonster> o = userMonsterRepository.findByUserAndMonster(user, monster);
+
+        if (o.isPresent()){
+            user.changeRepresentMonster(monster);
+            userRepository.save(user);
+        } else {
+            throw new MonsterNotFoundException();
+        }
+    }
+
+    @Override
+    public void reset() {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUsername).orElseThrow(UserNotFoundException::new);
+        userMissionRepository.deleteAllByUser(user);
+        userMonsterRepository.deleteAllByUser(user);
+        userItemRepository.deleteAllByUser(user);
+
+        // 유저-미션 테이블에 8개 넣는 코드
+        for(int i=1; i<=8; i++){
+            Mission mission = missionRepository.findById((long)i).orElseThrow(MissionNotFoundException::new);
+            UserMission um;
+            //맨처음 단군 미션만 READY로 바꿈
+            if (i == 1) {
+                um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.READY)
+                        .build();
+            } else {
+                um = UserMission.builder()
+                        .user(user)
+                        .mission(mission)
+                        .status(MissionStatus.NOT_YET)
+                        .build();
+            }
+            userMissionRepository.save(um);
+            user.changeNowMissionId((long)1);
+            userRepository.save(user);
+        }
+
+        // 기본 풀깨비 지급
+        Monster monster = monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new);
+        UserMonster um = UserMonster.builder()
+                .user(user)
+                .monster(monster)
+                .build();
+
+        userMonsterRepository.save(um);
+        log.info("유저 초기화 중..");
+        log.info("미션 초기화 & 풀깨비 초기화 완료");
+        user.changeRepresentMonster(monsterRepository.findById((long)1).orElseThrow(MonsterNotFoundException::new));
+        log.info("대표 풀깨비 1번으로 지정 완료");
     }
 }

@@ -7,8 +7,6 @@ import com.ssafy.dokcho2.dto.user.LoginRequestDto;
 import com.ssafy.dokcho2.dto.user.SignUpRequestDto;
 import com.ssafy.dokcho2.dto.user.UserResponseDto;
 
-import java.util.List;
-
 public interface UserService {
 
     boolean checkEmail(String email);
@@ -28,4 +26,8 @@ public interface UserService {
     TokenDto refresh(TokenRequestDto requestDto);
     void logout();
     UserResponseDto search(String keyword);
+
+    void changeRepresentMonster(Long monsterId);
+
+    void reset();
 }

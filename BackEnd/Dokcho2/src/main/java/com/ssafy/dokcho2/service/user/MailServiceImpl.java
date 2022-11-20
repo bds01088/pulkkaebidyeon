@@ -24,12 +24,12 @@ public class MailServiceImpl implements MailService{
         ePw.append(createKey());
 
         message.addRecipients(RecipientType.TO, to);//보내는 대상
-        message.setSubject("독초도감 새로운 비밀번호");//제목
+        message.setSubject("풀깨비뎐 새로운 비밀번호");//제목
 
         String msgg="";
         msgg+= "<div style='margin:100px;'>";
         msgg+= "<img src='https://dokchodogam.s3.ap-northeast-2.amazonaws.com/4.png' style='width:150px; height:150px;'/>";
-        msgg+= "<h1> 안녕하세요 독초도감입니다. </h1>";
+        msgg+= "<h1> 안녕하세요 풀깨비뎐입니다. </h1>";
         msgg+= "<br>";
         msgg+= "<p>비밀번호가 아래와 같이 변경되었습니다.<p>";
         msgg+= "<br>";
@@ -42,7 +42,7 @@ public class MailServiceImpl implements MailService{
         msgg+= ePw.toString()+"</strong><div><br/> ";
         msgg+= "</div>";
         message.setText(msgg, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("dockchodogam@gmail.com","DCDG"));//보내는 사람
+        message.setFrom(new InternetAddress("dockchodogam@gmail.com","PGBD"));//보내는 사람
 
         return message;
     }
