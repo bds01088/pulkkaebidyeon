@@ -10,7 +10,7 @@
           <img src="@/assets/battle/hp.png" />
         </div>
 
-        <div class="Hp__blood" id="enemyHp"></div>
+        <div class="Hp__blood__enemy" id="enemyHp"></div>
       </div>
 
       <div class="status__footer">
@@ -28,7 +28,7 @@
           <img src="@/assets/battle/hp.png" />
         </div>
 
-        <div class="Hp__blood" id="myHp"></div>
+        <div class="Hp__blood__mine" id="myHp"></div>
       </div>
 
       <div class="status__footer">
@@ -191,7 +191,17 @@ export default {
   margin-left: 0.5vh;
 }
 
-.Hp__blood {
+.Hp__blood__enemy {
+  height: 100%;
+  width: 80%;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  background: linear-gradient(19deg, #ffdf5f, #e95fff);
+  background-size: 200% 200%;
+  animation: gradientblood 4s ease infinite;
+}
+
+.Hp__blood__mine {
   height: 100%;
   width: 80%;
   /* background: rgb(254, 223, 84);
