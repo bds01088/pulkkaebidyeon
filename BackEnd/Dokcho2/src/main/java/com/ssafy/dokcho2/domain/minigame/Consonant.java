@@ -25,8 +25,8 @@ public class Consonant {
     @Column(name = "hint")
     private String hint;
 
-    @Column(name = "answer")
-    private String answer;
+    @Column(name = "right_answer")
+    private String right_answer;
 
     @Column(name = "description")
     private String description;

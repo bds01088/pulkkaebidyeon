@@ -26,9 +26,9 @@ public class MonsterController {
         return new ResponseEntity<>(monsterDtoList, HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping("/{monsterId}")
     @ApiOperation(value = "풀깨비 습득 후 갱신된 풀깨비 리스트 반환")
-    public ResponseEntity<List<MonsterDto>> addMonster(@RequestBody Long monsterId){
+    public ResponseEntity<List<MonsterDto>> addMonster(@PathVariable Long monsterId){
         List<MonsterDto> monsterDtoList = monsterService.addMonster(monsterId);
         return new ResponseEntity<>(monsterDtoList, HttpStatus.OK);
     }
