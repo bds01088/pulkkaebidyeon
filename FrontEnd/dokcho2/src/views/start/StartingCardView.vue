@@ -1,9 +1,6 @@
 <template>
   <div class="introCard">
     <div class="introCard__top">
-      <!-- <p v-if="this.userInfo" class="TITLE">
-        {{ this.userInfo.nickname }} 님과 여정을 함께 할 풀깨비가 찾아왔어요!
-      </p> -->
       <p class="TITLE">섬을 함께 탐험할 풀깨비가 찾아왔어요!</p>
     </div>
 
@@ -92,16 +89,10 @@ export default {
 
 .dockchoCard {
   margin: auto;
-  /* color: black;
-  background-color: antiquewhite;
-  border: 1px solid burlywood;
-  border-radius: 20px; */
 }
 
 .card__image {
   width: 50%;
-
-  /* margin-top: 3vh; */
 }
 
 .card__name {

@@ -1,7 +1,6 @@
 <template>
   <div class="background">
     <div class="setnicknamepage">
-      <!-- <img class="setnicknamepage__img" src="@/assets/dokcho_logo.png" alt="" /> -->
       <div class="setnicknamepage__text">
         풀깨비뎐에 새겨질 당신의 이름을 알려주세요 🐯
       </div>
