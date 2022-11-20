@@ -27,19 +27,18 @@
 
 ## 기술 스택 및 버전
 
-1. 이슈 관리 : ![Jira](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\jira-%230A0FFF.svg+xml)
-2. 형상 관리: ![GitLab](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\gitlab-%23181717.svg+xml)
-3. 커뮤니케이션: ![Notion](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\Notion-%23000000.svg+xml) ![Discord](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\discord-5865F2.svg+xml) 
+1. 이슈 관리 : ![Jira](https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white)
+2. 형상 관리: ![GitLab](https://img.shields.io/badge/gitlab-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white)
+3. 커뮤니케이션: ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white) ![Discord](https://img.shields.io/badge/discord-5865F2.svg?style=for-the-badge&logo=discord&logoColor=white) 
 4. 개발 환경 
-   - IDE : ![IntelliJ](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\IntelliJIDEA-000000.svg+xml)2022.1.2 ![Visual_Studio_Code](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\Visual Studio Code-0078d7.svg+xml)1.71.2
-   - DB : ![MySQL](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\MySQL-003545.svg+xml) 8.0.30 ![MongoDB](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\MongoDB-47A248.svg+xml) 6.0.1 
-   - UI & UX : ![Figma](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\Figma-F24E1E.svg+xml) 
-   - Server : ![AWS](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\AWS-FF9900.svg+xml) ![S3](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\S3-569A31.svg+xml) ![Linux](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\Linux-FCC624.svg+xml) ![ubuntu](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\Ubuntu-E95420.svg+xml)![NGINX](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\nginx-009639.svg+xml) ???
+   - IDE : ![IntelliJ](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)2022.1.2 ![Visual_Studio_Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)1.71.2
+   - DB : ![MySQL](https://img.shields.io/badge/MySQL-003545?style=for-the-badge&logo=mysql&logoColor=white) 8.0.30 !
+   - UI & UX : ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white) 
+   - Server : ![AWS](https://img.shields.io/badge/AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white) ![NGINX](https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white) 1.18.0
 5. 상세
-   - Backend : ![JAVA](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\JAVA-FF0000.svg+xml) 1.8 ![Spring](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\Spring-boot-6DB33F.svg+xml)2.7.3 ![Gradle](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\Gradle-02303A.svg+xml)7.5 ![JWT](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\JWT-000000.svg+xml)0.11.2
-   - Frontend : ![HTML5](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\HTML5-E34F26.svg+xml)![CSS3](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\css3-1572B6.svg+xml)![JAVASCRIPT](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\javascript-F7DF1E.svg+xml)![Vue.js](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\vue.js-4FC08Dstyle=for-the-badge&logo=vue.svg+xml) 3.2.39 ![Node.js](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\Node.js-339933style=for-the-badge&logo=node.svg+xml)16.16.0 ![TypeScript](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\TypeScript-3178C6.svg+xml) 4.5.5 ![bootstrap](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\BootStrap-7952B3.svg+xml) 5.2.1
-   - CI/CD : ![docker](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\docker-2496ED.svg+xml)20.10.18 ![Vue.js](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\jenkins-D24939.svg+xml) 2.222.4
-   - Data : ![python](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\python-3776AB.svg+xml)3.8.10 ![hadoop](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\hadoop-66CCFF.svg+xml)3.3.2 ![spark](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\spark-E25A1C.svg+xml) 3.2.1 ![kafka](C:\Users\SSAFY\Desktop\S07P31E203\README.assets\kafka-231F20.svg+xml) 7.0.1  
+   - Backend : ![JAVA](https://img.shields.io/badge/JAVA-FF0000?style=for-the-badge&logoColor=white) 8 ![Spring](https://img.shields.io/badge/Spring-boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)2.7.3 ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white)7.5 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)0.11.2 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)16.16.0 ![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)3.7
+   - Frontend : ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)![CSS3](https://img.shields.io/badge/css3-1572B6?style=for-the-badge&logo=css3&logoColor=white)![JAVASCRIPT](https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white)![Vue.js](https://img.shields.io/badge/vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white) 3.2.39 ![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=Three.js&logoColor=white)0.145.0 ![Blender](https://img.shields.io/badge/Blender-F5792A?style=for-the-badge&logo=Blender&logoColor=white) 
+   - CI/CD : ![docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)20.10.18 ![Vue.js](https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white) 2.222.4
 
 ## 프로젝트 파일 구조
 
