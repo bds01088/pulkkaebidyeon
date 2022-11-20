@@ -26,7 +26,7 @@
             <h3>팀장</h3>
             <p>서상균</p>
             <br />
-            <h3>조원</h3>
+            <h3>팀원</h3>
             <p>김성빈</p>
             <p>김효근</p>
             <p>박지현</p>
@@ -39,6 +39,8 @@
             <p>지현몬 묘근몬 재준몬 근희몬</p>
             <p>상균몬 지원몬 하민몬 성빈몬</p>
             <br />
+            <p>Special Thanks to...</p>
+            <p>이재준 최지원</p>
           </div>
         </div>
 
@@ -118,7 +120,6 @@ export default {
           directionalLight.position.x = directionalLightOriginPosition.x
           directionalLight.position.y = directionalLightOriginPosition.y
           directionalLight.position.z = directionalLightOriginPosition.z
-          // directionalLight.castShadow = true
 
           // mapSize 세팅으로 그림자 퀄리티 설정
           directionalLight.shadow.mapSize.width = 2048
@@ -142,7 +143,6 @@ export default {
           floorMesh.name = 'floor'
           floorMesh.rotation.x = -Math.PI / 2
           floorMesh.receiveShadow = true
-          // scene.add(floorMesh)
 
           const gltfLoader = new GLTFLoader()
 
@@ -330,14 +330,12 @@ body {
   height: 100%;
   background: #000;
   overflow: hidden;
-  /* z-index: 4; */
 }
 
 canvas {
   position: absolute;
   width: 100vw;
   height: 80vh;
-  /* z-index: 4; */
 }
 
 .fade {
@@ -346,7 +344,6 @@ canvas {
   min-height: 40vh;
   top: -25px;
   background-image: linear-gradient(0deg, transparent, black 75%);
-  /* z-index: 6; */
 }
 
 .star-wars {
@@ -362,8 +359,6 @@ canvas {
   line-height: 120%;
   perspective: 400px;
   text-align: justify;
-
-  /* z-index: 5; */
   background-color: black;
   background-color: rgba(0, 0, 0, 0);
 }

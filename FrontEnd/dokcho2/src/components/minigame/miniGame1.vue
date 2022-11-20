@@ -53,7 +53,6 @@ export default {
 
     function changeGame() {
       game.value.game = true
-      // console.log('바꿈')
     }
 
     return {
@@ -75,7 +74,6 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  /* background-color: rgb(212, 212, 212, 0.5); */
 }
 
 .miniGame {

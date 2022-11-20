@@ -72,7 +72,6 @@ export const accounts = {
             token
           )
           if (result.status === 200) {
-            console.log('Access-Token이 갱신되었습니다.')
             localStorage.setItem('accessToken', result.data.accessToken)
             localStorage.setItem('refreshToken', result.data.refreshToken)
             axios.defaults.headers.common.AUTHORIZATION =

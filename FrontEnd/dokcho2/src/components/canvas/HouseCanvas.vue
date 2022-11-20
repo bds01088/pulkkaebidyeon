@@ -77,7 +77,6 @@ export default {
 
       // Renderer
       let canvas = document.querySelector('#HouseCanvas')
-      console.log(canvas)
       const renderer = new THREE.WebGLRenderer({
         canvas,
         antialias: true
@@ -171,7 +170,6 @@ export default {
       // 내가 가진 풀깨비 넣기
       for (let monsterID in userMonster.value.userMonster) {
         let id = Number(monsterID) + 1
-        console.log('풀깨비 아이디', id)
 
         const monster = new HouseMonster({
           scene,
@@ -186,97 +184,9 @@ export default {
           },
           name: `${id}`
         })
-        console.log(monster)
+        monster
+        // console.log(monster)
       }
-
-      // gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
-      //   const monster = item.scene
-      //   monster.castShadow = true
-      //   monster.name = ['monster', `${id}`]
-      //   monster.position.x = monsterPos[id].x
-      //   monster.position.y = monsterPos[id].y
-      //   monster.position.z = monsterPos[id].z
-      //   monster.scale.set(0.5, 0.5, 0.5)
-
-      //   const shape = new Box(new Vec3(0.08, 0.08, 0.08))
-
-      //   monster.cannonBody = new Body({
-      //     mass: 0,
-      //     position: new Vec3(
-      //       monster.position.x,
-      //       monster.position.y,
-      //       monster.position.z
-      //     ),
-      //     shape
-      //   })
-
-      //   monster.cannonBody.quaternion.setFromAxisAngle(
-      //     new Vec3(0, 1, 0), // y축
-      //     0
-      //   )
-
-      //   console.log(monster.cannonBody)
-
-      //   cannonWorld.addBody(monster.cannonBody)
-
-      //   scene.add(monster)
-      //   // meshes.push(monster)
-      //   myMonsters.push(monster)
-      // })
-      // }
-
-      // 내가 가진 풀깨비 넣기
-      // axios({
-      //   url: BASE_URL + '/api/v1/monster',
-      //   method: 'GET',
-      //   headers: {
-      //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-      //   }
-      // })
-      //   .then((res) => {
-      //     userMonster.value.userMonster = res.data
-      //     console.log('axios 내부', userMonster.value.userMonster)
-
-      //     for (let monsterID in res.data) {
-      //       console.log(monsterID)
-      //       let id = Number(monsterID) + 1
-      //       console.log('풀깨비 아이디', id)
-      //       gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
-      //         const monster = item.scene
-      //         monster.name = ['monster', `${id}`]
-      //         monster.position.x = monsterPos[id].x
-      //         monster.position.y = monsterPos[id].y
-      //         monster.position.z = monsterPos[id].z
-      //         monster.scale.set(0.5, 0.5, 0.5)
-      //         scene.add(monster)
-      //         meshes.push(monster)
-
-      //         const shape = new Box(new Vec3(0.08, 0.08, 0.08))
-
-      //         monster.cannonBody = new Body({
-      //           mass: 0,
-      //           position: new Vec3(
-      //             monster.position.x,
-      //             monster.position.y,
-      //             monster.position.z
-      //           ),
-      //           shape
-      //         })
-
-      //         monster.cannonBody.quaternion.setFromAxisAngle(
-      //           new Vec3(0, 1, 0), // y축
-      //           0
-      //         )
-
-      //         console.log(monster.cannonBody)
-
-      //         cannonWorld.addBody(monster.cannonBody)
-      //       })
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log(err)
-      //   })
 
       const player = new Player({
         scene,
@@ -316,7 +226,8 @@ export default {
         name: 'door'
       })
 
-      console.log(door)
+      door
+      // console.log(door)
 
       // 맵 막는 박스 만들기
       new Wall({
@@ -344,17 +255,12 @@ export default {
 
         if (props.nowPage === 1 && !checkMonster.value.checkMonster) {
           checkMonster.value.checkMonster = true
-          console.log('집 들어옴 checkmonster', checkMonster.value.checkMonster)
           changeMonsters()
         }
 
         if (props.nowPage === 0 && checkMonster.value.checkMonster) {
           checkMonster.value.checkMonster = false
-          console.log('집 나감 checkmonster', checkMonster.value.checkMonster)
         }
-
-        // boxMesh.position.copy(boxBody.position) // 위치
-        // boxMesh.quaternion.copy(boxBody.quaternion) // 회전
 
         if (player.modelMesh) {
           player.modelMesh.position.copy(player.cannonBody.position)
@@ -403,7 +309,6 @@ export default {
               Math.abs(destinationPoint.z - player.modelMesh.position.z) < 0.02
             ) {
               player.moving = false
-              console.log('멈춤')
             }
           } else {
             // 서 있는 상태
@@ -430,18 +335,6 @@ export default {
         const meshArray = meshes.concat(myMonsters)
         const intersects = raycaster.intersectObjects(meshArray)
         for (const item of intersects) {
-          console.log(item)
-          // if (item.object.name === 'floor') {
-          //   destinationPoint.x = item.point.x
-          //   destinationPoint.z = item.point.z
-          //   player.modelMesh.lookAt(destinationPoint)
-
-          //   player.moving = true
-
-          //   pointerMesh.position.x = destinationPoint.x
-          //   pointerMesh.position.z = destinationPoint.z
-          // }
-
           if (item.object.name === 'book') {
             isPressed = false
             myPage.value.myPage = true
@@ -641,13 +534,11 @@ export default {
       draw()
 
       function onClick() {
-        // alert('aa')
         emit('changeCanvas')
       }
 
       function changeMonsters() {
         fetchUserMonster()
-        console.log('몬스터 받아옴')
 
         setTimeout(() => {
           for (let monster in myMonsters) {
@@ -656,12 +547,9 @@ export default {
           }
           myMonsters = []
 
-          console.log('뉴 풀깨비 체크', userMonster.value.userMonster)
-
           // 내가 가진 풀깨비 넣기
           for (let monsterID in userMonster.value.userMonster) {
             let id = Number(monsterID) + 1
-            console.log('풀깨비 아이디', id)
             gltfLoader.load(`/models/Monsters/${id}.glb`, (item) => {
               const monster = item.scene
               monster.name = ['monster', `${id}`]
@@ -687,8 +575,6 @@ export default {
                 0
               )
 
-              console.log(monster.cannonBody)
-
               cannonWorld.addBody(monster.cannonBody)
 
               scene.add(monster)
@@ -709,7 +595,6 @@ export default {
       })
         .then((res) => {
           userMonster.value.userMonster = res.data
-          console.log('axios 내부', userMonster.value.userMonster)
         })
         .catch((err) => {
           console.log(err)
@@ -740,7 +625,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 canvas {
   width: 100vw;

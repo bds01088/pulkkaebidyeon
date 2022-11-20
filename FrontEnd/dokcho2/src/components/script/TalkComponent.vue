@@ -109,7 +109,6 @@ export default {
 
     // endtalk
     function endTalk() {
-      console.log(audio)
       audio.play()
       const content = props.isTalk.content
       const userInfo = JSON.parse(localStorage.getItem('userInfo'))
@@ -127,7 +126,6 @@ export default {
 
       function fetchMonster() {
         const monsterId = userInfo.representMonster
-        // const monsterImg = require(`@/assets/starting/${monsterId}.png`)
         axios({
           url: BASE_URL + '/api/v1/monster/' + monsterId,
           method: 'GET',
@@ -327,13 +325,6 @@ export default {
 
       function levelUpMonsterAlert() {
         if (content.missionId === 2) {
-          // axios({
-          //   url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
-          //   method: 'POST',
-          //   headers: {
-          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-          //   }
-          // }).catch((err) => console.log(err))
           Swal.fire({
             title: `${content.characters}의 고민 해결 완료 ✨`,
             html:
@@ -376,13 +367,6 @@ export default {
         }
 
         if (content.missionId === 5) {
-          // axios({
-          //   url: BASE_URL + '/api/v1/monster/' + monsters[1].id,
-          //   method: 'POST',
-          //   headers: {
-          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-          //   }
-          // }).catch((err) => console.log(err))
           Swal.fire({
             title: `${content.characters}의 고민 해결 완료 ✨`,
             html:
@@ -425,13 +409,6 @@ export default {
         }
 
         if (content.missionId === 8) {
-          // axios({
-          //   url: BASE_URL + '/api/v1/monster/' + monsters[0].id,
-          //   method: 'POST',
-          //   headers: {
-          //     AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
-          //   }
-          // }).catch((err) => console.log(err))
           Swal.fire({
             title: `${content.characters}를 물리쳤어요! 🏆`,
             html:
@@ -514,7 +491,6 @@ export default {
                   AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
                 }
               }).then((res) => {
-                // console.log()
                 store.dispatch('fetchnowUserInfo')
                 if (content.missionId === 2) {
                   const monster1 = { id: 2, name: '도꼬마리몬' }
@@ -540,11 +516,9 @@ export default {
                   }).catch((err) => console.log(err))
                 }
                 if (res.data === true) {
-                  console.log('res.data', res.data)
                   emit('talkClose')
                   levelUpMonsterAlert()
                 } else {
-                  console.log('res.data', res.data)
                   emit('talkClose')
                   defaultMonsterAlert()
                 }
@@ -560,11 +534,9 @@ export default {
               }).then((res) => {
                 store.dispatch('fetchnowUserInfo')
                 if (res.data === true) {
-                  console.log('res.data', res.data)
                   emit('talkClose')
                   levelUpAlert()
                 } else {
-                  console.log('res.data', res.data)
                   emit('talkClose')
                   defaultAlert()
                 }
@@ -618,7 +590,6 @@ export default {
   width: 60%;
   height: 50%;
   padding: 2vw 7vw;
-  /* box-shadow: 0 0 1px 1px gray; */
   box-shadow: 10px 10px 10px #00000092;
   background-color: rgb(229, 224, 196);
   display: flex;
@@ -634,7 +605,6 @@ export default {
   height: 6vh;
   border-radius: 3vh;
   box-shadow: 2px 3px 5px 0px rgba(0, 0, 0, 0.5);
-  /* border: 2px rgba(0, 0, 0, 0.5) solid; */
   background-color: rgb(242, 241, 235);
   top: -7vh;
   position: absolute;
@@ -652,11 +622,6 @@ export default {
   font-size: 1.4rem;
   letter-spacing: 0.3px;
   word-spacing: 5px;
-  /* overflow: hidden;
-  font-size: 1.4rem;
-  width: 0;
-  white-space: nowrap;
-  animation: typing 1s steps(20, end) forwards; */
 }
 .btn__box {
   display: flex;
@@ -665,11 +630,6 @@ export default {
 }
 
 .icon {
-  /* border-radius: 3vh;
-  border: 2px gray solid;
-  width: 6vw;
-  height: 5vh;
-  font-size: 1vw; */
   cursor: url('@/assets/selector.cur'), pointer;
   transition: 0.5s;
   animation: blinker 1s cubic-bezier(1, 1, 1, 1) infinite alternate;
@@ -692,14 +652,4 @@ export default {
     opacity: 0;
   }
 }
-
-/* 타이핑 애니메이션 : 첫번째 줄 시작에만 적용돼서 주석처리 */
-/* @keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-} */
 </style>

@@ -99,7 +99,6 @@ export default {
     }
     function closeModal1() {
       audio.play()
-      console.log('닫음')
       modal1.value.modal1 = false
       emit('changeNavbar')
     }
@@ -147,8 +146,7 @@ export default {
             AUTHORIZATION: 'Bearer ' + localStorage.getItem('accessToken')
           }
         })
-        .then((res) => {
-          console.log(res)
+        .then(() => {
           swal({
             title: '로그아웃이 완료되었습니다!',
             text: ' 다시 탐험 하는 날을 기다릴게요 🌻 ',

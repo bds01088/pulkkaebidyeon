@@ -23,8 +23,6 @@
               {{ item.description }}</span
             >
           </div>
-
-          <!-- <p>{{ item.itemName }}</p> -->
         </div>
       </div>
       <div class="item__nomission" v-else>
@@ -41,7 +39,6 @@
           :key="item.itemId"
         >
           <div class="tooltip">
-            <!-- 지금 이미지, count 안넣어서 주석처리해둠 -->
             <img
               :src="require('@/assets/item/' + item.itemId + '.png')"
               alt=""
@@ -91,7 +88,6 @@ export default {
         await store.dispatch('doRefreshToken')
       }
       axios({
-        // 테스트용으로 요청 전체 아이템 받음 / 실제로는 item까지만
         url: BASE_URL + '/api/v1/item',
         method: 'GET',
         headers: {
@@ -135,7 +131,6 @@ export default {
 .item__container {
   width: 100%;
   height: 100%;
-  /* backdrop-filter: blur(4px); */
   z-index: 30;
   flex-direction: column;
   align-items: center;
@@ -155,7 +150,6 @@ export default {
   width: 50%;
   height: 80%;
   background: rgba(169, 170, 150, 0.714);
-  /* background-image: url('@/assets/Paper.png'); */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -171,7 +165,6 @@ export default {
 }
 
 .item__body {
-  /* margin: 2vh; */
   border: 1px solid white;
   background-color: #ffffff;
   width: 80%;
@@ -231,7 +224,6 @@ h3 {
 }
 
 .battle__item p {
-  /* margin-left: 10%; */
   font-size: 0.6rem;
   text-align: center;
 }
@@ -276,8 +268,6 @@ h3 {
   border-radius: 6px;
   padding: 5px 0;
   font-size: 0.8rem;
-
-  /* Position the tooltip */
   position: absolute;
   z-index: 1;
   bottom: 100%;

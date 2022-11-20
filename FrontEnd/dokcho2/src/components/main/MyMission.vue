@@ -3,8 +3,6 @@
     <div class="myMission">
       <div class="mission__header">
         <p class="mission__user">{{ userInfo.nickname }}의 사건 수첩</p>
-
-        <!-- <p>지금 해결 중인 사건 :</p> -->
       </div>
 
       <div
@@ -20,17 +18,6 @@
           mission__notyet: mission.status == 'NOT_YET'
         }"
       >
-        <!-- {{ mission.status }} -->
-        <!-- CSS 하고 주석 풀 예정 -->
-        <!-- <div v-if="mission.status !== 'NOT_YET'" class="mission__box">
-        <p>{{ mission.missionId }}번째 사건. 해결 완료!</p>
-        <p>{{ mission.characters }}의 고민을 해결하라!</p>
-      </div>
-      <div v-else class="mission__box">
-        <p>{{ mission.missionId }}번째 사건.</p>
-        <p>미해결</p>
-      </div> -->
-
         <div v-if="mission.status === 'NOT_YET'" class="mission__box">
           <div class="mission__text">
             <p class="mission__id">🔑 {{ mission.missionId }}번째 미션</p>
@@ -108,7 +95,7 @@
               class="item__image"
             />
           </div>
-                    <div
+          <div
             v-else-if="mission.characters === '호랑이'"
             class="mission__item"
           >
@@ -138,22 +125,15 @@
       />
     </div>
   </div>
-
-  <!-- <MissionDetail
-    @click="closeMissionDetail"
-    v-if="missionDetail.missionDetail"
-  /> -->
 </template>
 
 <script>
 import axios from 'axios'
 import { BASE_URL } from '@/constant/BASE_URL'
-// import MissionDetail from './MissionDetail.vue'
 import { ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
-  // components: { MissionDetail },
   setup(props, { emit }) {
     const missions = ref({ missions: [] })
     const missionDetail = ref({ missionDetail: false })
@@ -213,7 +193,6 @@ export default {
 .mission__container {
   width: 100%;
   height: 100%;
-  /* backdrop-filter: blur(4px); */
   z-index: 30;
   flex-direction: column;
   align-items: center;
@@ -233,7 +212,6 @@ export default {
   width: 50%;
   height: 90%;
   background: rgba(169, 170, 150, 0.714);
-  /* background-image: url('@/assets/Paper.png'); */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -253,20 +231,13 @@ export default {
 
 .mission__body {
   margin-bottom: 0.5vh;
-  /* border: 1px solid white; */
   background-color: #ffffff;
   width: 65%;
   height: 7%;
   padding: 1vh;
   border-radius: 20px;
   box-shadow: 1px 1px 5px 1px rgb(195, 194, 194);
-  /* display: flex;
-  flex-direction: row; */
 }
-
-/* .mission__body:hover {
-  cursor: pointer;
-} */
 
 .mission__box {
   display: flex;
@@ -283,7 +254,6 @@ export default {
 .mission__item {
   max-width: 40%;
   max-height: 7%;
-  /* margin-bottom: 2vh; */
   margin-right: 3%;
   display: flex;
   flex-direction: row;
@@ -298,7 +268,6 @@ export default {
   margin-right: 0.5vh;
 }
 .mission__box p {
-  /* margin: auto; */
   padding-left: 2vw;
   margin-bottom: 0.5vw;
 }
@@ -330,7 +299,6 @@ export default {
 .tooltip {
   position: relative;
   cursor: url('@/assets/selector.cur'), pointer;
-  /* display: inline-block; */
 }
 
 .tooltip .tooltiptext {
@@ -341,14 +309,10 @@ export default {
   color: black;
   text-align: center;
   border-radius: 30px;
-  /* padding: 7px 0; */
   font-size: 1rem;
-
-  /* Position the tooltip */
   position: absolute;
   z-index: 1;
   right: 110%;
-  /* left: -70%; */
   bottom: -100%;
   left: -20%;
   margin-left: -5vw;
@@ -364,7 +328,6 @@ export default {
 .tooltiptext p {
   margin-right: 2vw;
   word-break: keep-all;
-  /* word-wrap: break-word; */
   margin-bottom: 1vw;
 }
 
@@ -376,10 +339,8 @@ export default {
 .tooltip .tooltiptext::after {
   content: ' ';
   position: absolute;
-
   top: 50%;
   left: 100%;
-  /* margin-left: -10px; */
   border-width: 10px;
   border-style: solid;
   border-color: transparent transparent transparent rgba(255, 255, 255);

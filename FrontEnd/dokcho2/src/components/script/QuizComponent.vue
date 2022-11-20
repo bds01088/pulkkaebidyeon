@@ -70,7 +70,6 @@ export default {
         }
       })
         .then((res) => {
-          console.log(res.data)
           quiz.value.content = res.data
         })
         .catch((err) => console.log(err))
@@ -182,8 +181,6 @@ export default {
   border-radius: 10px;
 }
 .content > img {
-  /* max-width: 50vw;
-  max-height: 50vh; */
   width: 25vw;
   height: 50vh;
   margin-top: 2vh;
@@ -200,7 +197,6 @@ export default {
   align-items: center;
   margin: 1vw;
   padding-left: 2vw;
-  /* padding: 0 1vw; */
   width: 20vw;
   height: 7vh;
   border-radius: 3vh;

@@ -99,6 +99,7 @@ export default {
       floorTexture.wrapT = THREE.RepeatWrapping
       floorTexture.repeat.x = 1
       floorTexture.repeat.y = 1
+
       // 집 불러오는 바닥
       const houseFloorTexture = textureLoader.load('/images/housefloor3.png')
       houseFloorTexture.wrapS = THREE.RepeatWrapping
@@ -122,7 +123,6 @@ export default {
       const scene = new THREE.Scene()
 
       // Camera
-
       const cameraPosition = new THREE.Vector3(-15, 40, 0)
       camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
       camera.zoom = 0.15
@@ -143,6 +143,7 @@ export default {
       // mapSize 세팅으로 그림자 퀄리티 설정
       directionalLight.shadow.mapSize.width = 2048
       directionalLight.shadow.mapSize.height = 2048
+
       // 그림자 범위
       directionalLight.shadow.camera.left = -100
       directionalLight.shadow.camera.right = 100
@@ -172,9 +173,7 @@ export default {
       // Mesh
       const meshes = []
 
-      setTimeout(() => {
-        console.log(scene)
-      }, 20000)
+      setTimeout(() => {}, 20000)
 
       // 바닥 만들기
       const floorMesh = new THREE.Mesh(
@@ -187,20 +186,6 @@ export default {
       floorMesh.rotation.x = -Math.PI / 2
       floorMesh.receiveShadow = true
       scene.add(floorMesh)
-
-      // 포인터 매쉬 필요없음(삭제 예정)
-      // const pointerMesh = new THREE.Mesh(
-      //   new THREE.PlaneGeometry(0.5, 0.5),
-      //   new THREE.MeshBasicMaterial({
-      //     color: 'crimson',
-      //     transparent: true,
-      //     opacity: 0.5
-      //   })
-      // )
-      // pointerMesh.rotation.x = -Math.PI / 2
-      // pointerMesh.position.y = 0.01
-      // pointerMesh.receiveShadow = true
-      // scene.add(pointerMesh)
 
       // 집 앞에 있는 노란 박스
       const spotMesh = new THREE.Mesh(
@@ -217,7 +202,7 @@ export default {
 
       const gltfLoader = new GLTFLoader()
 
-      // 집(수정 예정)
+      // 집
       const house = new House({
         gltfLoader,
         scene,
@@ -246,8 +231,8 @@ export default {
         x: 68,
         z: 68
       })
-      // 위인들
 
+      // 위인들
       const Greats = [
         ['단군', { x: -34, y: 0, z: -50 }],
         ['장수왕', { x: -56, y: 0, z: -20 }],
@@ -327,11 +312,6 @@ export default {
           name: element[0]
         })
       })
-      // new Environment({
-      //   scene,
-      //   cannonWorld,
-      //   gltfLoader
-      // })
 
       // 마을
       const village = [
@@ -391,7 +371,6 @@ export default {
 
         if (isLoading === 0 && scene.children.length >= 167) {
           isLoading = 1
-          // console.log('로딩 끝1')
           emit('loadingEnd')
         }
 
@@ -580,19 +559,6 @@ export default {
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
         for (const item of intersects) {
-          // console.log(item)
-          // if (item.object.name === 'floor') {
-          //   destinationPoint.x = item.point.x
-          //   destinationPoint.z = item.point.z
-          //   player.modelMesh.lookAt(destinationPoint)
-
-          //   // console.log(item.point)
-
-          //   player.moving = true
-
-          //   pointerMesh.position.x = destinationPoint.x
-          //   pointerMesh.position.z = destinationPoint.z
-          // }
           if (item.object.name === 'house') {
             onClick()
             isPressed = false
@@ -686,15 +652,6 @@ export default {
             }
 
             isMinigame.value.isMinigame = true
-            // 건1, 건2, 건3
-
-            // 숫자 따라서 다른 함수 실행 -> 컴포넌트 true값으로 변경
-            // myPage.value.myPage = true
-            // if (item.object.name[1]) {
-            //   miniGame1.value.miniGame1 = true
-            // }
-
-            // 바깥에 컴포넌트 false값으로 바꾸는 함수 따로 만들어서 컴포넌트에 달기
           }
           break
         }
@@ -720,7 +677,7 @@ export default {
         mouse.y = -((e.clientY / canvas.clientHeight) * 2 - 1)
       }
 
-      // 변환된 마우스 좌표를 이용해 래이캐스팅
+      // 변환된 마우스 좌표를 이용해 레이캐스팅
       function raycasting() {
         raycaster.setFromCamera(mouse, camera)
         checkIntersects()
@@ -729,21 +686,9 @@ export default {
       function onPointerMove(e) {
         mouse.x = (e.clientX / window.innerWidth) * 2 - 1
         mouse.y = -((e.clientY / window.innerHeight) * 2 - 1)
-        // console.log('on pointer move 인식')
 
         raycaster.setFromCamera(mouse, camera)
         const intersects = raycaster.intersectObjects(meshes)
-
-        // for (const item of intersects) {
-        //   if (
-        //     item.object.name === 'house' ||
-        //     item.object.name.slice(0, 1) === '위' ||
-        //     item.object.name.slice(0, 1) === '빌' ||
-        //     item.object.name.slice(0, 1) === '건'
-        //   ) {
-        //     // item.object.material.color.set(0xff0000)
-        //   }
-        // }
 
         if (intersects && intersects.length > 0) {
           document.body.style.cursor = "url('@/assets/selector.cur'), pointer;"
@@ -871,7 +816,6 @@ export default {
 
       function onClick() {
         store.dispatch('fetchnowUserInfo')
-        // alert('aa')
         emit('changeCanvas')
       }
 
@@ -925,7 +869,6 @@ export default {
         }
       })
         .then((res) => {
-          // console.log(res.data)
           isTalk.value.content = res.data
           isTalk.value.content.line = res.data.line.split('\\t')
         })
@@ -952,8 +895,6 @@ export default {
 
       // 엔딩
       if (missionId === 8 && isTalk.value.content.status === 'BATTLE_WIN') {
-        console.log('ending!!!!!!!!!!!!!!')
-
         emit('startEndingCredits')
       }
     }
@@ -1014,7 +955,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 canvas {
   width: 100vw;

@@ -16,24 +16,6 @@ app
 
 // 웰컴 콘솔 메시지 🙋‍♀️
 function welcome() {
-  // console.image = function (url, size = 100) {
-  //   var image = new Image()
-  //   image.onload = function () {
-  //     var style = [
-  //       'font-size: 1px;',
-  //       'padding: ' +
-  //         (this.height / 100) * size +
-  //         'px ' +
-  //         (this.width / 100) * size +
-  //         'px;',
-  //       'background: url(' + url + ') no-repeat;',
-  //       'background-size: contain;'
-  //     ].join(' ')
-  //     console.log('%c ', style)
-  //   }
-  //   image.src = '@/assets/hello.png'
-  // }
-
   console.log(`
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣤⣤⣤⣄⣀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⡀⠀
