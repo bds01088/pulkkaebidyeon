@@ -1,19 +1,5 @@
 <template>
   <div class="wholeCanvas">
-    <div class="fullPage">
-      <img
-        class="fullPage__btn"
-        src="@/assets/open.png"
-        @click="fullPageChange"
-        v-if="fullPage === false"
-      />
-      <img
-        class="fullPage__btn"
-        src="@/assets/close.png"
-        @click="fullPageChange"
-        v-if="fullPage === true"
-      />
-    </div>
     <NavBar
       @changeNavbar="changeNavbar"
       @quizStart="quizStart"
@@ -80,7 +66,6 @@ export default {
       isGameStart: 0,
       audio: new Audio('audio/oursound.mp3'),
       quizAudio: new Audio('audio/future.mp3'),
-      fullPage: false,
       ending: 0
     }
   },
@@ -102,20 +87,6 @@ export default {
     this.audio.pause()
   },
   methods: {
-    // 전체화면 변경
-    fullPageChange() {
-      const documentElement = document.documentElement
-      if (document.fullscreenElement === null) {
-        //전체화면 아닌 상태
-        documentElement.requestFullscreen()
-        this.fullPage = true
-      } else {
-        //전체화면 상태
-        document.exitFullscreen()
-        this.fullPage = false
-      }
-    },
-
     changeCanvas() {
       if (this.nowPage === 0) {
         this.nowPage = 1

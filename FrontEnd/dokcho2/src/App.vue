@@ -1,12 +1,64 @@
 <template>
   <router-view />
+  <div class="fullPage">
+    <img
+      class="fullPage__btn"
+      src="@/assets/open.png"
+      @click="fullPageChange"
+      v-if="fullPage === false"
+    />
+    <img
+      class="fullPage__btn"
+      src="@/assets/close.png"
+      @click="fullPageChange"
+      v-if="fullPage === true"
+    />
+  </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      fullPage: false
+    }
+  },
+  methods: {
+    // 전체화면 변경
+    fullPageChange() {
+      const documentElement = document.documentElement
+      if (document.fullscreenElement === null) {
+        //전체화면 아닌 상태
+        documentElement.requestFullscreen()
+        this.fullPage = true
+      } else {
+        //전체화면 상태
+        document.exitFullscreen()
+        this.fullPage = false
+      }
+    }
+  }
+}
 </script>
 
 <style>
+.fullPage {
+  position: fixed;
+  display: inline;
+  z-index: 20;
+  bottom: 5%;
+  left: 93%;
+}
+
+.fullPage__btn {
+  cursor: url('@/assets/selector.cur'), pointer;
+  transition: 0.5s;
+}
+
+.fullPage__btn:hover {
+  scale: 1.2;
+}
+
 input {
   border-radius: 20px;
   padding: 0 1vw;

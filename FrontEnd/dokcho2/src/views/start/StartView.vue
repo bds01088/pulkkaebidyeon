@@ -166,6 +166,7 @@ input:focus {
   outline: none;
 }
 .loginpage {
+  height: 20%;
   display: flex;
   flex-direction: row;
   margin: auto;
@@ -177,11 +178,13 @@ input:focus {
   flex-direction: column;
 }
 .logo__img {
+  height: 30%;
+  object-fit: contain;
   display: block;
   margin: auto;
   padding-top: 15vh;
   width: 31vw;
-  margin-bottom: 5vh;
+  margin-bottom: 2vh;
 }
 
 .login__button {
@@ -219,7 +222,7 @@ input:focus {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin-top: 2vmin;
+  margin-top: 3vh;
   margin-right: 3vw;
 }
 
