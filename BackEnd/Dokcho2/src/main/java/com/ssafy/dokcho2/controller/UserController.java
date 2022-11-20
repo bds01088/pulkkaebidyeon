@@ -147,10 +147,17 @@ public class UserController {
         return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
     }
 
-    @GetMapping("/search/{keyword}")
-    @ApiOperation(value = "회원 검색")
-    public ResponseEntity<UserResponseDto> search(@PathVariable String keyword){
+    @PutMapping("/represent/{monsterId}")
+    @ApiOperation(value = "대표 풀깨비 변경")
+    public ResponseEntity<String> setRepresentMonster(@PathVariable Long monsterId){
+        userService.changeRepresentMonster(monsterId);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
+    }
 
-        return new ResponseEntity<>(userService.search(keyword), HttpStatus.OK);
+    @DeleteMapping("/reset")
+    @ApiOperation(value = "초기 상태로 되돌리기")
+    public ResponseEntity<String> userReset(){
+        userService.reset();
+        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 }
