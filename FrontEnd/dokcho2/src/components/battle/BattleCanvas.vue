@@ -1988,6 +1988,7 @@ p {
   position: absolute;
   top: 50%;
   right: 10%;
+  transition: 0.5s;
 
   display: inline-block;
   /* border: 12px solid transparent; */
