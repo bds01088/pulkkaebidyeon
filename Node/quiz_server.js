@@ -23,6 +23,7 @@ server.listen(3001, () => {
 
 let wordQuizs = [];
 let consonantQuizs = [];
+let characterQuizs = [];
 let players = {};
 let roomNum = 0;
 let rooms = [];
@@ -44,6 +45,17 @@ axios({
 })
   .then((res) => {
     consonantQuizs = res.data;
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+axios({
+  url: BASE_URL + "/api/v1/game/characterquiz/auth/30",
+  method: "GET",
+})
+  .then((res) => {
+    characterQuizs = res.data;
   })
   .catch((err) => {
     console.log(err);
@@ -120,8 +132,10 @@ try {
         });
         if (roomInfo.gameType === "saja") {
           roomInfo.roomQuiz = _.sampleSize(wordQuizs, 10);
-        } else {
+        } else if (roomInfo.gameType === "chosung") {
           roomInfo.roomQuiz = _.sampleSize(consonantQuizs, 10);
+        } else {
+          roomInfo.roomQuiz = _.sampleSize(characterQuizs, 10);
         }
 
         let payload = [roomInfo, players[socket.id].object];
@@ -190,18 +204,27 @@ try {
           roomInfo.quizing = false;
         } else {
           if (
+            data[3] !== "독초는 퀴즈를 뿌려라" &&
+            roomInfo.currentUser.length < 2
+          ) {
+            io.to(`${roomInfo.roomId}`).emit("whyAlone");
+          } else if (
             data[3] === "독초는 퀴즈를 뿌려라" &&
             roomInfo.currentUser.length < 2
           ) {
             io.to(`${roomInfo.roomId}`).emit("dontStartQuiz");
           } else {
             // 퀴즈시작
-            if (data[3] === "독초는 퀴즈를 뿌려라") {
+            if (
+              data[3] === "독초는 퀴즈를 뿌려라" &&
+              roomInfo.quizing == false
+            ) {
               roomInfo.quizing = true;
-              io.to(`${roomInfo.roomId}`).emit(
-                "startQuiz",
-                roomInfo.roomQuiz[roomInfo.nowQuizNumber]
-              );
+              let payload = [
+                roomInfo.gameType,
+                roomInfo.roomQuiz[roomInfo.nowQuizNumber],
+              ];
+              io.to(`${roomInfo.roomId}`).emit("startQuiz", payload);
             }
           }
 
@@ -244,10 +267,11 @@ try {
                 }
                 io.to(`${roomInfo.roomId}`).emit("fuckoff");
               } else {
-                io.to(`${roomInfo.roomId}`).emit(
-                  "nextQuiz",
-                  roomInfo.roomQuiz[roomInfo.nowQuizNumber]
-                );
+                let payload = [
+                  roomInfo.gameType,
+                  roomInfo.roomQuiz[roomInfo.nowQuizNumber],
+                ];
+                io.to(`${roomInfo.roomId}`).emit("nextQuiz", payload);
               }
             }
           }
