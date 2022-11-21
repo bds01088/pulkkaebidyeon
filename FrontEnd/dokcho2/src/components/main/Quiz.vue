@@ -545,6 +545,7 @@ export default {
       quizing.value.quizing = false
       characterQuiz.value.timer = -1
       characterQuiz.value.quiz = []
+      characterQuiz.value.isCharacter = false
       for (let winner of data) {
         allMsg.value.allMsg.push({
           socketId: '',
