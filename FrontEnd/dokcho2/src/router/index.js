@@ -64,6 +64,14 @@ const routes = [
     name: 'start',
     component: StartView
   },
+  {
+    path: '/e',
+    name: 'ending',
+    component: () =>
+      import(
+        /* webpackChunkName: "findpassword" */ '../components/ending/EndingCredits.vue'
+      )
+  },
   // 비밀번호 찾기
   {
     path: '/findpassword',
