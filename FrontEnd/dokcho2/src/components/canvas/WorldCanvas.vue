@@ -33,7 +33,7 @@ import gsap from 'gsap'
 import * as CANNON from 'cannon-es'
 import TalkComponent from '../script/TalkComponent.vue'
 import QuizComponent from '../script/QuizComponent.vue'
-import { ref, watchEffect } from 'vue'
+import { watchEffect } from 'vue'
 import Swal from 'sweetalert2'
 
 import { BASE_URL } from '@/constant/BASE_URL'
